@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ===========================
    Font-face
@@ -22,40 +22,40 @@
    =========================== */
 @theme {
   /* Primary */
-  --color-primary-100: #E3F4FF;
-  --color-primary-200: #B0DFFF;
-  --color-primary-300: #7DCBFF;
-  --color-primary-400: #4AB6FF;
-  --color-primary-500: #17A2FF;
+  --color-primary-100: #e3f4ff;
+  --color-primary-200: #b0dfff;
+  --color-primary-300: #7dcbff;
+  --color-primary-400: #4ab6ff;
+  --color-primary-500: #17a2ff;
 
   /* Gray Scale */
-  --color-gray-100: #EBEEF2;
-  --color-gray-200: #B9BFC8;
-  --color-gray-300: #808A9C;
+  --color-gray-100: #ebeef2;
+  --color-gray-200: #b9bfc8;
+  --color-gray-300: #808a9c;
   --color-gray-400: #505866;
-  --color-gray-500: #23272D;
-  --color-bk: #14161A;
-  --color-white: #FFFFFF;
+  --color-gray-500: #23272d;
+  --color-bk: #14161a;
+  --color-white: #ffffff;
 
   /* System Colors */
-  --color-success-100: #E6F9ED;
-  --color-success-200: #34C759;
-  --color-warning-100: #E6F9ED;
-  --color-warning-200: #FF9500;
-  --color-error-100: #FFECEC;
-  --color-error-200: #FF3B30;
-  --color-info-100: #E6F0FF;
-  --color-info-200: #007AFF;
+  --color-success-100: #e6f9ed;
+  --color-success-200: #34c759;
+  --color-warning-100: #e6f9ed;
+  --color-warning-200: #ff9500;
+  --color-error-100: #ffecec;
+  --color-error-200: #ff3b30;
+  --color-info-100: #e6f0ff;
+  --color-info-200: #007aff;
 
-  --color-background: #FFFFFF;
-  --color-foreground: #23272D;
-  --color-border: #B9BFC8;
+  --color-background: #ffffff;
+  --color-foreground: #23272d;
+  --color-border: #b9bfc8;
 
-  --font-sans: "Pretendard Variable", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: "HS-Santokki", "Pretendard Variable", sans-serif;
+  --font-sans:
+    'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-display: 'HS-Santokki', 'Pretendard Variable', sans-serif;
 }
-
 
 /* ===========================
    Typography Tokens
@@ -171,6 +171,7 @@
   body {
     @apply bg-background text-foreground font-sans;
   }
+
   * {
     @apply border-border;
   }
