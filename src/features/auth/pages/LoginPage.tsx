@@ -2,8 +2,17 @@ import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/ui/Logo';
 import { AuthHeader } from '@/components/layout/AuthHeader';
 import { InputField } from '@/components/ui/InputField';
+import { useNavigate } from 'react-router-dom';
 
 export function LoginPage() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log('Form submitted');
+    navigate('/');
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-white p-4">
       <AuthHeader />
@@ -14,7 +23,7 @@ export function LoginPage() {
           <br />
           숙터디
         </h1>
-        <form className="w-full space-y-5">
+        <form onSubmit={handleSubmit} className="w-full space-y-5">
           <InputField label="아이디" id="id" type="text" placeholder="아이디를 입력해주세요." />
           <InputField
             label="비밀번호"
