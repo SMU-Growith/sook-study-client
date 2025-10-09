@@ -1,36 +1,51 @@
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/ui/Logo';
 import { Badge } from '@/components/ui/Badge';
-import { InputField } from '@/components/ui/InputField';
-import { Input } from '@/components/ui/Input';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { Form } from '@/components/ui/Form';
+import {
+  signUpStep1Schema,
+  signUpStep2Schema,
+  type TSignUpStep1Schema,
+  type TSignUpStep2Schema,
+} from '../validators/auth';
+import { SignUpForm } from '../components/SignUpForm';
+import { SignUpEtcForm } from '../components/SignUpEtcForm';
+import { useNavigate } from 'react-router-dom';
+import { useSignUpStore } from '@/store/useSignUpStore';
+import { useMutation } from '@tanstack/react-query';
+import { signUpApi } from '@/lib/api/index';
+import { AxiosError } from 'axios';
 
-export function SignUpPage({ onNext }: { onNext: () => void }) {
-  const [timer, setTimer] = useState(300);
-  const [isCodeSent, setIdCodeSent] = useState(false);
-  const [isVerified, setIdVerified] = useState(false);
+export function SignUpPage() {
+  const [step, setStep] = useState(1);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const navigate = useNavigate();
+  const { formData, setFormData, reset } = useSignUpStore();
 
-  useEffect(() => {
-    // 코드가 전송된 후 타이머 시작
-    if (isCodeSent && timer > 0) {
-      const interval = setInterval(() => {
-        setTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [isCodeSent, timer]);
-
-  const handleNext = () => {
-    if (isVerified) {
-      onNext();
-    }
+  const { mutate: submitSignUp } = useMutation({
+    mutationFn: signUpApi,
+    onSuccess: () => {
+      alert('회원가입이 완료되었습니다.');
+      reset();
+      navigate('/');
+    },
+    onError: (error: unknown) => {
+      const err = error as AxiosError<{ message?: string }>;
+      alert(err.response?.data?.message || '회원가입 실패');
+    },
+  });
+  const onStep1Submit = (data: TSignUpStep1Schema) => {
+    console.log('Step 1 Data:', data);
+    const { id, password, email } = data;
+    setFormData({ id, password, email });
+    setStep(2);
   };
 
-  const formatTime = (seconds: number) => {
-    const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+  const onStep2Submit = (data: TSignUpStep2Schema) => {
+    console.log('Step 2 Data:', data);
+    const finalData = { ...formData, ...data };
+    submitSignUp(finalData);
   };
 
   return (
@@ -41,65 +56,46 @@ export function SignUpPage({ onNext }: { onNext: () => void }) {
       <main className="w-full max-w-[800px] px-4 py-10">
         <div className="w-full flex justify-between items-center mb-10">
           <div className="flex items-center gap-2">
-            <Badge variant="blue_">1</Badge>
-            <h1 className="text-body-1-semibold text-gray-400">계정 만들기</h1>
+            <Badge variant="blue_">{step}</Badge>
+            <h1 className="text-body-1-semibold text-gray-400">
+              {step === 1 ? '계정 만들기' : '정보 입력하기'}
+            </h1>
           </div>
-          <span className="text-caption-semibold text-gray-200">1/2</span>
+          <span className="text-caption-semibold text-gray-200">{step}/2</span>
         </div>
-        <div className="space-y-5">
-          <InputField label="아이디" id="id" type="text" placeholder="아이디를 입력해주세요." />
-          <InputField
-            label="비밀번호"
-            id="password"
-            type="password"
-            placeholder="비밀번호를 입력해주세요."
-          />
-          <div className="space-y-3">
-            <div className="flex items-end gap-2">
-              <div className="grow relative">
-                <InputField
-                  label="숙명 계정 인증하기"
-                  id="email"
-                  type="email"
-                  placeholder="인증받을 숙명 G-mail 계정을 입력해주세요."
-                />
-                {isCodeSent && (
-                  <span className="absolute right-5 bottom-3 text-body-2-semibold text-gray-500">
-                    {formatTime(timer)}
-                  </span>
-                )}
-              </div>
-              <Button
-                variant="solid"
-                size="md"
-                onClick={() => {
-                  setTimer(300);
-                  setIdCodeSent(true);
-                }}
-              >
-                인증번호 받기
+
+        {step === 1 && (
+          <Form
+            schema={signUpStep1Schema}
+            onSubmit={onStep1Submit}
+            mode="onBlur"
+            className="space-y-5"
+          >
+            <SignUpForm onVerified={setIsEmailVerified} />
+            <div className="flex w-full justify-end gap-2 mt-10">
+              <Button type="button" variant="default" size="lg" onClick={() => navigate(-1)}>
+                취소
+              </Button>
+              <Button type="submit" variant={isEmailVerified ? 'primary' : 'disabled'} size="lg">
+                다음으로
               </Button>
             </div>
-            <Input id="verification" type="text" placeholder="인증번호 6자리를 입력해주세요." />
-            <Button
-              variant="primary"
-              size="md"
-              className="w-full"
-              disabled={isVerified}
-              onClick={() => setIdVerified(true)}
-            >
-              인증하기
-            </Button>
-          </div>
-        </div>
-        <div className="flex w-full justify-end gap-2 mt-10">
-          <Button variant="default" size="lg">
-            취소
-          </Button>
-          <Button variant={isVerified ? 'primary' : 'disabled'} size="lg" onClick={handleNext}>
-            다음으로
-          </Button>
-        </div>
+          </Form>
+        )}
+
+        {step === 2 && (
+          <Form schema={signUpStep2Schema} onSubmit={onStep2Submit} className="space-y-5">
+            <SignUpEtcForm />
+            <div className="flex w-full justify-end gap-2 mt-10">
+              <Button type="button" variant="default" size="lg" onClick={() => navigate(-1)}>
+                취소
+              </Button>
+              <Button type="submit" variant="primary" size="lg">
+                회원가입 하기
+              </Button>
+            </div>
+          </Form>
+        )}
       </main>
     </div>
   );

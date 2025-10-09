@@ -1,18 +1,23 @@
 import './index.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
-import { SignUp } from '@/features/auth/routes/SignUp';
+import { SignUpPage } from '@/features/auth/pages/SignUpPage';
 import { Home } from '@/features/study/pages/Home';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="*" element={<Home />} />
-        <Route path="/signup" element={<SignUp />} />
-      </Routes>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="*" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
