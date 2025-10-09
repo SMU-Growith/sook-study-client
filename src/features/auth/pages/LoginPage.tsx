@@ -1,16 +1,31 @@
-import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/ui/Logo';
 import { AuthHeader } from '@/components/layout/AuthHeader';
-import { InputField } from '@/components/ui/InputField';
 import { useNavigate } from 'react-router-dom';
+import type { AxiosError } from 'axios';
+import { loginApi } from '@/lib/api/index';
+import { useMutation } from '@tanstack/react-query';
+import { loginSchema, type TLoginSchema } from '../validators/auth';
+import { LoginForm } from '../components/LoginForm';
+import { Form } from '@/components/ui/Form';
+import { Button } from '@/components/ui/Button';
 
 export function LoginPage() {
   const navigate = useNavigate();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log('Form submitted');
-    navigate('/');
+  const { mutate: submitLogin } = useMutation({
+    mutationFn: loginApi,
+    onSuccess: () => {
+      alert('로그인이 완료되었습니다.');
+      navigate('/');
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      alert(error.response?.data?.message || '로그인에 실패했습니다.');
+    },
+  });
+
+  const onSubmit = (data: TLoginSchema) => {
+    console.log('Login Data:', data);
+    submitLogin(data);
   };
 
   return (
@@ -23,18 +38,12 @@ export function LoginPage() {
           <br />
           숙터디
         </h1>
-        <form onSubmit={handleSubmit} className="w-full space-y-5">
-          <InputField label="아이디" id="id" type="text" placeholder="아이디를 입력해주세요." />
-          <InputField
-            label="비밀번호"
-            id="password"
-            type="password"
-            placeholder="비밀번호를 입력해주세요."
-          />
+        <Form schema={loginSchema} onSubmit={onSubmit} className="w-full space-y-5">
+          <LoginForm />
           <Button type="submit" size="lg" className="w-full">
             로그인하기
           </Button>
-        </form>
+        </Form>
         <div className="mt-5 w-full flex justify-between items-center text-body-1-semibold">
           <span className="text-gray-400">아직 회원이 아니신가요? </span>
           <a href="/signup" className="text-primary-500 hover:underline">

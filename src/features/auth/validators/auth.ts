@@ -24,3 +24,10 @@ export const signUpStep2Schema = z.object({
 });
 
 export type TSignUpStep2Schema = z.infer<typeof signUpStep2Schema>;
+
+export const loginSchema = z.object({
+  id: z.string().nonempty('아이디를 입력해주세요.'),
+  password: z.string().nonempty('패스워드를 입력해주세요.'),
+});
+
+export type TLoginSchema = z.infer<typeof loginSchema>;

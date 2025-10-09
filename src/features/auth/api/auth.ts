@@ -27,3 +27,7 @@ export const signUpApi = async (data: SignUpData) => {
   return response.data;
 };
 
+export const loginApi = async (data: { id: string; password: string }) => {
+  const response = await apiClient.post('/auth/login', data);
+  return response.data;
+};
