@@ -1,5 +1,76 @@
 import { FormField } from '@/components/ui/FormField';
 
+const studentStatusOptions = ['재학생', '휴학생', '취준생', '직장인'];
+const majorOptions = [
+  '한국어문학부',
+  '역사문화학과',
+  '프랑스언어·문화학과',
+  '중어중문학부',
+  '독일언어·문화학과',
+  '일본학과',
+  '문헌정보학과',
+  '문화관광외식학부 문화관광학전공',
+  '문화관광외식학부 르꼬르동블루외식경영전공',
+  '교육학부',
+
+  '화학과',
+  '생명시스템학부',
+  '수학과',
+  '통계학과',
+  '체육교육과',
+  '무용과',
+
+  '화공생명공학부',
+  '인공지능공학부',
+  '첨단소재·전자융합공학부 지능형전자시스템전공',
+  '첨단소재·전자융합공학부 신소재물리전공',
+  '소프트웨어학부 컴퓨터과학전공',
+  '소프트웨어학부 데이터사이언스전공',
+  '기계시스템학부',
+  '기초공학부',
+  '첨단공학부',
+
+  '가족자원경영학과',
+  '아동복지학부',
+  '의류학과',
+  '식품영양학과',
+
+  '정치외교학과',
+  '행정학과',
+  '홍보광고학과',
+  '소비자경제학과',
+  '사회심리학과',
+
+  '법학부',
+  '경제학부',
+  '경영학부',
+
+  '피아노과',
+  '관현악과',
+  '성악과',
+  '작곡과',
+
+  '약학부',
+  '시각·영상디자인과',
+  '산업디자인과',
+  '환경디자인과',
+  '공예과',
+  '회화과',
+
+  '자유전공학부',
+  '기초교양학부',
+  '융합학부/연계전공',
+
+  '글로벌융합학부',
+  '글로벌협력전공',
+  '앙트러프러너십전공',
+
+  '영어영문학전공',
+  '테슬(TESL)전공',
+
+  '미디어학부',
+];
+
 export function SignUpEtcForm() {
   return (
     <>
@@ -8,8 +79,21 @@ export function SignUpEtcForm() {
         label="닉네임"
         placeholder="숙터디에서 사용할 닉네임을 입력해주세요."
       />
-      <FormField name="studentStatus" label="재학상태" placeholder="재학 상태를 선택해주세요." />
-      <FormField name="major" label="전공" placeholder="전공을 선택해주세요." />
+      <FormField
+        name="studentStatus"
+        label="재학상태"
+        placeholder="재학 상태를 선택해주세요."
+        type="dropdown"
+        options={studentStatusOptions}
+      />
+      <FormField
+        name="major"
+        label="전공"
+        placeholder="전공을 선택해주세요."
+        type="dropdown"
+        options={majorOptions}
+        isSearchable={true}
+      />
       <FormField
         name="phoneNumber"
         label="전화번호"
