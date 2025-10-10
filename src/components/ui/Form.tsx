@@ -25,7 +25,7 @@ export function Form<T extends FieldValues>({
   const { mode, defaultValues, reValidateMode, ...rest } = props;
   const methods = useForm<T>({
     resolver: zodResolver(schema),
-    mode,
+    mode: 'onChange',
     defaultValues,
     reValidateMode,
     ...rest,

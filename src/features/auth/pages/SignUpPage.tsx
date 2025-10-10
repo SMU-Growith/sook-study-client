@@ -65,12 +65,7 @@ export function SignUpPage() {
         </div>
 
         {step === 1 && (
-          <Form
-            schema={signUpStep1Schema}
-            onSubmit={onStep1Submit}
-            mode="onBlur"
-            className="space-y-5"
-          >
+          <Form schema={signUpStep1Schema} onSubmit={onStep1Submit} className="space-y-5">
             <SignUpForm onVerified={setIsEmailVerified} />
             <div className="flex w-full justify-end gap-2 mt-10">
               <Button type="button" variant="default" size="lg" onClick={() => navigate(-1)}>

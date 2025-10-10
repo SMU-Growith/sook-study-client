@@ -1,4 +1,4 @@
-import { forwardRef, useId, useMemo, useState, type ComponentProps } from 'react';
+import { forwardRef, useId, useState, type ComponentProps } from 'react';
 import { Input } from './Input';
 import { cn } from '@/lib/utils';
 import { DropdownList } from './DropdownList';

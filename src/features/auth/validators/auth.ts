@@ -9,7 +9,7 @@ export const signUpStep1Schema = z.object({
     const domain = email.split('@')[1];
     return allowedEmailDomains.includes(domain);
   }, '숙명여대 이메일만 사용 가능합니다.'),
-  // verificationCode: z.string().length(5, '인증번호 5자리를 입력해주세요.'),
+  verificationCode: z.string().length(5, '인증번호 5자리를 입력해주세요.'),
 });
 
 export type TSignUpStep1Schema = z.infer<typeof signUpStep1Schema>;

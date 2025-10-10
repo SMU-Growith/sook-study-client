@@ -5,7 +5,7 @@ import { DropdownField } from './DropdownField';
 type FormFieldProps = React.ComponentProps<typeof InputField> & {
   label?: string;
   name: string;
-  type?: 'input' | 'dropdown';
+  type?: string;
   options?: string[];
   placeholder?: string;
   isSearchable?: boolean;
@@ -32,12 +32,13 @@ export function FormField({
       <DropdownField
         label={label}
         id={name}
+        {...register(name)}
         name={name}
         options={options}
         placeholder={placeholder}
         error={error}
         isSearchable={isSearchable}
-        onChange={(e) => setValue(name, e.target.value)}
+        onChange={(e) => setValue(name, e.target.value, { shouldValidate: true })}
       />
     );
   }
@@ -48,6 +49,7 @@ export function FormField({
       {...register(name)}
       placeholder={placeholder}
       error={error}
+      type={type}
     />
   );
 }
