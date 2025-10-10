@@ -28,7 +28,7 @@ export function SignUpPage() {
     onSuccess: () => {
       alert('회원가입이 완료되었습니다.');
       reset();
-      navigate('/');
+      navigate('/login');
     },
     onError: (error: unknown) => {
       const err = error as AxiosError<{ message?: string }>;
