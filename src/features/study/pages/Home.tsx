@@ -4,9 +4,9 @@ import { SideBar } from '@/components/ui/SideBar';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import BannerSvg from '@/assets/banner.svg';
-import { HomeStudy } from '@/components/ui/HomeStudy';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
+import { HomeStudy } from '../component/HomeStudy';
 
 export function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,7 +37,7 @@ export function Home() {
                 setIsModalOpen(true);
                 return;
               }
-              navigate('/study/detail/1');
+              navigate('/study/match');
             }}
           >
             다른 숙터디 둘러보기
