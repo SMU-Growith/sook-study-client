@@ -1,11 +1,11 @@
 import { StudyCard } from './StudyCard';
 
-export function StudyCardGroup() {
+export function StudyCardGroup({ onCardClick }: { onCardClick: () => void }) {
   return (
     <div className="flex gap-5">
-      <StudyCard />
-      <StudyCard />
-      <StudyCard />
+      <StudyCard onCardClick={onCardClick} />
+      <StudyCard onCardClick={onCardClick} />
+      <StudyCard onCardClick={onCardClick} />
     </div>
   );
 }

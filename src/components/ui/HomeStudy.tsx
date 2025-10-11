@@ -3,8 +3,9 @@ import { StudyCardGroup } from './StudyCardGroup';
 
 interface HomeStudyProps {
   type?: 'popular' | 'latest';
+  onCardClick: () => void;
 }
-export function HomeStudy({ type }: HomeStudyProps) {
+export function HomeStudy({ type, onCardClick }: HomeStudyProps) {
   return (
     <div>
       <div className="flex justify-between items-center mb-5">
@@ -20,7 +21,7 @@ export function HomeStudy({ type }: HomeStudyProps) {
           </Button>
         </div>
       </div>
-      <StudyCardGroup />
+      <StudyCardGroup onCardClick={onCardClick} />
     </div>
   );
 }

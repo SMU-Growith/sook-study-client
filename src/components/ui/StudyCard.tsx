@@ -4,18 +4,33 @@ import UserProfileSvg from '@/assets/icons/userProfile.svg';
 import HeartSvg from '@/assets/icons/heart.svg';
 import HeartFillSvg from '@/assets/icons/heartFill.svg';
 import { useState } from 'react';
+import { useAuthStore } from '@/store/authStore';
+import { useNavigate } from 'react-router-dom';
 
-export function StudyCard() {
+export function StudyCard({ onCardClick }: { onCardClick: () => void }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(1); // 초기 좋아요 수
+  const { isLoggedIn } = useAuthStore();
+  const navigate = useNavigate();
 
   const handleLikeClick = () => {
     setIsLiked(!isLiked);
     setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
   };
 
+  const handleCardClick = () => {
+    if (isLoggedIn) {
+      navigate('/study/detail/1');
+    } else {
+      onCardClick();
+    }
+  };
+
   return (
-    <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6">
+    <div
+      className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer"
+      onClick={handleCardClick}
+    >
       <div className="flex flex-col gap-y-[10px]">
         <div className="flex flex-col gap-y-5">
           <div>

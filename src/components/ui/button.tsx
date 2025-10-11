@@ -47,8 +47,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       sizeClasses = 'h-[52px] px-7 text-body-1-semibold rounded-xl';
     }
     const finalClasses = `${baseClasses} ${colorClasses} ${sizeClasses} ${className || ''}`;
-    console.log('Final Classes:', finalClasses);
-
     const Comp = 'button';
 
     return (
