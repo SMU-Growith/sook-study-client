@@ -18,7 +18,7 @@ export interface Study {
 
 interface StudyCardProps {
   study: Study;
-  onCardClick: () => void;
+  onCardClick?: () => void;
 }
 
 export function StudyCard({ study, onCardClick }: StudyCardProps) {
@@ -36,7 +36,7 @@ export function StudyCard({ study, onCardClick }: StudyCardProps) {
     if (isLoggedIn) {
       navigate('/study/detail/1');
     } else {
-      onCardClick();
+      onCardClick?.();
     }
   };
 

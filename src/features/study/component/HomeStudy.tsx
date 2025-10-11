@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CarouselNavButtons } from '@/components/ui/CarouselNavButtons';
-import { StudyCardGroup } from '@/components/ui/StudyCardGroup';
 import { popularStudiesData } from '../popularStudy';
+import { StudyCard } from '@/components/ui/StudyCard';
 
 const CARDS_PER_VIEW = 3; // 한 번에 보여줄 카드 수
 const MOVE_BY = 2; // 한 번에 이동할 카드 수
@@ -44,7 +44,11 @@ export function HomeStudy({ type, onCardClick }: HomeStudyProps) {
           />
         </div>
       </div>
-      <StudyCardGroup studies={visibleStudies} onCardClick={onCardClick} />
+      <div className="flex gap-5">
+        {visibleStudies.map((study) => (
+          <StudyCard key={study.id} study={study} onCardClick={onCardClick} />
+        ))}
+      </div>
     </div>
   );
 }
