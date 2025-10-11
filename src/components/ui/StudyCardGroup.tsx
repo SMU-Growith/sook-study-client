@@ -1,11 +1,16 @@
-import { StudyCard } from './StudyCard';
+import { StudyCard, type Study } from './StudyCard';
 
-export function StudyCardGroup({ onCardClick }: { onCardClick: () => void }) {
+interface StudyCardGroupProps {
+  studies: Study[];
+  onCardClick: () => void;
+}
+
+export function StudyCardGroup({ studies, onCardClick }: StudyCardGroupProps) {
   return (
     <div className="flex gap-5">
-      <StudyCard onCardClick={onCardClick} />
-      <StudyCard onCardClick={onCardClick} />
-      <StudyCard onCardClick={onCardClick} />
+      {studies.map((study) => (
+        <StudyCard key={study.id} study={study} onCardClick={onCardClick} />
+      ))}
     </div>
   );
 }
