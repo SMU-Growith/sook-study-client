@@ -17,15 +17,23 @@ export function SideBar() {
       {menus.map((menu) => {
         const isActive = location.pathname === menu.path;
         return (
-          <Button
+          <button
             key={menu.name}
-            variant={isActive ? 'primary' : 'defaultGray'}
-            size="lg"
-            className={isActive ? 'px-1' : 'px-1 text-body-1'} // [수정필요] className이 적용이 안되는 문제
+            className={`h-[52px] px-2 rounded-[12px]
+            ${isActive ? 'text-body-1-semibold text-white bg-primary-500 hover:bg-primary-400' : 'text-body-1 text-gray-300 hover:bg-gray-100'}`}
             onClick={() => navigate(menu.path)}
           >
             {menu.name}
-          </Button>
+          </button>
+
+          // <Button
+          //   variant={isActive ? 'primary' : 'defaultGray'}
+          //   size="lg"
+          //   className={isActive ? 'px-1' : 'px-1 text-body-1'} // [수정필요] className이 적용이 안되는 문제
+          //   onClick={() => navigate(menu.path)}
+          // >
+          //   {menu.name}
+          // </Button>
         );
       })}
     </aside>

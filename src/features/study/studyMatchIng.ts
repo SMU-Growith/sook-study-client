@@ -1,6 +1,6 @@
 import type { Study } from '@/components/ui/StudyCard';
 
-export const matchStudiesData: Study[] = [
+export const matchingStudiesData: Study[] = [
   {
     id: 1,
     status: '모집중',
@@ -19,14 +19,6 @@ export const matchStudiesData: Study[] = [
   },
   {
     id: 3,
-    status: '모집완료',
-    title: '토익 900점 목표로 같이 공부하실 분 모집합니다.',
-    tags: ['어학', '오프라인', '체계적인'],
-    author: '영어고수',
-    likeCount: 8,
-  },
-  {
-    id: 4,
     status: '모집중',
     title: 'CS 스터디 취준생 모여라',
     tags: ['개발', '온라인', '자율적인'],
@@ -34,7 +26,7 @@ export const matchStudiesData: Study[] = [
     likeCount: 30,
   },
   {
-    id: 5,
+    id: 4,
     status: '모집중',
     title: 'UX/UI 포트폴리오 만들 디자이너 구함',
     tags: ['디자인', '오프라인', '체계적인'],
@@ -42,7 +34,7 @@ export const matchStudiesData: Study[] = [
     likeCount: 18,
   },
   {
-    id: 6,
+    id: 5,
     status: '모집중',
     title: '알고리즘 문제풀이 코테 박살내기',
     tags: ['개발', '온라인', '자율적인'],
@@ -50,15 +42,7 @@ export const matchStudiesData: Study[] = [
     likeCount: 40,
   },
   {
-    id: 7,
-    status: '모집완료',
-    title: '사이드 플젝 하실 분 기획자/개발자',
-    tags: ['개발', '온라인', '자율적인'],
-    author: 'PM지망생',
-    likeCount: 22,
-  },
-  {
-    id: 8,
+    id: 6,
     status: '모집중',
     title: '영어 회화 스터디 주 2회 진행',
     tags: ['어학', '오프라인', '체계적인'],
@@ -66,11 +50,27 @@ export const matchStudiesData: Study[] = [
     likeCount: 15,
   },
   {
-    id: 9,
+    id: 7,
     status: '모집중',
     title: '프론트엔드 면접 대비 스터디',
     tags: ['개발', '온라인', '체계적인'],
     author: '면접러버',
     likeCount: 27,
+  },
+  {
+    id: 8,
+    status: '모집중',
+    title: '서비스 기획 포트폴리오 스터디',
+    tags: ['기획', '온라인', '자율적인'],
+    author: '기획하는고양이',
+    likeCount: 13,
+  },
+  {
+    id: 9,
+    status: '모집중',
+    title: 'AWS 자격증 준비 스터디 (CLF)',
+    tags: ['개발', '온라인', '체계적인'],
+    author: '클라우드초보',
+    likeCount: 19,
   },
 ];
