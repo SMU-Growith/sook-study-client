@@ -1,6 +1,6 @@
 import { Logo } from '@/components/ui/Logo';
 import { AuthHeader } from '@/components/layout/AuthHeader';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { AxiosError } from 'axios';
 import { loginApi } from '@/lib/api/index';
 import { useMutation } from '@tanstack/react-query';
@@ -10,21 +10,24 @@ import { Form } from '@/components/ui/Form';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import { StampConfirmModal } from '@/components/ui/StampConfirmModal';
+import { useAuthStore } from '@/store/authStore';
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const auth = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false); // 웰컴 스탬프 모달 상태
 
   const { mutate: submitLogin } = useMutation({
     mutationFn: loginApi,
     onSuccess: (res) => {
+      auth.login();
       alert('로그인이 완료되었습니다.');
       const isFirstLogin = res.data?.isFirstLogin ?? true; // 실제로는 서버 응답을 통해 확인
       // 만약 처음 로그인한 사람이라면 웰컴 스탬프 모달 띄우기
       if (isFirstLogin) {
         setIsModalOpen(true);
       }
-      navigate('/study');
+      navigate('/home');
     },
     onError: (error: AxiosError<{ message: string }>) => {
       alert(error.response?.data?.message || '로그인에 실패했습니다.');
@@ -35,7 +38,8 @@ export function LoginPage() {
     console.log('Login Data:', data);
     // submitLogin(data);
     // 임시로 웰컴 스탬프 모달 띄우기
-    setIsModalOpen(true);
+    setIsModalOpen(true); //[ld]
+    auth.login(); //[ld]
   };
 
   const handleConfirmStamp = () => {
@@ -61,9 +65,9 @@ export function LoginPage() {
         </Form>
         <div className="mt-5 w-full flex justify-between items-center text-body-1-semibold">
           <span className="text-gray-400">아직 회원이 아니신가요? </span>
-          <a href="/signup" className="text-primary-500 hover:underline">
+          <Link to="/signup" className="text-primary-500 hover:underline">
             회원가입하기
-          </a>
+          </Link>
         </div>
       </main>
 
@@ -71,7 +75,7 @@ export function LoginPage() {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-          navigate('/study');
+          navigate('/home');
         }}
         onConfirm={handleConfirmStamp}
       />

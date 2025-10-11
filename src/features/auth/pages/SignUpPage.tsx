@@ -56,7 +56,7 @@ export function SignUpPage() {
       <main className="w-full max-w-[800px] px-4 py-10">
         <div className="w-full flex justify-between items-center mb-10">
           <div className="flex items-center gap-2">
-            <Badge variant="blue_">{step}</Badge>
+            <Badge variant="blue">{step}</Badge>
             <h1 className="text-body-1-semibold text-gray-400">
               {step === 1 ? '계정 만들기' : '정보 입력하기'}
             </h1>

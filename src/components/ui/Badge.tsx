@@ -1,11 +1,25 @@
-import { type VariantProps } from 'class-variance-authority';
-import { twMerge } from 'tailwind-merge';
-import { badgeVariants } from '@/components/ui/badge.variants';
+type BadgeVariant = 'purple' | 'blue' | 'black';
+export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: BadgeVariant;
+  children?: React.ReactNode;
+}
 
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+export function Badge({ variant = 'blue', children, ...props }: BadgeProps) {
+  const baseClasses = `inline-flex justify-center items-center gap-2 flex-shrink-0 h-8 px-2 rounded-md gap-1`;
 
-export function Badge({ className, variant, ...props }: BadgeProps) {
-  return <div className={twMerge(badgeVariants({ variant, className }))} {...props} />;
+  let colorClasses = '';
+  if (variant === 'purple') {
+    colorClasses = 'bg-[#F0E4FF] text-[#9747FF] text-body-2-semibold';
+  } else if (variant === 'blue') {
+    colorClasses = 'bg-primary-100 text-primary-500 text-body-2-semibold';
+  } else if (variant === 'black') {
+    colorClasses = 'bg-gray-400 text-white text-body-2-semibold';
+  }
+  const finalClasses = `${baseClasses} ${colorClasses} ${props.className || ''}`;
+
+  return (
+    <div className={finalClasses} {...props}>
+      {children}
+    </div>
+  );
 }
