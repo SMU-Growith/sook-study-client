@@ -1,6 +1,6 @@
 import { Logo } from '@/components/ui/Logo';
 import { AuthHeader } from '@/components/layout/AuthHeader';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { AxiosError } from 'axios';
 import { loginApi } from '@/lib/api/index';
 import { useMutation } from '@tanstack/react-query';
@@ -61,9 +61,9 @@ export function LoginPage() {
         </Form>
         <div className="mt-5 w-full flex justify-between items-center text-body-1-semibold">
           <span className="text-gray-400">아직 회원이 아니신가요? </span>
-          <a href="/signup" className="text-primary-500 hover:underline">
+          <Link to="/signup" className="text-primary-500 hover:underline">
             회원가입하기
-          </a>
+          </Link>
         </div>
       </main>
 

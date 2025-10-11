@@ -14,7 +14,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/study" element={<Home />} />
+          <Route path="/home" element={<Home />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
