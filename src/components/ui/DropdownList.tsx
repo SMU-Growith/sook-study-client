@@ -5,9 +5,10 @@ interface DropdownListProps {
   options: string[];
   isSearchable?: boolean;
   onSelect: (value: string) => void;
+  selectedValue?: string;
 }
 
-const DropdownList = ({ options, isSearchable, onSelect }: DropdownListProps) => {
+const DropdownList = ({ options, isSearchable, onSelect, selectedValue }: DropdownListProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredOptions = useMemo(() => {
@@ -39,7 +40,9 @@ const DropdownList = ({ options, isSearchable, onSelect }: DropdownListProps) =>
         filteredOptions.map((option) => (
           <li
             key={option}
-            className="px-5 py-2 hover:bg-gray-200 rounded-[10px] cursor-pointer"
+            className={`px-5 py-2 hover:bg-gray-200 rounded-[10px] cursor-pointer ${
+              selectedValue === option ? 'bg-gray-200 rounded-[10px]' : ''
+            }`}
             onClick={() => {
               handleSelectOption(option);
             }}

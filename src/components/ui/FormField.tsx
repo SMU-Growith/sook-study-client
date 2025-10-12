@@ -6,7 +6,7 @@ type FormFieldProps = React.ComponentProps<typeof InputField> & {
   label?: string;
   name: string;
   type?: string;
-  options?: string[];
+  options?: string[] | Record<string, string[]>;
   placeholder?: string;
   isSearchable?: boolean;
 };
@@ -18,6 +18,7 @@ export function FormField({
   options,
   placeholder,
   isSearchable = false,
+  ...props
 }: FormFieldProps) {
   const {
     register,
@@ -27,7 +28,12 @@ export function FormField({
   const fieldError = errors[name] as FieldError | undefined;
   const error = fieldError?.message;
 
-  if (type == 'dropdown' && options) {
+  if (
+    type === 'dropdownTwoLevel' &&
+    options &&
+    typeof options === 'object' &&
+    !Array.isArray(options)
+  ) {
     return (
       <DropdownField
         label={label}
@@ -38,6 +44,24 @@ export function FormField({
         placeholder={placeholder}
         error={error}
         isSearchable={isSearchable}
+        type="dropdownTwoLevel"
+        onChange={(e) => setValue(name, e.target.value, { shouldValidate: true })}
+      />
+    );
+  }
+
+  if (type == 'dropdown' && Array.isArray(options)) {
+    return (
+      <DropdownField
+        label={label}
+        id={name}
+        {...register(name)}
+        name={name}
+        options={options}
+        placeholder={placeholder}
+        error={error}
+        isSearchable={isSearchable}
+        type="dropdown"
         onChange={(e) => setValue(name, e.target.value, { shouldValidate: true })}
       />
     );
