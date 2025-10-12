@@ -28,31 +28,33 @@ const DropdownField = forwardRef<HTMLInputElement, DropdownFieldProps>(
     };
 
     return (
-      <div className="flex flex-col items-start self-stretch gap-1 relative">
+      <div className="flex flex-col items-start self-stretch gap-1">
         {label && (
           <label htmlFor={id} className="text-body-1-semibold text-gray-500">
             {label}
           </label>
         )}
-        <Input
-          id={id}
-          ref={ref}
-          readOnly
-          value={selectedValue}
-          onClick={() => setIsOpen(!isOpen)}
-          className={cn(error ? 'border-red-500 focus:border-red-500' : '', 'cursor-pointer')}
-          {...props}
-        />
-        {error && <p className="text-body-2-semibold text-error-200">{error}</p>}
-
-        {isOpen && (
-          // mt-20 동작 이상 수정 필요
-          <DropdownList
-            options={options}
-            isSearchable={isSearchable}
-            onSelect={handleSelectAndClose}
+        <div className="relative w-full">
+          <Input
+            id={id}
+            ref={ref}
+            readOnly
+            value={selectedValue}
+            onClick={() => setIsOpen(!isOpen)}
+            className={cn(error ? 'border-red-500 focus:border-red-500' : '', 'cursor-pointer')}
+            {...props}
           />
-        )}
+          {error && <p className="text-body-2-semibold text-error-200">{error}</p>}
+
+          {isOpen && (
+            // mt-20 동작 이상 수정 필요
+            <DropdownList
+              options={options}
+              isSearchable={isSearchable}
+              onSelect={handleSelectAndClose}
+            />
+          )}
+        </div>
       </div>
     );
   }

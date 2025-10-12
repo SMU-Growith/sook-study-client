@@ -22,8 +22,8 @@ const DropdownList = ({ options, isSearchable, onSelect }: DropdownListProps) =>
 
   return (
     <ul
-      className="absolute z-10 mt-20 max-h-60 overflow-auto 
-          rounded-[10px] border-2 border-gray-200 bg-white p-[12px] text-body-2-semibold"
+      className="absolute z-10 mt-1 max-h-60 overflow-auto 
+          rounded-[10px] border-2 border-gray-200 bg-white p-[12px] text-body-2-semibold justify-center items-center"
     >
       {isSearchable && (
         <div className="mb-[10px]">

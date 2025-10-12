@@ -1,21 +1,35 @@
 import { AuthHeader } from '@/components/layout/AuthHeader';
 import { SideBar } from '@/components/ui/SideBar';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { matchingStudiesData } from '../studyMatchIng';
 import { StudyCard, type Study } from '@/components/ui/StudyCard';
 import { matchedStudiesData } from '../studyMatchDone';
 import { matchStudiesData } from '../studyMatch';
-import ArrowBottomSvg from '@/assets/arrow/arrowBottom.svg';
 import ArrowLeftSvg from '@/assets/arrow/arrowLeft.svg';
 import ArrowRightSvg from '@/assets/arrow/arrowRight.svg';
+import ArrowBottomSvg from '@/assets/arrow/arrowBottom.svg';
 import BookmarkSvg from '@/assets/icons/bookmark.svg';
 import BookmarkFillSvg from '@/assets/icons/bookmarkFill.svg';
 import SearchSvg from '@/assets/icons/search.svg';
-import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
-import { set } from 'zod';
+import { Tag } from '@/components/ui/Tag';
+import { DropdownList } from '@/components/ui/DropdownList';
+
+const CATEGORIES = {
+  분야: {
+    학업: ['전공 공부', '시험 공부', '자격증', '고시·임용·공무원'],
+    언어: ['회화', '외국어 시험'],
+    '취업/커리어': ['면접·자소서', '디자인', 'IT', '마케팅', '코딩', '데이터 분석'],
+    자기계발: ['독서·글쓰기', '운동', '사진·영상'],
+  },
+  진행방식: ['온라인', '오프라인', '온라인/오프라인'],
+  '스터디 성향': ['체계적인', '자유로운', '협력적인', '실적중심'],
+} as const;
+
+type TopCategory = keyof typeof CATEGORIES;
+type SubCategory = keyof (typeof CATEGORIES)['분야'];
 
 export function StudyMatch() {
   const navigate = useNavigate();
@@ -23,6 +37,11 @@ export function StudyMatch() {
   const [studyStatus, setStudyStatus] = useState('전체');
   const [allStudies, setAllStudies] = useState<Study[]>([]);
   const [isBookmarkOpen, setIsBookmarkOpen] = useState(false);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [activeTopCategory, setActiveTopCategory] = useState<TopCategory>('분야');
+  const [activeSubCategory, setActiveSubCategory] = useState<SubCategory>('학업');
 
   const TOTAL_PAGES = 5; // [lf] 총 페이지 수 받아오기
   const pageNumbers = [1, 2, 3, 4, 5]; // [lf] 페이지 번호 배열
@@ -30,6 +49,79 @@ export function StudyMatch() {
 
   const [searchText, setSearchText] = useState('');
   const [filteredStudies, setFilteredStudies] = useState<Study[]>([]);
+
+  const renderFilterOptions = () => {
+    if (activeTopCategory === '분야') {
+      const currentOptions = CATEGORIES['분야'];
+      const subCategories = Object.keys(currentOptions) as SubCategory[];
+      // 서브카테고리를 드랍다운으로 표시
+      // [lf] select box로 변경해야 됨
+
+      return (
+        <>
+          <div className="relative">
+            <Button variant="default" size="md" onClick={() => setDropdownOpen(!isDropdownOpen)}>
+              {activeSubCategory}
+              <img src={ArrowBottomSvg} alt="드랍다운" className="ml-1" />
+            </Button>
+            {isDropdownOpen && (
+              <DropdownList
+                options={subCategories}
+                isSearchable={false}
+                onSelect={(value) => {
+                  setActiveSubCategory(value as SubCategory);
+                  setDropdownOpen(false);
+                }}
+              />
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            {currentOptions[activeSubCategory]?.map((tag) => (
+              <Tag key={tag} onClick={() => handleTagToggle(tag)}>
+                {tag}
+              </Tag>
+            ))}
+          </div>
+        </>
+      );
+    }
+
+    // '진행방식' 또는 '스터디 성향' 카테고리인 경우
+    const currentOptions = CATEGORIES[activeTopCategory] as readonly string[];
+
+    return (
+      <div className="flex gap-2">
+        {currentOptions.map((tag) => (
+          <Tag key={tag} onClick={() => handleTagToggle(tag)}>
+            {tag}
+          </Tag>
+        ))}
+      </div>
+    );
+  };
+
+  const handleTagToggle = (tag: string) => {
+    // 조건1. 없는 태그만 추가
+    setSelectedTags((prevTags) => {
+      // 조건1. 선택된 태그가 5개 이상이면 추가 못함
+      if (prevTags.length >= 5) return prevTags;
+      // 조건1. 없는 태그만 추가
+      if (!prevTags.includes(tag)) {
+        return [...prevTags, tag];
+      }
+      return prevTags;
+    });
+  };
+
+  const removeTag = (tag: string) => {
+    setSelectedTags((prevTags) => prevTags.filter((t) => t !== tag));
+  };
+
+  const handleStudyStatus = (status: string) => {
+    setStudyStatus(status);
+    setPage(1);
+  };
 
   const filterStudies = (studies: Study[], text: string): Study[] => {
     if (!text) return studies;
@@ -41,39 +133,45 @@ export function StudyMatch() {
     );
   };
 
-  const handleStudyStatus = (status: string) => {
-    setStudyStatus(status);
-    setPage(1);
-    console.log(`Selected study status: ${status}`);
-    // TODO: 백엔드에서 조회하는 API 호출
-    let data: Study[] = [];
-    if (status === '모집중') {
-      data = matchingStudiesData;
-    } else if (status === '모집 완료') {
-      data = matchedStudiesData;
-    } else {
-      data = matchStudiesData;
+  const applyFilters = () => {
+    // TODO 백엔드에서 필터링된 데이터 받아오기
+
+    let studies = matchStudiesData;
+
+    // 상태 필터링
+    if (studyStatus === '모집중') studies = matchingStudiesData;
+    else if (studyStatus === '모집 완료') studies = matchedStudiesData;
+
+    // 검색 필터링
+    studies = filterStudies(studies, searchText);
+
+    // 태그 필터링
+    if (selectedTags.length > 0) {
+      studies = studies.filter((study) => selectedTags.some((tag) => study.tags.includes(tag)));
     }
 
-    setAllStudies(data);
-    setFilteredStudies(filterStudies(data, searchText));
+    console.log('selectedTags:', selectedTags);
+    console.log(
+      'study.tags:',
+      studies.map((s) => s.tags)
+    );
+
+    setFilteredStudies(studies);
+    setPage(1);
   };
 
   const handleSearch = (text: string) => {
-    setSearchText(text.trim());
+    setSearchText(text);
     setPage(1);
   };
 
   useEffect(() => {
-    const initialData = matchStudiesData;
-    setAllStudies(initialData);
-    setFilteredStudies(filterStudies(initialData, searchText));
+    setAllStudies(matchStudiesData);
   }, []);
 
   useEffect(() => {
-    setFilteredStudies(filterStudies(allStudies, searchText));
-    setPage(1);
-  }, [allStudies, searchText]);
+    applyFilters();
+  }, [studyStatus, searchText, selectedTags]);
 
   return (
     <div className="flex h-screen bg-white w-full">
@@ -82,27 +180,68 @@ export function StudyMatch() {
       <main className="flex flex-col flex-1 ml-[160px] mt-[88px] px-20 py-10 gap-y-10 overflow-y-auto">
         <div></div>
         <div className="flex flex-col gap-10">
-          <div className="flex gap-6">
-            <Button
-              variant="solid"
-              size="md"
-              className="px-3 py-2 gap-2"
-              onClick={() => setIsBookmarkOpen(!isBookmarkOpen)}
-            >
-              <img src={isBookmarkOpen ? BookmarkFillSvg : BookmarkSvg} alt="북마크" />
-              태그 검색하기
-            </Button>
-            <div className="relative w-3/8 ">
-              <Input
-                type="text"
-                placeholder="찾으시는 스터디가 있나요 ?"
-                className="rounded-[22px] border-2 border-gray-200 text-body-2"
-                onChange={(e) => {
-                  handleSearch(e.currentTarget.value);
-                }}
-              />
-              <img src={SearchSvg} alt="검색" className="absolute right-5 top-3" />
+          <div className="flex flex-col gap-6">
+            <div className="flex gap-6">
+              <Button
+                variant="solid"
+                size="md"
+                className="px-3 py-2 gap-2"
+                onClick={() => setIsBookmarkOpen(!isBookmarkOpen)}
+              >
+                <img src={isBookmarkOpen ? BookmarkFillSvg : BookmarkSvg} alt="북마크" />
+                태그 검색하기
+              </Button>
+              <div className="relative w-3/8 ">
+                <Input
+                  type="text"
+                  placeholder="찾으시는 스터디가 있나요 ?"
+                  className="rounded-[22px] border-2 border-gray-200 text-body-2"
+                  onChange={(e) => {
+                    handleSearch(e.currentTarget.value);
+                  }}
+                />
+                <img src={SearchSvg} alt="검색" className="absolute right-5 top-3" />
+              </div>
             </div>
+            {isBookmarkOpen && (
+              <div className="flex flex-col rounded-[20px] border-2 border-gray-200 px-6 py-[18px]">
+                <div className="flex items-center gap-2 mb-6">
+                  <img src={BookmarkFillSvg} alt="북마크" />
+                  {selectedTags.length === 0 ? (
+                    <span className="text-body-2-semibold text-gray-400">
+                      최대 5개까지 태그 검색이 가능해요.
+                    </span>
+                  ) : (
+                    <>
+                      {selectedTags.map((tag) => (
+                        <Tag key={tag} deleteable onDelete={() => removeTag(tag)}>
+                          {tag}
+                        </Tag>
+                      ))}
+                    </>
+                  )}
+                </div>
+                <div className="flex flex-col gap-3">
+                  <div className="flex gap-2">
+                    {Object.keys(CATEGORIES).map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => {
+                          setActiveTopCategory(category as TopCategory);
+                        }}
+                      >
+                        <span
+                          className={`text-body-1-semibold ${activeTopCategory === category ? '' : 'text-gray-200'}`}
+                        >
+                          {category}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  {renderFilterOptions()}
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex flex-col gap-5">
             <div className="flex gap-2">

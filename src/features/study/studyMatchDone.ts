@@ -12,8 +12,8 @@ export const matchedStudiesData: Study[] = [
   {
     id: 2,
     status: '모집완료',
-    title: '사이드 플젝 하실 분 기획자/개발자',
-    tags: ['개발', '온라인', '자율적인'],
+    title: '사이드 플젝 하실 분 기획자/코딩자',
+    tags: ['코딩', '온라인', '자유로운'],
     author: 'PM지망생',
     likeCount: 22,
   },
