@@ -1,11 +1,12 @@
-import { forwardRef, useId, useState, type ComponentProps } from 'react';
+import { forwardRef, useEffect, useId, useState, type ComponentProps } from 'react';
 import { Input } from './Input';
 import { cn } from '@/lib/utils';
 import { DropdownList } from './DropdownList';
-import { set } from 'zod';
-import { is } from 'zod/v4/locales';
+import { useWatch } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 
 interface DropdownFieldProps extends ComponentProps<'input'> {
+  name: string;
   label?: string;
   options: string[] | Record<string, string[]>;
   error?: string;
@@ -21,12 +22,20 @@ const DropdownField = forwardRef<HTMLInputElement, DropdownFieldProps>(
     // dropdown 단일
     const [isSingleOpen, setIsSingleOpen] = useState(false);
     const [singleValue, setSingleValue] = useState('');
-
     // dropdown 2단계
     const [isMainOpen, setIsMainOpen] = useState(false);
     const [isSubOpen, setIsSubOpen] = useState(false);
     const [selectedMain, setSelectedMain] = useState('');
     const [selectedSub, setSelectedSub] = useState('');
+
+    const { control } = useFormContext();
+    const watchedValue = useWatch({ control, name: props.name });
+
+    useEffect(() => {
+      if (watchedValue && typeof watchedValue === 'string') {
+        setSingleValue(watchedValue);
+      }
+    }, [watchedValue]);
 
     const handleSingleSelectAndClose = (value: string) => {
       setSingleValue(value);

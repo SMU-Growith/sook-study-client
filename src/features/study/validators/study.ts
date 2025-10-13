@@ -22,4 +22,4 @@ export const studyStep3Schema = z.object({
 
 export const studyCreateSchema = studyStep1Schema.and(studyStep2Schema).and(studyStep3Schema);
 
-export type TStudyCreateSchema = z.infer<typeof studyCreateSchema>;
+export type TStudySchema = z.infer<typeof studyCreateSchema>;

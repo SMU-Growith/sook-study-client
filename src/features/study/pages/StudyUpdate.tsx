@@ -2,13 +2,15 @@ import { AuthHeader } from '@/components/layout/AuthHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/Form';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { studyCreateSchema, type TStudySchema } from '../validators/study';
 import { FormField } from '@/components/ui/FormField';
-import { useMutation } from '@tanstack/react-query';
-import { studyCreateApi } from '@/lib/api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { studyUpdateApi, fetchStudyById } from '@/lib/api';
 import type { AxiosError } from 'axios';
+import StateOnSvg from '@/assets/icons/stateOn.svg';
+import StateOffSvg from '@/assets/icons/stateOff.svg';
 
 // 스터디 분야, 스터디 성향, 진행 방식, 연락 방식 드롭다운 옵션
 const STUDY_FIELD_OPTIONS = ['학업', '언어', '취업/커리어', '자기계발'] as const;
@@ -30,33 +32,95 @@ const RULE_TAG_OPTIONS = [
   { label: '기타', key: 'etc' },
 ];
 
-export function StudyCreate() {
+// [ld] 임시 데이터 (필드명 변경해야 함)
+const studyData: TStudySchema & { isRecruiting: boolean } = {
+  studyField: '언어 - 회화',
+  studyType: '자유로운',
+  progressMethod: '온라인',
+  contactMethod: '카카오톡',
+  contactInfo: 'kakao_id_123',
+  name: '함께 영어 회화 스터디해요!',
+  introduction: '영어 회화 실력을 늘리고 싶은 분들 모여요!',
+  rules: {
+    time: '매주 토요일 오후 3시 ~ 5시',
+    absence: '월 1회까지 휴무 가능',
+    mood: '편안하고 자유로운 분위기',
+  },
+  isRecruiting: true,
+};
+
+export function StudyUpdate() {
   const navigate = useNavigate();
-
+  const { studyId } = useParams();
   const [activeRuleTags, setActiveRuleTags] = useState<string[]>([]);
+  const [isRecruiting, setIsRecruiting] = useState<boolean | null>(null);
 
-  const { mutate: submitStudy } = useMutation({
-    mutationFn: studyCreateApi,
+  // const { data: studyData } = useQuery({
+  //   queryKey: ['study', studyId],
+  //   queryFn: () => fetchStudyById(Number(studyId)),
+  //   enabled: !!studyId,
+  // });
+
+  useEffect(() => {
+    if (studyData) {
+      if (studyData.rules) {
+        setActiveRuleTags(Object.keys(studyData.rules));
+      }
+      setIsRecruiting(studyData.isRecruiting);
+    }
+  }, [studyData]);
+
+  const { mutate: updateStudy } = useMutation({
+    mutationFn: ({
+      id,
+      isRecruiting,
+      data,
+    }: {
+      id: number;
+      isRecruiting: boolean;
+      data: TStudySchema;
+    }) => studyUpdateApi(id, { ...data, isRecruiting }),
     onSuccess: (res) => {
-      alert('스터디가 생성되었습니다.');
-      navigate('/study/match');
+      alert('스터디가 수정되었습니다.');
+      console.log(res);
+      navigate(`/study/detail/${studyId}`);
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      alert(error.response?.data?.message || '스터디 생성에 실패했습니다.');
+      alert(error.response?.data?.message || '스터디 수정에 실패했습니다.');
     },
   });
 
   const onSubmit = (data: TStudySchema) => {
-    console.log('Study Form Data:', data);
-    // submitStudy(data);
-    navigate('/study/match');
+    if (!studyId) return;
+    console.log('Updated Study Form Data:', data);
+    console.log('isRecruiting:', isRecruiting);
+    // updateStudy({ id: Number(studyId), isRecruiting, data });
+    navigate(`/study/detail/${studyId}`);
+  };
+
+  const toggleRecruiting = () => {
+    setIsRecruiting((prev) => !prev);
   };
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center bg-white">
       <AuthHeader />
       <main className="w-full max-w-[800px] px-4 py-10 mt-[88px]">
-        <Form schema={studyCreateSchema} onSubmit={onSubmit} className="space-y-5">
+        <Form
+          schema={studyCreateSchema}
+          onSubmit={onSubmit}
+          defaultValues={studyData}
+          className="space-y-5"
+        >
+          <div className="flex gap-2 justify-end items-center mb-5">
+            <span className="text-body-1-semibold text-gray-400">
+              {isRecruiting ? '모집중' : '모집마감'}
+            </span>
+            <button type="button" onClick={toggleRecruiting} aria-label="모집중/모집마감">
+              <img src={isRecruiting ? StateOnSvg : StateOffSvg} alt="" className="w-12 h-12" />
+            </button>
+          </div>
+
           <div className="w-full flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
               <Badge variant="blue">1</Badge>
@@ -159,7 +223,7 @@ export function StudyCreate() {
               취소
             </Button>
             <Button type="submit" variant="primary" size="lg">
-              스터디 만들기
+              수정하기
             </Button>
           </div>
         </Form>

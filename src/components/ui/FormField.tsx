@@ -46,6 +46,7 @@ export function FormField({
         error={error}
         isSearchable={isSearchable}
         type="dropdownTwoLevel"
+        value={props.value}
         onChange={(e) => setValue(name, e.target.value, { shouldValidate: true })}
       />
     );
