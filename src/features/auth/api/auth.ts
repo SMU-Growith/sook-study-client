@@ -1,5 +1,10 @@
 import { apiClient } from '@/lib/api/';
-import type { TSignUpStep1Schema, TSignUpStep2Schema } from '@/features/auth/validators/auth';
+import type {
+  TLoginSchema,
+  TSignUpStep1Schema,
+  TSignUpStep2Schema,
+} from '@/features/auth/validators/auth';
+import type { TStudyCreateSchema } from '@/features/study/validators/study';
 
 type SignUpData = Omit<TSignUpStep1Schema, 'verificationCode'> & TSignUpStep2Schema;
 
@@ -27,7 +32,12 @@ export const signUpApi = async (data: SignUpData) => {
   return response.data;
 };
 
-export const loginApi = async (data: { id: string; password: string }) => {
+export const loginApi = async (data: TLoginSchema) => {
   const response = await apiClient.post('/auth/login', data);
+  return response.data;
+};
+
+export const studyCreateApi = async (data: TStudyCreateSchema) => {
+  const response = await apiClient.post('/studies', data);
   return response.data;
 };
