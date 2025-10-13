@@ -1,6 +1,7 @@
 import { useFormContext, type FieldError } from 'react-hook-form';
 import { InputField } from './InputField';
 import { DropdownField } from './DropdownField';
+import { TextAreaField } from './TextAreaField';
 
 type FormFieldProps = React.ComponentProps<typeof InputField> & {
   label?: string;
@@ -66,6 +67,21 @@ export function FormField({
       />
     );
   }
+
+  if (type === 'textarea') {
+    return (
+      <TextAreaField
+        label={label}
+        id={name}
+        {...register(name)}
+        placeholder={placeholder}
+        error={error}
+        rows={5}
+        onChange={(e) => setValue(name, e.target.value, { shouldValidate: true })}
+      />
+    );
+  }
+
   return (
     <InputField
       label={label}
@@ -74,6 +90,7 @@ export function FormField({
       placeholder={placeholder}
       error={error}
       type={type}
+      onChange={(e) => setValue(name, e.target.value, { shouldValidate: true })}
     />
   );
 }
