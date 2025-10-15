@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api/';
-import type { TStudySchema } from '@/features/study/validators/study';
+import type { TStudyApplySchema, TStudySchema } from '@/features/study/validators/study';
 
 type StudyUpdateData = TStudySchema & { isRecruiting: boolean };
 
@@ -15,5 +15,10 @@ export const studyUpdateApi = async (studyId: number, data: StudyUpdateData) => 
 
 export const fetchStudyById = async (studyId: number) => {
   const response = await apiClient.get(`/studies/${studyId}`);
+  return response.data;
+};
+
+export const studyApplyApi = async (studyId: number, data: TStudyApplySchema) => {
+  const response = await apiClient.post(`/studies/${studyId}/applications`, data);
   return response.data;
 };

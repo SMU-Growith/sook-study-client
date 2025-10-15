@@ -4,16 +4,28 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/Form';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { studyCreateSchema, type TStudySchema } from '../validators/study';
+import {
+  studyCreateSchema,
+  type TStudySchema,
+  studyApplySchema,
+  type TStudyApplySchema,
+} from '../validators/study';
 import { FormField } from '@/components/ui/FormField';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { studyUpdateApi, fetchStudyById } from '@/lib/api';
+import { studyUpdateApi, fetchStudyById, studyApplyApi, fetchMyInfoApi } from '@/lib/api';
 import type { AxiosError } from 'axios';
 import StateOnSvg from '@/assets/icons/stateOn.svg';
 import StateOffSvg from '@/assets/icons/stateOff.svg';
 import { SideBar } from '@/components/ui/SideBar';
 import UserProfileSvg from '@/assets/icons/userProfile.svg';
 import LinkSvg from '@/assets/link.svg';
+import { Modal } from '@/components/ui/Modal';
+import { InputField } from '@/components/ui/InputField';
+import { majorOptions, studentStatusOptions } from '@/constants';
+import { useForm, useFormContext } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { TMyInfo } from '@/features/auth/validators/auth';
+import { useAuthStore } from '@/store/authStore';
 
 // 스터디 분야, 스터디 성향, 진행 방식, 연락 방식 드롭다운 옵션
 const STUDY_FIELD_OPTIONS = ['학업', '언어', '취업/커리어', '자기계발'] as const;
@@ -59,6 +71,8 @@ export function StudyRead() {
   const { studyId } = useParams();
   const [activeRuleTags, setActiveRuleTags] = useState<string[]>([]);
   const [isRecruiting, setIsRecruiting] = useState<boolean | null>(null);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const { nickname } = useAuthStore();
 
   // const { data: studyData } = useQuery({
   //   queryKey: ['study', studyId],
@@ -66,6 +80,35 @@ export function StudyRead() {
   //   enabled: !!studyId,
   // });
 
+  const FetchMyInfoButton = () => {
+    const methods = useFormContext<TStudyApplySchema>();
+    // const handleAutoFill = async () => {
+    //   try {
+    //     const data: TMyInfo = await fetchMyInfoApi();
+    //     methods.reset({
+    //       studentStatus: data.studentStatus,
+    //       major: data.major,
+    //       phoneNumber: data.phoneNumber,
+    //     });
+    //     alert('내 정보가 불러와졌습니다.');
+    //   } catch (error) {
+    //     alert('내 정보 불러오기에 실패했습니다. 다시 시도해주세요.');
+    //   }
+    // };
+    const handleAutoFillTemp = () => {
+      methods.reset({
+        studentStatus: '휴학생',
+        major: '인공지능공학부',
+        phoneNumber: '010-5432-9813',
+      });
+    };
+
+    return (
+      <Button type="button" variant="solid" size="sm" onClick={() => handleAutoFillTemp()}>
+        내 정보 불러오기
+      </Button>
+    );
+  };
   useEffect(() => {
     if (studyData) {
       if (studyData.rules) {
@@ -75,9 +118,30 @@ export function StudyRead() {
     }
   }, [studyData]);
 
+  const { mutate: submitStudyApply } = useMutation({
+    mutationFn: (studyApplyData: TStudyApplySchema) =>
+      studyApplyApi(Number(studyId), studyApplyData),
+    onSuccess: (res) => {
+      alert('스터디 지원이 완료되었습니다.');
+      setIsApplyModalOpen(false);
+      navigate(`/study/detail/${studyId}`);
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      alert(error.response?.data?.message || '스터디 지원에 실패했습니다.');
+    },
+  });
+
+  const onSubmit = (data: TStudyApplySchema) => {
+    console.log('Study Apply Data:', data);
+    // submitStudyApply(data);
+    // 임시로 웰컴 스탬프 모달 띄우기
+    setIsApplyModalOpen(false); //[ld]
+    navigate(`/study/detail/${studyId}`);
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-white">
-      <AuthHeader />
+      <AuthHeader className="z-60" />
       <SideBar />
       <main className="flex ml-[160px] mt-[88px] px-20 py-10 gap-y-10 overflow-y-auto ">
         <div className="flex w-full gap-10">
@@ -146,13 +210,73 @@ export function StudyRead() {
             </div>
           </div>
           <div className="flex flex-col gap-3 w-60">
-            <Button onClick={() => {}}>지원하기</Button>
+            <Button onClick={() => setIsApplyModalOpen(true)}>지원하기</Button>
             <Button variant="default" onClick={() => {}}>
               관심 스터디
             </Button>
           </div>
         </div>
       </main>
+
+      <Modal
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        className="fixed top-[88px] right-0 w-1/3 h-[calc(100%-88px)] flex flex-col px-10 py-10"
+      >
+        <Form
+          schema={studyApplySchema}
+          onSubmit={onSubmit}
+          className="flex flex-col flex-1 overflow-hidden"
+        >
+          <div className="flex justify-between mb-5 items-center">
+            <h2 className="heading-2">지원서 작성</h2>
+            <FetchMyInfoButton />
+          </div>
+          <div className="flex-1 overflow-y-auto pr-3 space-y-5">
+            <FormField
+              name="nickname"
+              label="닉네임"
+              placeholder={nickname || '다함송이'}
+              defaultValue={nickname || ''}
+              disabled
+            />
+            <FormField
+              name="studentStatus"
+              label="재학상태"
+              placeholder="재학 상태를 선택해주세요."
+              type="dropdown"
+              options={studentStatusOptions}
+            />
+            <FormField
+              name="major"
+              label="전공"
+              placeholder="전공을 선택해주세요."
+              type="dropdown"
+              options={majorOptions}
+              isSearchable={true}
+            />
+            <FormField
+              name="phoneNumber"
+              label="전화번호"
+              placeholder="연락 가능한 전화번호를 입력해주세요."
+            />
+            <FormField
+              label="지원 동기"
+              name="motivation"
+              placeholder="스터디에 지원하게 된 동기를 입력해주세요."
+              type="textarea"
+            />
+            <div className="flex mt-8 gap-2">
+              <Button variant="default" onClick={() => setIsApplyModalOpen(false)}>
+                취소
+              </Button>
+              <Button type="submit" className="flex-1">
+                지원하기
+              </Button>
+            </div>
+          </div>
+        </Form>
+      </Modal>
     </div>
   );
 }

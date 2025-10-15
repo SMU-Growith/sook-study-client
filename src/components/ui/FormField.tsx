@@ -92,6 +92,7 @@ export function FormField({
       error={error}
       type={type}
       onChange={(e) => setValue(name, e.target.value, { shouldValidate: true })}
+      {...props}
     />
   );
 }

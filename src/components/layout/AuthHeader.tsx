@@ -4,10 +4,15 @@ import { Button } from '@/components/ui/button';
 import UserProfileSvg from '@/assets/icons/userProfile.svg';
 import { useAuthStore } from '@/store/authStore';
 
-export function AuthHeader() {
+interface AuthHeaderProps {
+  className?: string;
+}
+export function AuthHeader({ className }: AuthHeaderProps) {
   const { isLoggedIn } = useAuthStore();
   return (
-    <header className="fixed top-0 left-0 z-40 w-full h-[88px] flex items-center justify-between px-6 py-4">
+    <header
+      className={`fixed top-0 left-0 z-40 w-full h-[88px] flex items-center justify-between px-6 py-4 bg-white ${className}`}
+    >
       <Logo />
       {isLoggedIn ? (
         <div className="flex items-center gap-3">

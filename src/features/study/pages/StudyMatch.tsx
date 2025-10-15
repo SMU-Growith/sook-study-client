@@ -16,17 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { Tag } from '@/components/ui/Tag';
 import { DropdownList } from '@/components/ui/DropdownList';
-
-const CATEGORIES = {
-  분야: {
-    학업: ['전공 공부', '시험 공부', '자격증', '고시·임용·공무원'],
-    언어: ['회화', '외국어 시험'],
-    '취업/커리어': ['면접·자소서', '디자인', 'IT', '마케팅', '코딩', '데이터 분석'],
-    자기계발: ['독서·글쓰기', '운동', '사진·영상'],
-  },
-  진행방식: ['온라인', '오프라인', '온라인/오프라인'],
-  '스터디 성향': ['체계적인', '자유로운', '협력적인', '실적중심'],
-} as const;
+import type { CATEGORIES } from '@/constants/index';
 
 type TopCategory = keyof typeof CATEGORIES;
 type SubCategory = keyof (typeof CATEGORIES)['분야'];

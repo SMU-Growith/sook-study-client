@@ -21,7 +21,10 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         <Input
           id={id}
           ref={ref}
-          className={error ? 'border-red-500 focus:border-red-500' : ''}
+          className={[
+            error ? 'border-red-500 focus:border-red-500' : '',
+            props.disabled ? 'bg-gray-100 text-gray-200' : '',
+          ].join(' ')}
           {...props}
         />
         {error && <p className="text-body-2-semibold text-error-200">{error}</p>}

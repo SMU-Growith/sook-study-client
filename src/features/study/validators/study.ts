@@ -23,3 +23,17 @@ export const studyStep3Schema = z.object({
 export const studyCreateSchema = studyStep1Schema.and(studyStep2Schema).and(studyStep3Schema);
 
 export type TStudySchema = z.infer<typeof studyCreateSchema>;
+
+export const studyApplySchema = z.object({
+  studentStatus: z.string().min(1, '재학 상태를 선택해주세요.'),
+  major: z.string().min(1, '전공을 선택해주세요.'),
+  phoneNumber: z
+    .string()
+    .nonempty('전화번호를 입력해주세요.')
+    .regex(/^010-\d{4}-\d{4}$/, '올바른 전화번호 형식이 아닙니다. (010-1234-5678)'),
+  motivation: z
+    .string()
+    .min(10, '지원 동기를 10자 이상 입력해주세요.')
+    .max(150, '지원 동기는 150자 이하로 입력해주세요.'),
+});
+export type TStudyApplySchema = z.infer<typeof studyApplySchema>;
