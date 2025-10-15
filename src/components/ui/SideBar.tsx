@@ -15,7 +15,9 @@ export function SideBar() {
   return (
     <aside className="fixed top-[88px] left-0 z-30 w-[160px] flex flex-col px-5 pt-10 gap-5 text-body-1">
       {menus.map((menu) => {
-        const isActive = location.pathname === menu.path;
+        const isActive =
+          location.pathname === menu.path ||
+          (menu.path === '/study/match' && location.pathname.startsWith('/study/detail'));
         return (
           <button
             key={menu.name}
