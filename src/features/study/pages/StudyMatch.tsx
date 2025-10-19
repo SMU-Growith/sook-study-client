@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { Tag } from '@/components/ui/Tag';
 import { DropdownList } from '@/components/ui/DropdownList';
-import type { CATEGORIES } from '@/constants/index';
+import { CATEGORIES } from '@/constants/index';
 
 type TopCategory = keyof typeof CATEGORIES;
 type SubCategory = keyof (typeof CATEGORIES)['분야'];
@@ -119,7 +119,7 @@ export function StudyMatch() {
     return studies.filter(
       (study) =>
         study.title.toLowerCase().includes(lowerText) ||
-        study.tags.some((tag) => tag.toLowerCase().includes(lowerText))
+        study.tags.every((tag) => tag.toLowerCase().includes(lowerText))
     );
   };
 
@@ -137,7 +137,7 @@ export function StudyMatch() {
 
     // 태그 필터링
     if (selectedTags.length > 0) {
-      studies = studies.filter((study) => selectedTags.some((tag) => study.tags.includes(tag)));
+      studies = studies.filter((study) => selectedTags.every((tag) => study.tags.includes(tag)));
     }
 
     console.log('selectedTags:', selectedTags);
