@@ -12,7 +12,7 @@ import ArrowBottomSvg from '@/assets/arrow/arrowBottom.svg';
 import BookmarkSvg from '@/assets/icons/bookmark.svg';
 import BookmarkFillSvg from '@/assets/icons/bookmarkFill.svg';
 import SearchSvg from '@/assets/icons/search.svg';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Tag } from '@/components/ui/Tag';
 import { DropdownList } from '@/components/ui/DropdownList';

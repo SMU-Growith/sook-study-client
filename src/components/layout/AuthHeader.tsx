@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Logo } from '@/components/ui/Logo';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import UserProfileSvg from '@/assets/icons/userProfile.svg';
 import { useAuthStore } from '@/store/authStore';
 

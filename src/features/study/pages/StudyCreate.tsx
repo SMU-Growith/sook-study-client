@@ -1,6 +1,6 @@
 import { AuthHeader } from '@/components/layout/AuthHeader';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Form } from '@/components/ui/Form';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
