@@ -1,13 +1,13 @@
 import { forwardRef, useId, type ComponentProps } from 'react';
-import { Input } from './Input';
+import { TextArea } from './TextArea';
 
-interface InputFieldProps extends ComponentProps<'input'> {
+interface TextAreaProps extends ComponentProps<'textarea'> {
   label?: string;
   error?: string;
 }
 
-const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
-  ({ label, error, ...props }, ref) => {
+const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaProps>(
+  ({ label, error, rows = 5, ...props }, ref) => {
     const fallbackId = useId();
     const id = props.id || fallbackId;
 
@@ -18,13 +18,11 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             {label}
           </label>
         )}
-        <Input
+        <TextArea
           id={id}
           ref={ref}
-          className={[
-            error ? 'border-red-500 focus:border-red-500' : '',
-            props.disabled ? 'bg-gray-100 text-gray-200' : '',
-          ].join(' ')}
+          rows={rows}
+          className={error ? 'border-red-500 focus:border-red-500' : ''}
           {...props}
         />
         {error && <p className="text-body-2-semibold text-error-200">{error}</p>}
@@ -32,6 +30,6 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     );
   }
 );
-InputField.displayName = 'InputField';
+TextAreaField.displayName = 'TextAreaField';
 
-export { InputField };
+export { TextAreaField };

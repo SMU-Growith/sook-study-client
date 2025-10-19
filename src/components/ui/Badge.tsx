@@ -1,4 +1,4 @@
-type BadgeVariant = 'purple' | 'blue' | 'black';
+type BadgeVariant = 'purple' | 'blue' | 'black' | 'gray';
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: BadgeVariant;
   children?: React.ReactNode;
@@ -14,6 +14,8 @@ export function Badge({ variant = 'blue', children, ...props }: BadgeProps) {
     colorClasses = 'bg-primary-100 text-primary-500 text-body-2-semibold';
   } else if (variant === 'black') {
     colorClasses = 'bg-gray-400 text-white text-body-2-semibold';
+  } else if (variant === 'gray') {
+    colorClasses = 'bg-gray-100 text-black text-body-2-semibold';
   }
   const finalClasses = `${baseClasses} ${colorClasses} ${props.className || ''}`;
 

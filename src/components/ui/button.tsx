@@ -1,7 +1,14 @@
 import { forwardRef, type ComponentProps, type ReactNode } from 'react';
 import { Slot } from '@radix-ui/react-slot';
 
-type ButtonVariant = 'primary' | 'secondary' | 'disabled' | 'default' | 'defaultGray' | 'solid';
+type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'disabled'
+  | 'default'
+  | 'defaultGray'
+  | 'solid'
+  | 'focus';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ComponentProps<'button'> {
@@ -36,6 +43,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         'bg-white text-gray-300 hover:bg-primary-100 focus:border-primary-500 focus:bg-primary-100';
     } else if (appliedVariant === 'solid') {
       colorClasses = 'bg-gray-100 text-gray-500 hover:bg-gray-200';
+    } else if (appliedVariant === 'focus') {
+      colorClasses = 'bg-primary-100  text-primary-500 border-2 border-primary-500';
     }
 
     let sizeClasses = '';

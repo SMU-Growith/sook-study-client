@@ -1,0 +1,60 @@
+import type { Study } from '@/components/ui/StudyCard';
+
+export const matchedStudiesData: Study[] = [
+  {
+    id: 1,
+    status: '모집완료',
+    title: '토익 900점 목표로 같이 공부하실 분 모집합니다.',
+    tags: ['어학', '오프라인', '체계적인'],
+    author: '영어고수',
+    likeCount: 8,
+  },
+  {
+    id: 2,
+    status: '모집완료',
+    title: '사이드 플젝 하실 분 기획자/코딩자',
+    tags: ['코딩', '온라인', '자유로운'],
+    author: 'PM지망생',
+    likeCount: 22,
+  },
+  {
+    id: 3,
+    status: '모집완료',
+    title: 'JLPT N2 대비 일본어 스터디',
+    tags: ['어학', '온라인', '체계적인'],
+    author: '일본어장인',
+    likeCount: 9,
+  },
+  {
+    id: 4,
+    status: '모집완료',
+    title: '영상 편집 프리미어 프로 스터디',
+    tags: ['디자인', '오프라인', '체계적인'],
+    author: '비디오편집자',
+    likeCount: 10,
+  },
+  {
+    id: 5,
+    status: '모집완료',
+    title: '취업자 모의면접 스터디 (비대면)',
+    tags: ['취업', '온라인', '체계적인'],
+    author: 'HR마스터',
+    likeCount: 23,
+  },
+  {
+    id: 6,
+    status: '모집완료',
+    title: 'MBA 입시 스터디: 경영학 개론부터',
+    tags: ['경영', '온라인', '체계적인'],
+    author: '비즈니스러버',
+    likeCount: 7,
+  },
+  {
+    id: 7,
+    status: '모집완료',
+    title: '디지털 마케팅 실전 케이스 분석',
+    tags: ['마케팅', '온라인', '체계적인'],
+    author: '광고쟁이',
+    likeCount: 11,
+  },
+];

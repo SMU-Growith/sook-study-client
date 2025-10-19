@@ -14,8 +14,8 @@ export function Modal({ isOpen, onClose, children, className }: ModalProps) {
       <div
         onClick={(e) => e.stopPropagation()}
         className={`
-          bg-white rounded-[20px]
-          ${className || 'w-full max-w-[360px] p-5'}
+          bg-white
+          ${className || 'w-full max-w-[360px] p-5 rounded-[20px]'}
         `}
       >
         {children}

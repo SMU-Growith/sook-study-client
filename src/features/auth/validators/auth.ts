@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// 회원가입
 const allowedEmailDomains = ['sookmyung.ac.kr', 'sm.ac.kr'];
 
 export const signUpStep1Schema = z.object({
@@ -26,9 +27,21 @@ export const signUpStep2Schema = z.object({
 
 export type TSignUpStep2Schema = z.infer<typeof signUpStep2Schema>;
 
+// 로그인
 export const loginSchema = z.object({
   id: z.string().nonempty('아이디를 입력해주세요.'),
   password: z.string().nonempty('패스워드를 입력해주세요.'),
 });
 
 export type TLoginSchema = z.infer<typeof loginSchema>;
+
+// [lf] 내 정보 조회
+export const myInfoSchema = z.object({
+  id: z.string(),
+  email: z.email(),
+  nickname: z.string(),
+  studentStatus: z.string(),
+  major: z.string(),
+  phoneNumber: z.string(),
+});
+export type TMyInfo = z.infer<typeof myInfoSchema>;
