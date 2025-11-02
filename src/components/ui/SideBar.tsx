@@ -9,7 +9,7 @@ export function SideBar() {
     { name: '홈', path: '/home' },
     { name: '숙터디 둘러보기', path: '/study/match' },
     { name: '숙터디 만들기', path: '/study/create' },
-    { name: '내 숙터디', path: '/my-studies' },
+    { name: '내 숙터디', path: '/study/my' },
     { name: '지원 내역', path: '/applications' },
   ];
   return (
