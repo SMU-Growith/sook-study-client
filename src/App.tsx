@@ -8,7 +8,8 @@ import { StudyMatch } from './features/study/pages/StudyMatch';
 import { StudyCreate } from './features/study/pages/StudyCreate';
 import { StudyUpdate } from './features/study/pages/StudyUpdate';
 import { StudyRead } from './features/study/pages/StudyRead';
-import { MyStudy } from './features/study/pages/MyStudy';
+import { MyStudyList } from './features/study/pages/MyStudyList';
+import { MyStudy } from './features/study/pages/StudyLogLeader';
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,8 @@ function App() {
           <Route path="/study/create" element={<StudyCreate />} />
           <Route path="/study/update/:studyId" element={<StudyUpdate />} />
           <Route path="/study/detail/:studyId" element={<StudyRead />} />
-          <Route path="/study/my" element={<MyStudy />} />
+          <Route path="/study/my" element={<MyStudyList />} />
+          <Route path="/study/my/:studyId" element={<MyStudy />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

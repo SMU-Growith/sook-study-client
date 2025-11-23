@@ -29,7 +29,7 @@ export function MyStudyCard({ study, onCardClick }: MyStudyCardProps) {
 
   const handleCardClick = () => {
     if (isLoggedIn) {
-      navigate('/study/log/1');
+      navigate('/study/my/1');
     } else {
       onCardClick?.();
     }

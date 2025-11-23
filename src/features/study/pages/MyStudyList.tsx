@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { myStudiesData } from '../myStudyMatch';
 import { MyStudyCard } from '@/components/ui/MyStudyCard';
 
-export function MyStudy() {
+export function MyStudyList() {
   const [studyStatus, setStudyStatus] = useState('진행중');
 
   const handleStudyStatus = (status: string) => {

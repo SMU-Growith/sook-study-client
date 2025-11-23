@@ -6,7 +6,7 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Badge({ variant = 'blue', icon, children, ...props }: BadgeProps) {
-  const baseClasses = `inline-flex justify-center items-center flex-shrink-0 h-8 px-2 rounded-md gap-1`;
+  const baseClasses = `inline-flex w-fit justify-center items-center flex-shrink-0 h-8 px-2 rounded-md gap-1`;
 
   let colorClasses = '';
   if (variant === 'purple') {
