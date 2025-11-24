@@ -6,10 +6,28 @@ import StudyLeader from '@/assets/studyLeader.svg';
 import StudyMember from '@/assets/studyMember.svg';
 import UserProfileSvg from '@/assets/icons/userProfile.svg';
 import BlueCircleSvg from '@/assets/blueCircle.svg';
-import { myStudySessionListData } from '../StudySession';
+import { myStudySessionListData } from '../studySession';
 import { StudySessionCard } from '@/components/ui/StudySessionCard';
+import PlusSvg from '@/assets/icons/plus.svg';
+import { StudyLogCreateModal } from '../component/StudyLogCreateModal';
+import { useState } from 'react';
 
 export function MyStudy() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCreateStudyLog = () => {
+    const newSession = {
+      id: myStudySessionListData.length + 1,
+      title: `스터디 ${myStudySessionListData.length + 1}`,
+      submittedMembers: 0,
+      status: '진행중',
+    };
+
+    myStudySessionListData.push(newSession);
+    setIsModalOpen(false);
+    // 스터디 일지 하나 추가하기
+  };
+
   return (
     <div className="flex h-screen bg-white w-full">
       <AuthHeader />
@@ -114,17 +132,36 @@ export function MyStudy() {
           </Button>
         </div>
         <div className="flex flex-1 flex-col px-10 py-10 gap-5">
-          <h2 className="heading-2">스터디 일지</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="heading-2">스터디 일지</h2>
+            <div className="flex gap-2">
+              <Button variant="primary" size="lg" onClick={() => setIsModalOpen(true)}>
+                <img src={PlusSvg} alt="플러스 아이콘" />
+                일지 생성하기
+              </Button>
+            </div>
+          </div>
           <p className="text-subtitle-1">
             총 <span className="text-primary-500">5개</span>
           </p>
           <div className="grid grid-cols-2 gap-5">
-            {myStudySessionListData.map((study) => (
-              <StudySessionCard key={study.id} isLeader={true} studyLog={study} />
-            ))}
+            {myStudySessionListData
+              .slice()
+              .reverse()
+              .map((study) => (
+                <StudySessionCard key={study.id} isLeader={true} studyLog={study} />
+              ))}
           </div>
         </div>
       </main>
+      <StudyLogCreateModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+        }}
+        onConfirm={handleCreateStudyLog}
+        nextSessionId={myStudySessionListData.length + 1}
+      />
     </div>
   );
 }
