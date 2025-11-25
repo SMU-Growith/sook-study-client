@@ -149,7 +149,7 @@ export function MyStudy() {
               .slice()
               .reverse()
               .map((study) => (
-                <StudySessionCard key={study.id} isLeader={true} studyLog={study} />
+                <StudySessionCard id={study.id} isLeader={true} studyLog={study} />
               ))}
           </div>
         </div>
