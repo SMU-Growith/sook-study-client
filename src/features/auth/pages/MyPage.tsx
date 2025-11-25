@@ -32,6 +32,10 @@ export function MyPage() {
     // submitProfileUpdate(data);
   };
 
+  const handleStudyPreferenceTest = () => {
+    navigate('/study/preference-test');
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col items-center bg-white">
       <AuthHeader />
@@ -45,7 +49,7 @@ export function MyPage() {
             <Button type="button" variant="default" size="lg" onClick={() => navigate('/home')}>
               홈으로
             </Button>
-            <Button type="submit" variant="primary" size="lg">
+            <Button type="submit" variant="primary" size="lg" onClick={handleStudyPreferenceTest}>
               프로필 저장하기
             </Button>
           </div>
