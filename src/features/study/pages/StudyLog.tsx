@@ -1,6 +1,5 @@
 import { AuthHeader } from '@/components/layout/AuthHeader';
 import { Button } from '@/components/ui/Button';
-import { myStudySessionListData } from '../studySession';
 import PlusSvg from '@/assets/icons/plus.svg';
 import { StudyLogCreateModal } from '../component/StudyLogCreateModal';
 import { useState } from 'react';
@@ -8,13 +7,12 @@ import { useAuthStore } from '@/store/authStore';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { StudyLogCard } from '@/features/study/component/MyStudyLogCard';
 import { myStudyLogListData } from '../studyLog';
-import { Badge } from '@/components/ui/Badge';
 
 export function MyStudyLog() {
   const auth = useAuthStore();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
   const [searchParams] = useSearchParams();
-  const { studyId, sessionId } = useParams<{ studyId: string; sessionId: string }>();
+  const { sessionId } = useParams<{ studyId: string; sessionId: string }>();
   const sessionTitle = searchParams.get('sessionTitle');
 
   const handleCreateStudyLog = () => {
@@ -22,7 +20,7 @@ export function MyStudyLog() {
       id: myStudyLogListData.length + 1,
       title: '오늘의 회고',
       role: '스터디원',
-      writerNickname: '회고송',
+      writerNickname: '피그마송',
       viewCount: 0,
       content: '집중이 잘 안 되었던 이유와 내일 개선하고 싶은 점을 적었습니다.',
       link: undefined,
@@ -35,7 +33,8 @@ export function MyStudyLog() {
     };
 
     myStudyLogListData.push(newLog);
-    setIsModalOpen(false);
+    setIsWriteModalOpen(false);
+    auth.setHasWrittenLog(true);
   };
 
   return (
@@ -50,7 +49,11 @@ export function MyStudyLog() {
             </div>
             {auth.isLeader && (
               <div className="flex gap-2">
-                <Button variant="primary" size="lg" onClick={() => setIsModalOpen(true)}>
+                <Button
+                  variant={auth.hasWrittenLog ? 'disabled' : 'primary'}
+                  size="lg"
+                  onClick={() => setIsWriteModalOpen(true)}
+                >
                   <img src={PlusSvg} alt="플러스 아이콘" />
                   일지 작성하기
                 </Button>
@@ -61,19 +64,27 @@ export function MyStudyLog() {
             총 <span className="text-primary-500">5개</span>
           </p>
           <div className="grid grid-cols-2 gap-5">
+            {auth.hasWrittenLog ? null : (
+              <StudyLogCard sessionId={sessionId} isEmpty={true} sessionTitle={sessionTitle} />
+            )}
             {myStudyLogListData
               .slice()
               .reverse()
               .map((studyLog) => (
-                <StudyLogCard sessionId={sessionId} logId={studyLog.id} studyLog={studyLog} />
+                <StudyLogCard
+                  sessionId={sessionId}
+                  logId={studyLog.id}
+                  studyLog={studyLog}
+                  isEmpty={false}
+                />
               ))}
           </div>
         </div>
       </main>
       <StudyLogCreateModal
-        isOpen={isModalOpen}
+        isOpen={isWriteModalOpen}
         onClose={() => {
-          setIsModalOpen(false);
+          setIsWriteModalOpen(false);
         }}
         onConfirm={handleCreateStudyLog}
         nextSessionId={Number(sessionId)}

@@ -8,6 +8,8 @@ interface AuthState {
   login: (nickname: string, isLeader: boolean) => void;
   logout: () => void;
   setNickName: (nickname: string) => void;
+  hasWrittenLog: boolean;
+  setHasWrittenLog: (hasWritten: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -19,6 +21,8 @@ export const useAuthStore = create<AuthState>()(
       login: (nickname, isLeader) => set({ isLoggedIn: true, nickname, isLeader }),
       logout: () => set({ isLoggedIn: false, nickname: null, isLeader: false }),
       setNickName: (nickname) => set({ nickname }),
+      hasWrittenLog: false,
+      setHasWrittenLog: (hasWritten) => set({ hasWrittenLog: hasWritten }),
     }),
     {
       name: 'auth-status',
