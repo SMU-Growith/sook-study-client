@@ -40,3 +40,8 @@ export const fetchMyInfoApi = async () => {
   const response = await apiClient.get('/auth/profile');
   return response.data;
 };
+
+export const profileUpdateApi = async (data: Partial<SignUpData>) => {
+  const response = await apiClient.put('/auth/profile', data);
+  return response.data;
+};
