@@ -15,6 +15,7 @@ import { MyPage } from './features/auth/pages/MyPage';
 import { StudyPreferenceTest } from './features/study/pages/StudyPreferenceTest';
 import { StudyPreferenceQuestion } from './features/study/pages/StudyPreferenceQuestion';
 import { StudyPreferenceResult } from './features/study/pages/StudyPreferenceResult';
+import { Stamp } from './features/auth/pages/Stamp';
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ function App() {
             element={<StudyPreferenceQuestion />}
           />
           <Route path="/study/preference-test/result" element={<StudyPreferenceResult />} />
+          <Route path="/my-page/stamp" element={<Stamp />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/Logo';
 import { Form } from '@/components/ui/Form';
 import { myProfileSchema, type TProfile } from '../validators/auth';
