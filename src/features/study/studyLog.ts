@@ -4,7 +4,7 @@ export const myStudyLogListData: MyStudyLog[] = [
   {
     id: 1,
     title: '자료구조 복습 일지',
-    role: '스터디장',
+    role: '스터디원',
     writerNickname: '리더송이',
     viewCount: 42,
     content:
@@ -49,7 +49,7 @@ export const myStudyLogListData: MyStudyLog[] = [
   {
     id: 3,
     title: 'React 훅 정리',
-    role: '스터디장',
+    role: '스터디원',
     writerNickname: '프론트송',
     viewCount: 55,
     content: 'useState, useEffect, useMemo 위주로 실습했고, 커스텀 훅 예제도 하나 만들어봤어요.',
@@ -108,7 +108,7 @@ export const myStudyLogListData: MyStudyLog[] = [
   {
     id: 6,
     title: '머신러닝 파이프라인',
-    role: '스터디장',
+    role: '스터디원',
     writerNickname: 'AI송',
     viewCount: 48,
     content:
@@ -146,7 +146,7 @@ export const myStudyLogListData: MyStudyLog[] = [
   {
     id: 8,
     title: 'CS 면접 대비 노트',
-    role: '스터디장',
+    role: '스터디원',
     writerNickname: '면접송',
     viewCount: 60,
     content: '프로세스/스레드, 동기/비동기, 뮤텍스/세마포어 개념을 정리했습니다.',
