@@ -2,7 +2,7 @@ import { AuthHeader } from '@/components/layout/AuthHeader';
 import { SideBar } from '@/components/ui/SideBar';
 import { useState } from 'react';
 import { myStudiesData } from '../myStudyMatch';
-import { MyStudyCard } from '@/components/ui/MyStudyCard';
+import { MyStudyCard } from '@/features/study/component/MyStudyCard';
 
 export function MyStudyList() {
   const [studyStatus, setStudyStatus] = useState('진행중');

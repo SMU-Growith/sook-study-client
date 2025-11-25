@@ -1,4 +1,4 @@
-import type { MyStudy } from '@/components/ui/MyStudyCard';
+import type { MyStudy } from '@/features/study/component/MyStudyCard';
 
 export const myStudiesData: MyStudy[] = [
   {

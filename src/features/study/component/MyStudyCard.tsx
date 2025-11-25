@@ -1,12 +1,12 @@
-import { Badge } from './Badge';
-import { Tag } from './Tag';
+import { Badge } from '../../../components/ui/Badge';
+import { Tag } from '../../../components/ui/Tag';
 import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
 import StudyLeader from '@/assets/studyLeader.svg';
 import StudyMember from '@/assets/studyMember.svg';
 import Calendar from '@/assets/calendar.svg';
 import People from '@/assets/people.svg';
-import { Button } from './Button';
+import { Button } from '../../../components/ui/Button';
 
 export interface MyStudy {
   id: number;
@@ -29,7 +29,7 @@ export function MyStudyCard({ study, onCardClick }: MyStudyCardProps) {
 
   const handleCardClick = () => {
     if (isLoggedIn) {
-      navigate('/study/my/1');
+      navigate(`/study/my/${study.id}`);
     } else {
       onCardClick?.();
     }

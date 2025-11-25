@@ -7,15 +7,17 @@ import StudyMember from '@/assets/studyMember.svg';
 import UserProfileSvg from '@/assets/icons/userProfile.svg';
 import BlueCircleSvg from '@/assets/blueCircle.svg';
 import { myStudySessionListData } from '../studySession';
-import { StudySessionCard } from '@/components/ui/StudySessionCard';
 import PlusSvg from '@/assets/icons/plus.svg';
-import { StudyLogCreateModal } from '../component/StudyLogCreateModal';
 import { useState } from 'react';
+import { useAuthStore } from '@/store/authStore';
+import { StudySessionCreateModal } from '../component/StudySessionCreateModal';
+import { StudySessionCard } from '@/features/study/component/MyStudySessionCard';
 
-export function MyStudy() {
+export function MyStudySession() {
+  const auth = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleCreateStudyLog = () => {
+  const handleCreateStudySession = () => {
     const newSession = {
       id: myStudySessionListData.length + 1,
       title: `스터디 ${myStudySessionListData.length + 1}`,
@@ -34,14 +36,16 @@ export function MyStudy() {
       <main className="flex w-full mt-[88px]">
         <div className="flex flex-col px-[18px] py-6 gap-5 w-[336px]">
           <h2 className="heading-2">스터디 이름</h2>
-          <Button variant="default" size="md">
-            모집글 수정하기
-          </Button>
+          {auth.isLeader && (
+            <Button variant="default" size="md">
+              모집글 수정하기
+            </Button>
+          )}
           <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
             <div className="flex flex-col gap-y-[12px]">
               <div className="flex justify-between items-center">
                 <p className="text-body-1-semibold">스터디멤버</p>
-                <img src={SettingsSvg} alt="설정 아이콘" />
+                {auth.isLeader && <img src={SettingsSvg} alt="설정 아이콘" />}
               </div>
               <hr className="border-t-3 border-gray-100" />
               <div className="flex gap-3">
@@ -83,7 +87,7 @@ export function MyStudy() {
             <div className="flex flex-col gap-y-[12px]">
               <div className="flex justify-between items-center">
                 <p className="text-body-1-semibold">스터디 규칙</p>
-                <img src={SettingsSvg} alt="설정 아이콘" />
+                {auth.isLeader && <img src={SettingsSvg} alt="설정 아이콘" />}
               </div>
               <hr className="border-t-3 border-gray-100" />
               <div className="flex flex-col gap-1">
@@ -104,42 +108,50 @@ export function MyStudy() {
             </div>
           </div>
 
-          <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
-            <div className="flex flex-col gap-y-[12px]">
-              <div className="flex justify-between items-center">
-                <p className="text-body-1-semibold">지원내역</p>
-                <div className="flex gap-1 items-start">
-                  <p className="text-[#277AFF] text-caption-semibold cursor-pointer">새로운 지원</p>
-                  <img src={BlueCircleSvg} alt="블루 동그라미 아이콘" />
+          {auth.isLeader && (
+            <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
+              <div className="flex flex-col gap-y-[12px]">
+                <div className="flex justify-between items-center">
+                  <p className="text-body-1-semibold">지원내역</p>
+                  <div className="flex gap-1 items-start">
+                    <p className="text-[#277AFF] text-caption-semibold cursor-pointer">
+                      새로운 지원
+                    </p>
+                    <img src={BlueCircleSvg} alt="블루 동그라미 아이콘" />
+                  </div>
+                </div>
+                <hr className="border-t-3 border-gray-100" />
+                <div className="flex flex-col gap-3">
+                  {['지송이', '지원송이', '원송이'].map((applierName) => (
+                    <div className="flex items-center">
+                      <img src={UserProfileSvg} alt="User Profile" />
+                      <span className="text-body-2-semibold text-gray-400 ml-1">{applierName}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <hr className="border-t-3 border-gray-100" />
-              <div className="flex flex-col gap-3">
-                {['지송이', '지원송이', '원송이'].map((applierName) => (
-                  <div className="flex items-center">
-                    <img src={UserProfileSvg} alt="User Profile" />
-                    <span className="text-body-2-semibold text-gray-400 ml-1">{applierName}</span>
-                  </div>
-                ))}
-              </div>
             </div>
-          </div>
+          )}
           <Button variant="default" size="md">
             스터디 나가기
           </Button>
-          <Button variant="deleted" size="md">
-            스터디 종료하기
-          </Button>
+          {auth.isLeader && (
+            <Button variant="deleted" size="md">
+              스터디 종료하기
+            </Button>
+          )}
         </div>
         <div className="flex flex-1 flex-col px-10 py-10 gap-5">
           <div className="flex justify-between items-center">
             <h2 className="heading-2">스터디 일지</h2>
-            <div className="flex gap-2">
-              <Button variant="primary" size="lg" onClick={() => setIsModalOpen(true)}>
-                <img src={PlusSvg} alt="플러스 아이콘" />
-                일지 생성하기
-              </Button>
-            </div>
+            {auth.isLeader && (
+              <div className="flex gap-2">
+                <Button variant="primary" size="lg" onClick={() => setIsModalOpen(true)}>
+                  <img src={PlusSvg} alt="플러스 아이콘" />
+                  일지 생성하기
+                </Button>
+              </div>
+            )}
           </div>
           <p className="text-subtitle-1">
             총 <span className="text-primary-500">5개</span>
@@ -149,17 +161,17 @@ export function MyStudy() {
               .slice()
               .reverse()
               .map((study) => (
-                <StudySessionCard id={study.id} isLeader={true} studyLog={study} />
+                <StudySessionCard id={study.id} isLeader={true} studySession={study} />
               ))}
           </div>
         </div>
       </main>
-      <StudyLogCreateModal
+      <StudySessionCreateModal
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
         }}
-        onConfirm={handleCreateStudyLog}
+        onConfirm={handleCreateStudySession}
         nextSessionId={myStudySessionListData.length + 1}
       />
     </div>

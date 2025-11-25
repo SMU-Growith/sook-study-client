@@ -1,27 +1,27 @@
 import { useAuthStore } from '@/store/authStore';
-import { useNavigate } from 'react-router-dom';
-import { Button } from './Button';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Button } from '../../../components/ui/Button';
 import BurgerIconSvg from '@/assets/burgerIcon.svg';
 import People from '@/assets/people.svg';
 import { useState } from 'react';
-import { DropdownList } from './DropdownList';
-import { set } from 'zod';
-import { StudyLogUpdateModal } from '@/features/study/component/StudyLogUpdateModal';
+import { DropdownList } from '../../../components/ui/DropdownList';
+import { StudySessionUpdateModal } from '@/features/study/component/StudySessionUpdateModal';
 
-export type MyStudySessionList = {
+export type MyStudySession = {
   id: number;
   title: string;
   submittedMembers: number;
   status: string;
 };
 
-interface MyStudyLogCardProps {
+interface MyStudySessionCardProps {
   id: number;
   isLeader: boolean;
-  studyLog: MyStudySessionList;
+  studySession: MyStudySession;
 }
 
-export function StudySessionCard({ id, isLeader, studyLog }: MyStudyLogCardProps) {
+export function StudySessionCard({ id, isLeader, studySession }: MyStudySessionCardProps) {
+  const { studyId } = useParams<{ studyId: string }>();
   const { isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
   // 버거 아이콘 클릭되었는지 상태 관리
@@ -29,7 +29,11 @@ export function StudySessionCard({ id, isLeader, studyLog }: MyStudyLogCardProps
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   const handleCardClick = () => {
-    navigate(`/study/log/${studyLog.id}`);
+    navigate(
+      `/study/my/${studyId}/${studySession.id}?sessionTitle=${encodeURIComponent(
+        studySession.title
+      )}`
+    );
   };
 
   const handleBurgerIconSelect = (option: string) => {
@@ -41,8 +45,8 @@ export function StudySessionCard({ id, isLeader, studyLog }: MyStudyLogCardProps
     // 여기에 각 옵션에 대한 실제 동작을 구현하세요.
   };
 
-  const handleUpdateStudyLog = () => {
-    studyLog.title = `수정된 ${studyLog.title}`;
+  const handleUpdateStudySession = () => {
+    studySession.title = `수정된 ${studySession.title}`;
     setIsUpdateModalOpen(false);
   };
   return (
@@ -51,8 +55,8 @@ export function StudySessionCard({ id, isLeader, studyLog }: MyStudyLogCardProps
         <div className="flex flex-col gap-y-5">
           <div className="flex justify-between items-start">
             <div className="flex flex-col">
-              <p className="text-gray-300 text-body-1-semibold">{studyLog.id}회차</p>
-              <h3 className="heading-3">{studyLog.title}</h3>
+              <p className="text-gray-300 text-body-1-semibold">{studySession.id}회차</p>
+              <h3 className="heading-3">{studySession.title}</h3>
             </div>
             <div className="relative">
               <button
@@ -75,7 +79,7 @@ export function StudySessionCard({ id, isLeader, studyLog }: MyStudyLogCardProps
           <div className="flex items-center gap-1">
             <img src={People} alt="People" className="px-[2px] w-5 h-5" />
             <span className="text-body-2-semibold text-gray-400">
-              제출 멤버 {studyLog.submittedMembers}명
+              제출 멤버 {studySession.submittedMembers}명
             </span>
           </div>
           <Button variant="solid" onClick={handleCardClick}>
@@ -83,12 +87,12 @@ export function StudySessionCard({ id, isLeader, studyLog }: MyStudyLogCardProps
           </Button>
         </div>
       </div>
-      <StudyLogUpdateModal
+      <StudySessionUpdateModal
         isOpen={isUpdateModalOpen}
         onClose={() => setIsUpdateModalOpen(false)}
-        onConfirm={handleUpdateStudyLog}
-        currSessionId={studyLog.id}
-        currTitle={studyLog.title}
+        onConfirm={handleUpdateStudySession}
+        currSessionId={studySession.id}
+        currTitle={studySession.title}
       />
     </div>
   );

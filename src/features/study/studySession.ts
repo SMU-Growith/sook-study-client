@@ -1,6 +1,6 @@
-import type { MyStudySessionList } from '@/components/ui/StudySessionCard';
+import type { MyStudySession } from './component/MyStudySessionCard';
 
-export const myStudySessionListData: MyStudySessionList[] = [
+export const myStudySessionListData: MyStudySession[] = [
   {
     id: 1,
     title: '스터디 1',
