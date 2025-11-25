@@ -80,7 +80,7 @@ export function StudyLogReadModal({
           <InputField
             label="스터디 일지"
             placeholder="이번 회차에는 어떤 스터디 일지를 작성할 지 입력해주세요."
-            value={logData?.title}
+            value="React + Zustand 구조 잡기"
             disabled
             readOnly
           />

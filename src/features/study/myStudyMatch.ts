@@ -1,4 +1,4 @@
-import type { MyStudy } from '@/features/study/component/MyStudyCard';
+import type { MyStudy } from './component/MyStudyCard';
 
 export const myStudiesData: MyStudy[] = [
   {
@@ -17,7 +17,7 @@ export const myStudiesData: MyStudy[] = [
     tags: ['코딩', '온라인', '자유로운'],
     memberCount: 7,
     studyDays: 12,
-    status: '진행중',
+    status: '종료',
   },
   {
     id: 3,

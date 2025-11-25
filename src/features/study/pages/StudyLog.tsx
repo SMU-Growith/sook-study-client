@@ -1,5 +1,5 @@
 import { AuthHeader } from '@/components/layout/AuthHeader';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import PlusSvg from '@/assets/icons/plus.svg';
 import { StudyLogCreateModal } from '../component/StudyLogCreateModal';
 import { useState } from 'react';
@@ -14,25 +14,33 @@ export function MyStudyLog() {
   const [searchParams] = useSearchParams();
   const { sessionId } = useParams<{ studyId: string; sessionId: string }>();
   const sessionTitle = searchParams.get('sessionTitle');
+  const [logs, setLogs] = useState(myStudyLogListData);
 
   const handleCreateStudyLog = () => {
     const newLog = {
-      id: myStudyLogListData.length + 1,
-      title: '오늘의 회고',
-      role: '스터디원',
-      writerNickname: '피그마송',
+      id: 5,
+      title: 'React 컴포넌트 구조 리팩터링으로 성능 높이기',
+      role: '스터디장',
+      writerNickname: '김눈송',
       viewCount: 0,
-      content: '집중이 잘 안 되었던 이유와 내일 개선하고 싶은 점을 적었습니다.',
-      link: undefined,
-      attachments: [],
-      likeCount: 0,
-      heartCount: 0,
-      laughCount: 0,
-      surpriseCount: 0,
-      questionCount: 0,
+      content:
+        '컴포넌트가 비효율적으로 분리된 구조를 개선하고, props drilling을 최소화하는 방향으로 리팩터링했습니다. Context API와 Zustand를 비교하며 가장 적합한 구조를 선택하는 연습을 했습니다.',
+      link: 'https://react.dev/learn/thinking-in-react',
+      attachments: [
+        {
+          id: 1,
+          name: 'commit1.png, commit2.png, commit3.png',
+          type: 'png' as const,
+          url: '/mock/files/component_refactoring_before_after.site',
+        },
+      ],
+      likeCount: 4,
+      heartCount: 6,
+      laughCount: 1,
+      surpriseCount: 1,
+      questionCount: 2,
     };
-
-    myStudyLogListData.push(newLog);
+    setLogs((prevLogs) => [...prevLogs, newLog]);
     setIsWriteModalOpen(false);
     auth.setHasWrittenLog(true);
   };
@@ -61,13 +69,31 @@ export function MyStudyLog() {
             )}
           </div>
           <p className="text-subtitle-1">
-            총 <span className="text-primary-500">5개</span>
+            총 <span className="text-primary-500">{logs.length}개</span>
           </p>
           <div className="grid grid-cols-2 gap-5">
             {auth.hasWrittenLog ? null : (
-              <StudyLogCard sessionId={sessionId} isEmpty={true} sessionTitle={sessionTitle} />
+              <div className="w-full border-2 border-dashed border-gray-200 rounded-[20px] px-[18px] py-10 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-5">
+                  <p className="text-body-1-semibold text-gray-300">
+                    아직 스터디 일지 작성을 안하셨네요!
+                  </p>
+                  <Button variant="solid" size="lg" onClick={() => setIsWriteModalOpen(true)}>
+                    스터디 일지 작성하기
+                  </Button>
+                </div>
+                <StudyLogCreateModal
+                  isOpen={isWriteModalOpen}
+                  onClose={() => {
+                    setIsWriteModalOpen(false);
+                  }}
+                  onConfirm={handleCreateStudyLog}
+                  nextSessionId={Number(sessionId)}
+                  sessionTitle={sessionTitle || '스터디 한 것들 정리'}
+                />
+              </div>
             )}
-            {myStudyLogListData
+            {logs
               .slice()
               .reverse()
               .map((studyLog) => (

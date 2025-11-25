@@ -1,15 +1,18 @@
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/FormField';
 import { majorOptions, studentStatusOptions } from '@/constants/index';
+import { useState } from 'react';
 
 export function ProfileForm() {
+  const [nickname, setNickname] = useState('김눈송');
   return (
     <>
       <FormField
         name="nickname"
         label="닉네임"
         placeholder="숙터디에서 사용할 닉네임을 입력해주세요."
-        value="김눈송"
+        value={nickname}
+        onChange={(e) => setNickname(e.target.value)}
       />
       <FormField
         name="studentStatus"

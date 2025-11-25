@@ -14,32 +14,35 @@ import { StudySessionCreateModal } from '../component/StudySessionCreateModal';
 import { StudySessionCard } from '@/features/study/component/MyStudySessionCard';
 import { StudyFinishModal } from '../component/StudyFinishModal';
 import { StudyOutModal } from '../component/StudyOutModal';
+import { useNavigate } from 'react-router';
 
 export function MyStudySession() {
   const auth = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStudyFinishModalOpen, setIsStudyFinishModalOpen] = useState(false);
   const [isStudyOutModalOpen, setIsStudyOutModalOpen] = useState(false);
+  const [sessions, setSessions] = useState(myStudySessionListData);
 
   const handleCreateStudySession = () => {
     const newSession = {
       id: myStudySessionListData.length + 1,
-      title: `스터디 ${myStudySessionListData.length + 1}`,
+      title: 'React 컴포넌트 아키텍처 분석하기',
       submittedMembers: 0,
       status: '진행중',
     };
 
-    myStudySessionListData.push(newSession);
+    setSessions([...sessions, newSession]);
     setIsModalOpen(false);
     // 스터디 일지 하나 추가하기
   };
+  const navigate = useNavigate();
 
   return (
     <div className="flex h-screen bg-white w-full">
       <AuthHeader />
       <main className="flex w-full mt-[88px]">
         <div className="flex flex-col px-[18px] py-6 gap-5 w-[336px]">
-          <h2 className="heading-2">스터디 이름</h2>
+          <h2 className="heading-2">React 실력 키우실 분! 초보도 환영!</h2>
           {auth.isLeader && (
             <Button variant="default" size="md">
               모집글 수정하기
@@ -58,7 +61,7 @@ export function MyStudySession() {
                 </Badge>
                 <div className="flex items-center">
                   <img src={UserProfileSvg} alt="User Profile" />
-                  <span className="text-body-2-semibold text-gray-400 ml-1">리더송이</span>
+                  <span className="text-body-2-semibold text-gray-400 ml-1">김눈송</span>
                 </div>
               </div>
               <div className="flex flex-col gap-3">
@@ -161,7 +164,7 @@ export function MyStudySession() {
             총 <span className="text-primary-500">5개</span>
           </p>
           <div className="grid grid-cols-2 gap-5">
-            {myStudySessionListData
+            {sessions
               .slice()
               .reverse()
               .map((study) => (
@@ -183,6 +186,7 @@ export function MyStudySession() {
         onClose={() => setIsStudyOutModalOpen(false)}
         onConfirm={() => {
           setIsStudyOutModalOpen(false);
+          navigate(-1);
         }}
       />
       <StudyFinishModal
@@ -190,6 +194,8 @@ export function MyStudySession() {
         onClose={() => setIsStudyFinishModalOpen(false)}
         onConfirm={() => {
           setIsStudyFinishModalOpen(false);
+          // 이전페이지로 이동
+          navigate(-1);
         }}
       />
     </div>

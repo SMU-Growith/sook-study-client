@@ -46,7 +46,7 @@ export function StudySessionCard({ id, isLeader, studySession }: MyStudySessionC
   };
 
   const handleUpdateStudySession = () => {
-    studySession.title = `수정된 ${studySession.title}`;
+    studySession.title = 'React 컴포넌트 아키텍처 설계하기';
     setIsUpdateModalOpen(false);
   };
   return (
