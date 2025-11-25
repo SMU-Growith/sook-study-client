@@ -20,7 +20,7 @@ export function LoginPage() {
   const { mutate: submitLogin } = useMutation({
     mutationFn: loginApi,
     onSuccess: (res) => {
-      auth.login(res.data.nickname);
+      auth.login(res.data.nickname, true);
       alert('로그인이 완료되었습니다.');
       const isFirstLogin = res.data?.isFirstLogin ?? true; // 실제로는 서버 응답을 통해 확인
       // 만약 처음 로그인한 사람이라면 웰컴 스탬프 모달 띄우기
@@ -39,7 +39,7 @@ export function LoginPage() {
     // submitLogin(data);
     // 임시로 웰컴 스탬프 모달 띄우기
     setIsModalOpen(true); //[ld]
-    auth.login('다함송이'); //[ld]
+    auth.login('다함송이', true); //[ld]
   };
 
   const handleConfirmStamp = () => {

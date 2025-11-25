@@ -8,7 +8,8 @@ type ButtonVariant =
   | 'default'
   | 'defaultGray'
   | 'solid'
-  | 'focus';
+  | 'focus'
+  | 'deleted';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ComponentProps<'button'> {
@@ -45,6 +46,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       colorClasses = 'bg-gray-100 text-gray-500 hover:bg-gray-200';
     } else if (appliedVariant === 'focus') {
       colorClasses = 'bg-primary-100  text-primary-500 border-2 border-primary-500';
+    } else if (appliedVariant === 'deleted') {
+      colorClasses = 'bg-error-100 text-error-200';
     }
 
     let sizeClasses = '';

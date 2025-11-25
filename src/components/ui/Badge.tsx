@@ -1,11 +1,12 @@
-type BadgeVariant = 'purple' | 'blue' | 'black' | 'gray';
+type BadgeVariant = 'purple' | 'blue' | 'black' | 'gray' | 'yellow';
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: BadgeVariant;
+  icon?: string;
   children?: React.ReactNode;
 }
 
-export function Badge({ variant = 'blue', children, ...props }: BadgeProps) {
-  const baseClasses = `inline-flex justify-center items-center gap-2 flex-shrink-0 h-8 px-2 rounded-md gap-1`;
+export function Badge({ variant = 'blue', icon, children, ...props }: BadgeProps) {
+  const baseClasses = `inline-flex w-fit justify-center items-center flex-shrink-0 h-8 px-2 rounded-md gap-1`;
 
   let colorClasses = '';
   if (variant === 'purple') {
@@ -16,11 +17,14 @@ export function Badge({ variant = 'blue', children, ...props }: BadgeProps) {
     colorClasses = 'bg-gray-400 text-white text-body-2-semibold';
   } else if (variant === 'gray') {
     colorClasses = 'bg-gray-100 text-black text-body-2-semibold';
+  } else if (variant === 'yellow') {
+    colorClasses = 'bg-warning-100 text-warning-200 text-body-2-semibold';
   }
   const finalClasses = `${baseClasses} ${colorClasses} ${props.className || ''}`;
 
   return (
     <div className={finalClasses} {...props}>
+      {icon && <img src={icon} alt="" className="w-4 h-4" />}
       {children}
     </div>
   );

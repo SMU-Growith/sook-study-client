@@ -13,10 +13,7 @@ export function Modal({ isOpen, onClose, children, className }: ModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-bk/50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`
-          bg-white
-          ${className || 'w-full max-w-[360px] p-5 rounded-[20px]'}
-        `}
+        className={`bg-white w-full max-w-[330px] p-5 rounded-[20px] ${className}`}
       >
         {children}
       </div>
