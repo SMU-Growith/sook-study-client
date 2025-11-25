@@ -12,10 +12,14 @@ import { useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { StudySessionCreateModal } from '../component/StudySessionCreateModal';
 import { StudySessionCard } from '@/features/study/component/MyStudySessionCard';
+import { StudyFinishModal } from '../component/StudyFinishModal';
+import { StudyOutModal } from '../component/StudyOutModal';
 
 export function MyStudySession() {
   const auth = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isStudyFinishModalOpen, setIsStudyFinishModalOpen] = useState(false);
+  const [isStudyOutModalOpen, setIsStudyOutModalOpen] = useState(false);
 
   const handleCreateStudySession = () => {
     const newSession = {
@@ -132,11 +136,11 @@ export function MyStudySession() {
               </div>
             </div>
           )}
-          <Button variant="default" size="md">
+          <Button variant="default" size="md" onClick={() => setIsStudyOutModalOpen(true)}>
             스터디 나가기
           </Button>
           {auth.isLeader && (
-            <Button variant="deleted" size="md">
+            <Button variant="deleted" size="md" onClick={() => setIsStudyFinishModalOpen(true)}>
               스터디 종료하기
             </Button>
           )}
@@ -173,6 +177,20 @@ export function MyStudySession() {
         }}
         onConfirm={handleCreateStudySession}
         nextSessionId={myStudySessionListData.length + 1}
+      />
+      <StudyOutModal
+        isOpen={isStudyOutModalOpen}
+        onClose={() => setIsStudyOutModalOpen(false)}
+        onConfirm={() => {
+          setIsStudyOutModalOpen(false);
+        }}
+      />
+      <StudyFinishModal
+        isOpen={isStudyFinishModalOpen}
+        onClose={() => setIsStudyFinishModalOpen(false)}
+        onConfirm={() => {
+          setIsStudyFinishModalOpen(false);
+        }}
       />
     </div>
   );
