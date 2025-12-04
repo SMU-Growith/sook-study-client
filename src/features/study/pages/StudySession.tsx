@@ -1,6 +1,6 @@
 import { AuthHeader } from '@/components/layout/AuthHeader';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import SettingsSvg from '@/assets/settings.svg';
 import StudyLeader from '@/assets/studyLeader.svg';
 import StudyMember from '@/assets/studyMember.svg';

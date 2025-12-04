@@ -1,4 +1,4 @@
-import type { StudyPreferenceQuestion } from './pages/StudyPreferenceQuestion';
+import type { StudyPreferenceQuestion } from './component/StudyPreferenceQuestionCard';
 
 export const studyPreferenceQuestions: StudyPreferenceQuestion[] = [
   {

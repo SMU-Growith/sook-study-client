@@ -1,44 +1,34 @@
 import { AuthHeader } from '@/components/layout/AuthHeader';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/Form';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  studyCreateSchema,
   type TStudySchema,
   studyApplySchema,
   type TStudyApplySchema,
 } from '../validators/study';
 import { FormField } from '@/components/ui/FormField';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { studyUpdateApi, fetchStudyById, studyApplyApi, fetchMyInfoApi } from '@/lib/api';
-import type { AxiosError } from 'axios';
-import StateOnSvg from '@/assets/icons/stateOn.svg';
-import StateOffSvg from '@/assets/icons/stateOff.svg';
 import { SideBar } from '@/components/ui/SideBar';
 import UserProfileSvg from '@/assets/icons/userProfile.svg';
 import LinkSvg from '@/assets/link.svg';
 import { Modal } from '@/components/ui/Modal';
-import { InputField } from '@/components/ui/InputField';
 import { majorOptions, studentStatusOptions } from '@/constants';
-import { useForm, useFormContext } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import type { TMyInfo } from '@/features/auth/validators/auth';
+import { useFormContext } from 'react-hook-form';
 import { useAuthStore } from '@/store/authStore';
 
 // 스터디 분야, 스터디 성향, 진행 방식, 연락 방식 드롭다운 옵션
-const STUDY_FIELD_OPTIONS = ['학업', '언어', '취업/커리어', '자기계발'] as const;
-const SUBFIELD_MAP: Record<(typeof STUDY_FIELD_OPTIONS)[number], string[]> = {
-  학업: ['전공 공부', '시험 공부', '자격증', '고시·임용·공무원'],
-  언어: ['회화', '외국어 시험'],
-  '취업/커리어': ['면접·자소서', '디자인', 'IT', '마케팅', '코딩', '데이터 분석'],
-  자기계발: ['독서·글쓰기', '운동', '사진·영상'],
-};
+// const STUDY_FIELD_OPTIONS = ['학업', '언어', '취업/커리어', '자기계발'] as const;
+// const SUBFIELD_MAP: Record<(typeof STUDY_FIELD_OPTIONS)[number], string[]> = {
+//   학업: ['전공 공부', '시험 공부', '자격증', '고시·임용·공무원'],
+//   언어: ['회화', '외국어 시험'],
+//   '취업/커리어': ['면접·자소서', '디자인', 'IT', '마케팅', '코딩', '데이터 분석'],
+//   자기계발: ['독서·글쓰기', '운동', '사진·영상'],
+// };
 
-const STUDY_TYPE_OPTIONS = ['체계적인', '자유로운', '협력적인', '실적중심'];
-const PROGRESS_METHOD_OPTIONS = ['온라인', '오프라인', '온라인/오프라인'];
-const CONTACT_METHOD_OPTIONS = ['카카오톡', '이메일'];
+// const STUDY_TYPE_OPTIONS = ['체계적인', '자유로운', '협력적인', '실적중심'];
+// const PROGRESS_METHOD_OPTIONS = ['온라인', '오프라인', '온라인/오프라인'];
+// const CONTACT_METHOD_OPTIONS = ['카카오톡', '이메일'];
 const RULE_TAG_OPTIONS = [
   { label: '시간', key: 'time' },
   { label: '벌금', key: 'penalty' },
@@ -69,8 +59,8 @@ const studyData: TStudySchema & { isRecruiting: boolean; createdAt: string; auth
 export function StudyRead() {
   const navigate = useNavigate();
   const { studyId } = useParams();
-  const [activeRuleTags, setActiveRuleTags] = useState<string[]>([]);
-  const [isRecruiting, setIsRecruiting] = useState<boolean | null>(null);
+  const [, setActiveRuleTags] = useState<string[]>([]);
+  const [, setIsRecruiting] = useState<boolean | null>(null);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const { nickname } = useAuthStore();
 
@@ -118,18 +108,18 @@ export function StudyRead() {
     }
   }, [studyData]);
 
-  const { mutate: submitStudyApply } = useMutation({
-    mutationFn: (studyApplyData: TStudyApplySchema) =>
-      studyApplyApi(Number(studyId), studyApplyData),
-    onSuccess: (res) => {
-      alert('스터디 지원이 완료되었습니다.');
-      setIsApplyModalOpen(false);
-      navigate(`/study/detail/${studyId}`);
-    },
-    onError: (error: AxiosError<{ message: string }>) => {
-      alert(error.response?.data?.message || '스터디 지원에 실패했습니다.');
-    },
-  });
+  // const { mutate: submitStudyApply } = useMutation({
+  //   mutationFn: (studyApplyData: TStudyApplySchema) =>
+  //     studyApplyApi(Number(studyId), studyApplyData),
+  //   onSuccess: (res) => {
+  //     alert('스터디 지원이 완료되었습니다.');
+  //     setIsApplyModalOpen(false);
+  //     navigate(`/study/detail/${studyId}`);
+  //   },
+  //   onError: (error: AxiosError<{ message: string }>) => {
+  //     alert(error.response?.data?.message || '스터디 지원에 실패했습니다.');
+  //   },
+  // });
 
   const onSubmit = (data: TStudyApplySchema) => {
     console.log('Study Apply Data:', data);

@@ -1,5 +1,5 @@
 import { Modal } from '@/components/ui/Modal';
-import { Button } from './Button';
+import { Button } from './button';
 import CloseSvg from '@/assets/icons/close.svg';
 
 interface StampConfirmModalProps {

@@ -1,32 +1,30 @@
 import { Button } from '@/components/ui/button';
-import { Logo } from '@/components/ui/Logo';
 import { Form } from '@/components/ui/Form';
 import { myProfileSchema, type TProfile } from '../validators/auth';
-import { SignUpEtcForm } from '../components/SignUpEtcForm';
 import { useNavigate } from 'react-router-dom';
-import { useSignUpStore } from '@/store/useSignUpStore';
-import { useMutation } from '@tanstack/react-query';
-import { profileUpdateApi, signUpApi } from '@/lib/api/index';
-import { AxiosError } from 'axios';
+// import { useSignUpStore } from '@/store/useSignUpStore';
+// import { useMutation } from '@tanstack/react-query';
+// import { profileUpdateApi } from '@/lib/api/index';
+// import { AxiosError } from 'axios';
 import UserProfileSvg from '@/assets/icons/userProfile.svg';
 import { AuthHeader } from '@/components/layout/AuthHeader';
 import { ProfileForm } from '../components/ProfileForm';
 
 export function MyPage() {
   const navigate = useNavigate();
-  const { formData, setFormData, reset } = useSignUpStore();
+  // const { reset } = useSignUpStore();
 
-  const { mutate: submitProfileUpdate } = useMutation({
-    mutationFn: profileUpdateApi,
-    onSuccess: () => {
-      alert('프로필 수정이 완료되었습니다.');
-      reset();
-    },
-    onError: (error: unknown) => {
-      const err = error as AxiosError<{ message?: string }>;
-      alert(err.response?.data?.message || '회원가입 실패');
-    },
-  });
+  // const { mutate: submitProfileUpdate } = useMutation({
+  //   mutationFn: profileUpdateApi,
+  //   onSuccess: () => {
+  //     alert('프로필 수정이 완료되었습니다.');
+  //     reset();
+  //   },
+  //   onError: (error: unknown) => {
+  //     const err = error as AxiosError<{ message?: string }>;
+  //     alert(err.response?.data?.message || '회원가입 실패');
+  //   },
+  // });
   const onProfileSubmit = (data: TProfile) => {
     console.log('TProfileSchema:', data);
     // submitProfileUpdate(data);

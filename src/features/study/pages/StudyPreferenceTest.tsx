@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import BannerSvg from '@/assets/studyPreferenceBanner.svg';
 import { AuthHeader } from '@/components/layout/AuthHeader';

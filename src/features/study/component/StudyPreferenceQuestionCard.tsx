@@ -1,15 +1,14 @@
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
-export type StudyPreferenceQuestionCard = {
+export type StudyPreferenceQuestion = {
   id: number;
   question: string;
   options: string[];
 };
 
 interface StudyPreferenceTestCardsProps {
-  q: StudyPreferenceQuestionCard;
+  q: StudyPreferenceQuestion;
   selectedIndex: number | null;
   onSelect: (optionIndex: number) => void;
 }

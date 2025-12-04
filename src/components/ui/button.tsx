@@ -1,5 +1,4 @@
 import { forwardRef, type ComponentProps, type ReactNode } from 'react';
-import { Slot } from '@radix-ui/react-slot';
 
 type ButtonVariant =
   | 'primary'

@@ -7,7 +7,7 @@ interface StudyFinishModalProps {
   onClose: () => void;
   onConfirm: () => void;
 }
-export function StudyDetailModal({ isOpen, badgeType, onClose, onConfirm }: StudyFinishModalProps) {
+export function StudyDetailModal({ isOpen, badgeType, onClose }: StudyFinishModalProps) {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-bk/50" onClick={onClose}>

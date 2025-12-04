@@ -1,13 +1,13 @@
 import { Logo } from '@/components/ui/Logo';
 import { AuthHeader } from '@/components/layout/AuthHeader';
 import { Link, useNavigate } from 'react-router-dom';
-import type { AxiosError } from 'axios';
-import { loginApi } from '@/lib/api/index';
-import { useMutation } from '@tanstack/react-query';
+// import type { AxiosError } from 'axios';
+// import { loginApi } from '@/lib/api/index';
+// import { useMutation } from '@tanstack/react-query';
 import { loginSchema, type TLoginSchema } from '../validators/auth';
 import { LoginForm } from '../components/LoginForm';
 import { Form } from '@/components/ui/Form';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { StampConfirmModal } from '@/components/ui/StampConfirmModal';
 import { useAuthStore } from '@/store/authStore';
@@ -17,22 +17,22 @@ export function LoginPage() {
   const auth = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false); // 웰컴 스탬프 모달 상태
 
-  const { mutate: submitLogin } = useMutation({
-    mutationFn: loginApi,
-    onSuccess: (res) => {
-      auth.login(res.data.nickname, true);
-      alert('로그인이 완료되었습니다.');
-      const isFirstLogin = res.data?.isFirstLogin ?? true; // 실제로는 서버 응답을 통해 확인
-      // 만약 처음 로그인한 사람이라면 웰컴 스탬프 모달 띄우기
-      if (isFirstLogin) {
-        setIsModalOpen(true);
-      }
-      navigate('/home');
-    },
-    onError: (error: AxiosError<{ message: string }>) => {
-      alert(error.response?.data?.message || '로그인에 실패했습니다.');
-    },
-  });
+  // const { mutate: submitLogin } = useMutation({
+  //   mutationFn: loginApi,
+  //   onSuccess: (res) => {
+  //     auth.login(res.data.nickname, true);
+  //     alert('로그인이 완료되었습니다.');
+  //     const isFirstLogin = res.data?.isFirstLogin ?? true; // 실제로는 서버 응답을 통해 확인
+  //     // 만약 처음 로그인한 사람이라면 웰컴 스탬프 모달 띄우기
+  //     if (isFirstLogin) {
+  //       setIsModalOpen(true);
+  //     }
+  //     navigate('/home');
+  //   },
+  //   onError: (error: AxiosError<{ message: string }>) => {
+  //     alert(error.response?.data?.message || '로그인에 실패했습니다.');
+  //   },
+  // });
 
   const onSubmit = (data: TLoginSchema) => {
     console.log('Login Data:', data);

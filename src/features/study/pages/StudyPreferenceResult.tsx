@@ -2,7 +2,7 @@ import { AuthHeader } from '@/components/layout/AuthHeader';
 import CarefulSong from '@/assets/preferences/carefulSong.svg';
 import Desc1 from '@/assets/preferences/carefulSongDesc1.svg';
 import Desc2 from '@/assets/preferences/carefulSongDesc2.svg';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 
 export function StudyPreferenceResult() {
   return (

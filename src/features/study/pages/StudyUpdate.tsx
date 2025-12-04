@@ -1,14 +1,14 @@
 import { AuthHeader } from '@/components/layout/AuthHeader';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/Form';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { studyCreateSchema, type TStudySchema } from '../validators/study';
 import { FormField } from '@/components/ui/FormField';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { studyUpdateApi, fetchStudyById } from '@/lib/api';
-import type { AxiosError } from 'axios';
+// import { useMutation, useQuery } from '@tanstack/react-query';
+// import { studyUpdateApi, fetchStudyById } from '@/lib/api';
+// import type { AxiosError } from 'axios';
 import StateOnSvg from '@/assets/icons/stateOn.svg';
 import StateOffSvg from '@/assets/icons/stateOff.svg';
 
@@ -70,25 +70,25 @@ export function StudyUpdate() {
     }
   }, [studyData]);
 
-  const { mutate: updateStudy } = useMutation({
-    mutationFn: ({
-      id,
-      isRecruiting,
-      data,
-    }: {
-      id: number;
-      isRecruiting: boolean;
-      data: TStudySchema;
-    }) => studyUpdateApi(id, { ...data, isRecruiting }),
-    onSuccess: (res) => {
-      alert('스터디가 수정되었습니다.');
-      console.log(res);
-      navigate(`/study/detail/${studyId}`);
-    },
-    onError: (error: AxiosError<{ message: string }>) => {
-      alert(error.response?.data?.message || '스터디 수정에 실패했습니다.');
-    },
-  });
+  // const { mutate: updateStudy } = useMutation({
+  //   mutationFn: ({
+  //     id,
+  //     isRecruiting,
+  //     data,
+  //   }: {
+  //     id: number;
+  //     isRecruiting: boolean;
+  //     data: TStudySchema;
+  //   }) => studyUpdateApi(id, { ...data, isRecruiting }),
+  //   onSuccess: (res) => {
+  //     alert('스터디가 수정되었습니다.');
+  //     console.log(res);
+  //     navigate(`/study/detail/${studyId}`);
+  //   },
+  //   onError: (error: AxiosError<{ message: string }>) => {
+  //     alert(error.response?.data?.message || '스터디 수정에 실패했습니다.');
+  //   },
+  // });
 
   const onSubmit = (data: TStudySchema) => {
     if (!studyId) return;

@@ -1,6 +1,6 @@
-import { Modal } from '@/components/ui/modal';
-import { Button } from './Button';
+import { Button } from './button';
 import CloseSvg from '@/assets/icons/close.svg';
+import { Modal } from './Modal';
 
 interface LoginPromptModalProps {
   isOpen: boolean;

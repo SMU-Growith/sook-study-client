@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/store/authStore';
+// import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
 import StudyLeader from '@/assets/studyLeader.svg';
 import StudyMember from '@/assets/studyMember.svg';
@@ -23,8 +23,7 @@ interface MyStudyCardProps {
   onCardClick?: () => void;
 }
 
-export function MyStudyCard({ study, onCardClick }: MyStudyCardProps) {
-  const { isLoggedIn } = useAuthStore();
+export function MyStudyCard({ study }: MyStudyCardProps) {
   const navigate = useNavigate();
 
   const handleCardClick = () => {

@@ -1,5 +1,3 @@
-import { useAuthStore } from '@/store/authStore';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/Badge';
 import StudyLeader from '@/assets/studyLeader.svg';
@@ -7,8 +5,6 @@ import StudyMember from '@/assets/studyMember.svg';
 import eyeSvg from '@/assets/eye.svg';
 import { Button } from '@/components/ui/button';
 import { StudyLogReadModal } from './StudyLogReadModal';
-import { StudyLogCreateModal } from './StudyLogCreateModal';
-import { myStudyLogListData } from '../studyLog';
 
 export type MyStudyLog = {
   id: number;
@@ -41,18 +37,10 @@ interface MyStudyLogProps {
 
 export function StudyLogCard({
   sessionId,
-  logId,
   studyLog,
-  isEmpty,
-  sessionTitle,
 }: MyStudyLogProps) {
-  const auth = useAuthStore();
-  const { isLoggedIn } = useAuthStore();
-  const navigate = useNavigate();
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [, setIsUpdateModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
-  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
-  const [logs, setLogs] = useState(myStudyLogListData);
 
   const handleReadStudyLog = () => {
     setIsReadModalOpen(true);

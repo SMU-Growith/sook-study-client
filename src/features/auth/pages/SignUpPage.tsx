@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/Logo';
 import { Badge } from '@/components/ui/Badge';
 import { useState } from 'react';

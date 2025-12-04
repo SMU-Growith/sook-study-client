@@ -2,7 +2,7 @@ import { Modal } from '@/components/ui/Modal';
 import CloseSvg from '@/assets/icons/close.svg';
 import { InputField } from '@/components/ui/InputField';
 import { TextAreaField } from '@/components/ui/TextAreaField';
-import { useRef, useState, type ChangeEvent } from 'react';
+import { useState } from 'react';
 import HeartReactionSvg from '@/assets/reactions/heartReaction.svg';
 import LikeReactionSvg from '@/assets/reactions/likeReaction.svg';
 import QuestionReactionSvg from '@/assets/reactions/questionReaction.svg';
@@ -32,7 +32,6 @@ interface StudyLogReadModalProps {
 export function StudyLogReadModal({
   isOpen,
   onClose,
-  onConfirm,
   sessionId,
   logData,
 }: StudyLogReadModalProps) {

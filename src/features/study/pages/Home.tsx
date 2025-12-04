@@ -4,7 +4,7 @@ import { SideBar } from '@/components/ui/SideBar';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import BannerSvg from '@/assets/studyPreferenceTestBanner.svg';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { HomeStudy } from '../component/HomeStudy';
 

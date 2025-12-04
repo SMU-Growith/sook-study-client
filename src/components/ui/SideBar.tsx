@@ -1,4 +1,3 @@
-import { Button } from './Button';
 import { useLocation, useNavigate } from 'react-router';
 
 export function SideBar() {

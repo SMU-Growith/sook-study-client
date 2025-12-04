@@ -1,7 +1,6 @@
 import { AuthHeader } from '@/components/layout/AuthHeader';
 import { SideBar } from '@/components/ui/SideBar';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { matchingStudiesData } from '../studyMatchIng';
 import { StudyCard, type Study } from '@/components/ui/StudyCard';
 import { matchedStudiesData } from '../studyMatchDone';
@@ -12,7 +11,7 @@ import ArrowBottomSvg from '@/assets/arrow/arrowBottom.svg';
 import BookmarkSvg from '@/assets/icons/bookmark.svg';
 import BookmarkFillSvg from '@/assets/icons/bookmarkFill.svg';
 import SearchSvg from '@/assets/icons/search.svg';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { Tag } from '@/components/ui/Tag';
 import { DropdownList } from '@/components/ui/DropdownList';
@@ -22,10 +21,8 @@ type TopCategory = keyof typeof CATEGORIES;
 type SubCategory = keyof (typeof CATEGORIES)['분야'];
 
 export function StudyMatch() {
-  const navigate = useNavigate();
-
   const [studyStatus, setStudyStatus] = useState('전체');
-  const [allStudies, setAllStudies] = useState<Study[]>([]);
+  const [, setAllStudies] = useState<Study[]>([]); 
   const [isBookmarkOpen, setIsBookmarkOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
@@ -33,7 +30,6 @@ export function StudyMatch() {
   const [activeTopCategory, setActiveTopCategory] = useState<TopCategory>('분야');
   const [activeSubCategory, setActiveSubCategory] = useState<SubCategory>('학업');
 
-  const TOTAL_PAGES = 5; // [lf] 총 페이지 수 받아오기
   const pageNumbers = [1, 2, 3, 4, 5]; // [lf] 페이지 번호 배열
   const [page, setPage] = useState(1); // [lf] 현재 페이지
 

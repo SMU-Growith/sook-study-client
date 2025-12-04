@@ -1,18 +1,12 @@
 import { AuthHeader } from '@/components/layout/AuthHeader';
 import UserProfileSvg from '@/assets/icons/userProfile.svg';
 import BadgeWelcomOn from '@/assets/badges/badgeWelcomeOn.svg';
-import BadgeWelcomOff from '@/assets/badges/badgeWelcomeOff.svg';
 
 import BadgeLeaderOn from '@/assets/badges/badgeLeaderOn.svg';
-import BadgeLeaderOff from '@/assets/badges/badgeLeaderOff.svg';
 import BadgeWriteOn from '@/assets/badges/badgeWriteOn.svg';
-import BadgeWriteOff from '@/assets/badges/badgeWriteOff.svg';
 import BadgeCheerOn from '@/assets/badges/badgeCheerOn.svg';
-import BadgeCheerOff from '@/assets/badges/badgeCheerOff.svg';
 import BadgeSuperOn from '@/assets/badges/badgeSuperOn.svg';
-import BadgeSuperOff from '@/assets/badges/badgeSuperOff.svg';
 import { useState } from 'react';
-import { set } from 'zod';
 import { StudyDetailModal } from '../components/StudyDetailModal';
 
 export function Stamp() {

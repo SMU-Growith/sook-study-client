@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
-import { AxiosError } from 'axios';
 
-import { requestEmailCodeApi, checkEmailCodeApi } from '@/lib/api';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/FormField';
 import { type TSignUpStep1Schema } from '@/features/auth/validators/auth';
 
@@ -14,8 +11,6 @@ interface SignUpFormProps {
 
 export function SignUpForm({ onVerified }: SignUpFormProps) {
   const {
-    getValues,
-    setError,
     watch,
     formState: { errors },
   } = useFormContext<TSignUpStep1Schema>();
@@ -26,44 +21,44 @@ export function SignUpForm({ onVerified }: SignUpFormProps) {
   const [isCodeSent, setIsCodeSent] = useState(false);
 
   // 인증 코드 요청 뮤테이션
-  const { mutate: sendCode } = useMutation({
-    mutationFn: requestEmailCodeApi,
-    onSuccess: () => {
-      setIsCodeSent(true);
-      setTimer(300);
-      alert('인증 코드가 발송되었습니다.');
-    },
-    onError: (error: AxiosError<{ message: string }>) => {
-      console.log(error);
-      alert(error.response?.data?.message || '인증 코드 발송에 실패했습니다.');
-    },
-  });
+  // const { mutate: sendCode } = useMutation({
+  //   mutationFn: requestEmailCodeApi,
+  //   onSuccess: () => {
+  //     setIsCodeSent(true);
+  //     setTimer(300);
+  //     alert('인증 코드가 발송되었습니다.');
+  //   },
+  //   onError: (error: AxiosError<{ message: string }>) => {
+  //     console.log(error);
+  //     alert(error.response?.data?.message || '인증 코드 발송에 실패했습니다.');
+  //   },
+  // });
 
   // 인증 코드 확인 뮤테이션
-  const { mutate: verifyCode } = useMutation({
-    mutationFn: checkEmailCodeApi,
-    onSuccess: () => {
-      onVerified(true);
-      alert('이메일 인증이 완료되었습니다.');
-    },
-    onError: (error: AxiosError<{ message: string }>) => {
-      console.log(error);
-      setError('verificationCode', {
-        message: error.response?.data?.message || '인증 코드가 올바르지 않습니다.',
-      });
-    },
-  });
+  // const { mutate: verifyCode } = useMutation({
+  //   mutationFn: checkEmailCodeApi,
+  //   onSuccess: () => {
+  //     onVerified(true);
+  //     alert('이메일 인증이 완료되었습니다.');
+  //   },
+  //   onError: (error: AxiosError<{ message: string }>) => {
+  //     console.log(error);
+  //     setError('verificationCode', {
+  //       message: error.response?.data?.message || '인증 코드가 올바르지 않습니다.',
+  //     });
+  //   },
+  // });
 
   const handleRequestCode = () => {
-    const email = getValues('email');
+    // const email = getValues('email');
     // sendCode(email); // 나중에 주석해제
     setIsCodeSent(true); // 나중에 삭제
     setTimer(300);
   };
 
   const handleVerifyCode = () => {
-    const email = getValues('email');
-    const verificationCode = getValues('verificationCode');
+    // const email = getValues('email');
+    // const verificationCode = getValues('verificationCode');
     // verifyCode({ email, verificationCode }); // 나중에 주석해제
     onVerified(true); // 나중에 삭제
   };

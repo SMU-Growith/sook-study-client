@@ -1,6 +1,6 @@
 import { Modal } from '@/components/ui/Modal';
 import CloseSvg from '@/assets/icons/close.svg';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { InputField } from '@/components/ui/InputField';
 
 interface StudySessionCreateModalProps {

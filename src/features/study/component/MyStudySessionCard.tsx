@@ -1,6 +1,6 @@
-import { useAuthStore } from '@/store/authStore';
+// import { useAuthStore } from '@/store/authStore';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button } from '../../../components/ui/Button';
+import { Button } from '../../../components/ui/button';
 import BurgerIconSvg from '@/assets/burgerIcon.svg';
 import People from '@/assets/people.svg';
 import { useState } from 'react';
@@ -20,9 +20,8 @@ interface MyStudySessionCardProps {
   studySession: MyStudySession;
 }
 
-export function StudySessionCard({ id, isLeader, studySession }: MyStudySessionCardProps) {
+export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
   const { studyId } = useParams<{ studyId: string }>();
-  const { isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
   // 버거 아이콘 클릭되었는지 상태 관리
   const [isBurgerIconClicked, setIsBurgerIconClicked] = useState(false);

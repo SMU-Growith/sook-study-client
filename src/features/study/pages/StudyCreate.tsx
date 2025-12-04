@@ -1,14 +1,14 @@
 import { AuthHeader } from '@/components/layout/AuthHeader';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/Form';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { studyCreateSchema, type TStudySchema } from '../validators/study';
 import { FormField } from '@/components/ui/FormField';
-import { useMutation } from '@tanstack/react-query';
-import { studyCreateApi } from '@/lib/api';
-import type { AxiosError } from 'axios';
+// import { useMutation } from '@tanstack/react-query';
+// import { studyCreateApi } from '@/lib/api';
+// import type { AxiosError } from 'axios';
 
 // 스터디 분야, 스터디 성향, 진행 방식, 연락 방식 드롭다운 옵션
 const STUDY_FIELD_OPTIONS = ['학업', '언어', '취업/커리어', '자기계발'] as const;
@@ -35,16 +35,16 @@ export function StudyCreate() {
 
   const [activeRuleTags, setActiveRuleTags] = useState<string[]>([]);
 
-  const { mutate: submitStudy } = useMutation({
-    mutationFn: studyCreateApi,
-    onSuccess: (res) => {
-      alert('스터디가 생성되었습니다.');
-      navigate('/study/match');
-    },
-    onError: (error: AxiosError<{ message: string }>) => {
-      alert(error.response?.data?.message || '스터디 생성에 실패했습니다.');
-    },
-  });
+  // const { mutate: submitStudy } = useMutation({
+  //   mutationFn: studyCreateApi,
+  //   onSuccess: (res) => {
+  //     alert('스터디가 생성되었습니다.');
+  //     navigate('/study/match');
+  //   },
+  //   onError: (error: AxiosError<{ message: string }>) => {
+  //     alert(error.response?.data?.message || '스터디 생성에 실패했습니다.');
+  //   },
+  // });
 
   const onSubmit = (data: TStudySchema) => {
     console.log('Study Form Data:', data);
