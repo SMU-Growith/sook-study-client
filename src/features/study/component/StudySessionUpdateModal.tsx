@@ -1,7 +1,8 @@
 import { Modal } from '@/components/ui/Modal';
 import CloseSvg from '@/assets/icons/close.svg';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { InputField } from '@/components/ui/InputField';
+import { useEffect, useState } from 'react';
 
 interface StudySessionUpdateModalProps {
   isOpen: boolean;
@@ -17,6 +18,12 @@ export function StudySessionUpdateModal({
   currSessionId,
   currTitle,
 }: StudySessionUpdateModalProps) {
+  const [title, setTitle] = useState(currTitle || '');
+
+  useEffect(() => {
+    setTitle(currTitle || '');
+  }, [currTitle]);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[550px]">
       <div className="flex flex-col text-left relative pt-4">
@@ -26,11 +33,7 @@ export function StudySessionUpdateModal({
         <h3 className="heading-3 mb-2">스터디 일지 수정하기</h3>
         <hr className="border-t-3 border-gray-100 mb-[22px]" />
         <p className="text-gray-300 text-body-1-semibold mb-[22px]">{currSessionId}회차</p>
-        <InputField
-          label="스터디 일지"
-          placeholder="이번 회차에는 어떤 스터디 일지를 작성할 지 입력해주세요."
-          value={currTitle}
-        />
+        <InputField label="스터디 일지" value={title} onChange={(e) => setTitle(e.target.value)} />
         <div className="flex gap-[10px] mt-[12px] mb-[12px]">
           <Button variant="default" onClick={onClose}>
             닫기

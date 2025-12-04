@@ -45,3 +45,18 @@ export const myInfoSchema = z.object({
   phoneNumber: z.string(),
 });
 export type TMyInfo = z.infer<typeof myInfoSchema>;
+
+// 프로필
+export const myProfileSchema = z.object({
+  id: z.string(),
+  nickname: z.string().min(1, '닉네임을 입력해주세요.').max(15, '닉네임은 15자 이하여야 합니다.'),
+  studentStatus: z.string().nonempty('재학 상태를 선택해주세요.'),
+  major: z.string().nonempty('전공을 선택해주세요.'),
+  phoneNumber: z
+    .string()
+    .nonempty('전화번호를 입력해주세요.')
+    .regex(/^010-\d{4}-\d{4}$/, '올바른 전화번호 형식이 아닙니다. (010-1234-5678)'),
+  studyPreferences: z.array(z.string()).min(1, '최소 하나 이상의 스터디 성향을 선택해주세요.'),
+  notificationsEnabled: z.boolean(),
+});
+export type TProfile = z.infer<typeof myProfileSchema>;

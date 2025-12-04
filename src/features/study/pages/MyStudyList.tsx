@@ -2,7 +2,7 @@ import { AuthHeader } from '@/components/layout/AuthHeader';
 import { SideBar } from '@/components/ui/SideBar';
 import { useState } from 'react';
 import { myStudiesData } from '../myStudyMatch';
-import { MyStudyCard } from '@/features/study/component/MyStudyCard';
+import { MyStudyCard } from '../component/MyStudyCard';
 
 export function MyStudyList() {
   const [studyStatus, setStudyStatus] = useState('진행중');
@@ -29,9 +29,11 @@ export function MyStudyList() {
               ))}
             </div>
             <div className="grid grid-cols-2 gap-5">
-              {myStudiesData.map((study) => (
-                <MyStudyCard key={study.id} study={study} />
-              ))}
+              {myStudiesData
+                .filter((study) => study.status === studyStatus)
+                .map((study) => (
+                  <MyStudyCard key={study.id} study={study} />
+                ))}
             </div>
           </div>
         </div>

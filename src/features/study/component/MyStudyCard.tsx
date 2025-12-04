@@ -1,12 +1,12 @@
-import { Badge } from '../../../components/ui/Badge';
-import { Tag } from '../../../components/ui/Tag';
 import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
 import StudyLeader from '@/assets/studyLeader.svg';
 import StudyMember from '@/assets/studyMember.svg';
 import Calendar from '@/assets/calendar.svg';
 import People from '@/assets/people.svg';
-import { Button } from '../../../components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Tag } from '@/components/ui/Tag';
+import { Button } from '@/components/ui/button';
 
 export interface MyStudy {
   id: number;
@@ -28,17 +28,13 @@ export function MyStudyCard({ study, onCardClick }: MyStudyCardProps) {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    if (isLoggedIn) {
-      navigate(`/study/my/${study.id}`);
-    } else {
-      onCardClick?.();
-    }
+    navigate(`/study/my/${study.id}`);
   };
 
   return (
     <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
       <div className="flex flex-col gap-y-[10px]">
-        <div className="flex flex-col gap-y-5" onClick={handleCardClick}>
+        <div className="flex flex-col gap-y-5">
           <div>
             <Badge
               variant={study.role === '스터디원' ? 'yellow' : 'purple'}
@@ -64,7 +60,7 @@ export function MyStudyCard({ study, onCardClick }: MyStudyCardProps) {
               <span className="text-body-2-semibold text-gray-400">{study.studyDays}일째</span>
             </div>
           </div>
-          <Button variant="solid">
+          <Button variant="solid" onClick={handleCardClick}>
             {study.status == '진행중' ? '스터디 보기' : '스터디 참여하기'}
           </Button>
         </div>

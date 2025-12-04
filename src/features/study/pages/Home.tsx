@@ -3,7 +3,7 @@ import { LoginPromptModal } from '@/components/ui/LoginPromptModal';
 import { SideBar } from '@/components/ui/SideBar';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
-import BannerSvg from '@/assets/banner.svg';
+import BannerSvg from '@/assets/studyPreferenceTestBanner.svg';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/authStore';
 import { HomeStudy } from '../component/HomeStudy';
@@ -21,7 +21,7 @@ export function Home() {
       <AuthHeader />
       <SideBar />
       <main className="flex flex-col flex-1 ml-[160px] mt-[88px] px-20 py-10 gap-y-10 overflow-y-auto">
-        <Link to="/personality-test" className="cursor-pointer">
+        <Link to="/study/preference-test" className="cursor-pointer">
           <img src={BannerSvg} alt="배너 이미지" className="w-full h-auto" />
         </Link>
         <div className="space-y-10">

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/Badge';
 import StudyLeader from '@/assets/studyLeader.svg';
 import StudyMember from '@/assets/studyMember.svg';
 import eyeSvg from '@/assets/eye.svg';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { StudyLogReadModal } from './StudyLogReadModal';
 import { StudyLogCreateModal } from './StudyLogCreateModal';
 import { myStudyLogListData } from '../studyLog';
@@ -52,6 +52,7 @@ export function StudyLogCard({
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
+  const [logs, setLogs] = useState(myStudyLogListData);
 
   const handleReadStudyLog = () => {
     setIsReadModalOpen(true);
@@ -61,49 +62,6 @@ export function StudyLogCard({
     setIsUpdateModalOpen(true);
   };
 
-  const handleCreateStudyLog = () => {
-    const newLog = {
-      id: myStudyLogListData.length + 1,
-      title: '오늘의 회고',
-      role: '스터디원',
-      writerNickname: '피그마송',
-      viewCount: 0,
-      content: '집중이 잘 안 되었던 이유와 내일 개선하고 싶은 점을 적었습니다.',
-      link: undefined,
-      attachments: [],
-      likeCount: 0,
-      heartCount: 0,
-      laughCount: 0,
-      surpriseCount: 0,
-      questionCount: 0,
-    };
-
-    myStudyLogListData.push(newLog);
-    setIsWriteModalOpen(false);
-    auth.setHasWrittenLog(true);
-  };
-
-  if (isEmpty) {
-    return (
-      <div className="w-full border-2 border-dashed border-gray-200 rounded-[20px] px-[18px] py-10 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-5">
-          <p className="text-body-1-semibold text-gray-300">아직 스터디 일지 작성을 안하셨네요!</p>
-          <Button variant="solid" size="lg" onClick={() => setIsWriteModalOpen(true)}>
-            스터디 일지 작성하기
-          </Button>
-        </div>
-        <StudyLogCreateModal
-          isOpen={isWriteModalOpen}
-          onClose={() => {
-            setIsWriteModalOpen(false);
-          }}
-          onConfirm={handleCreateStudyLog}
-          nextSessionId={Number(sessionId)}
-          sessionTitle={sessionTitle || '스터디 한 것들 정리'}
-        />
-      </div>
-    );
-  }
   return (
     <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
       <div className="flex flex-col gap-y-[10px]">

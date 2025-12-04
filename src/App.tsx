@@ -11,6 +11,11 @@ import { StudyRead } from './features/study/pages/StudyRead';
 import { MyStudyList } from './features/study/pages/MyStudyList';
 import { MyStudyLog } from './features/study/pages/StudyLog';
 import { MyStudySession } from './features/study/pages/StudySession';
+import { MyPage } from './features/auth/pages/MyPage';
+import { StudyPreferenceTest } from './features/study/pages/StudyPreferenceTest';
+import { StudyPreferenceQuestion } from './features/study/pages/StudyPreferenceQuestion';
+import { StudyPreferenceResult } from './features/study/pages/StudyPreferenceResult';
+import { Stamp } from './features/auth/pages/Stamp';
 
 const queryClient = new QueryClient();
 
@@ -29,6 +34,14 @@ function App() {
           <Route path="/study/my" element={<MyStudyList />} />
           <Route path="/study/my/:studyId" element={<MyStudySession />} />
           <Route path="/study/my/:studyId/:sessionId" element={<MyStudyLog />} />
+          <Route path="/my-page" element={<MyPage />} />
+          <Route path="/study/preference-test" element={<StudyPreferenceTest />} />
+          <Route
+            path="/study/preference-test/question/:questionId"
+            element={<StudyPreferenceQuestion />}
+          />
+          <Route path="/study/preference-test/result" element={<StudyPreferenceResult />} />
+          <Route path="/my-page/stamp" element={<Stamp />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
