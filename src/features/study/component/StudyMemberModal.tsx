@@ -9,6 +9,9 @@ import StudyLeaderSvg from "@/assets/studyLeader.svg";
 import StudyMemberSvg from "@/assets/studyMember.svg";
 import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import type { StudyMember } from "../api/studyType";
+import CheckboxOff from "@/assets/checkBoxOff.svg";
+import CheckboxOn from "@/assets/checkBoxOn.svg";
+import { is } from "zod/v4/locales";
 
 interface StudyMemberModalProps {
   isOpen: boolean;
@@ -33,10 +36,10 @@ export function StudyMemberModal({
   const handleMemberClick = (member: StudyMember) => {
     setSelectedMember(member);
   };
-
-  useEffect(() => {
-    console.log(members);
-  }, [isOpen]);
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [newLeaderMemberId, setNewLeaderMemberId] = useState<number | null>(
+    null
+  );
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[550px]">
@@ -57,6 +60,13 @@ export function StudyMemberModal({
           </div>
         </div>
         <hr className="border-t-3 border-gray-100 mt-2 mb-2" />
+        {isSelectMode ? (
+          <p className="text-body-1-semibold mt-1 mb-4">
+            스터디원 중 누구와 역할을 바꿀까요?
+          </p>
+        ) : (
+          ""
+        )}
         <div className="flex gap-2">
           <div className="flex flex-col gap-[10px]">
             <Badge variant="yellow" icon={StudyMemberSvg}>
@@ -71,6 +81,20 @@ export function StudyMemberModal({
                     onClick={() => handleMemberClick(member)}
                   >
                     <div className="flex items-center">
+                      {isSelectMode ? (
+                        <img
+                          src={
+                            newLeaderMemberId === member.userId
+                              ? CheckboxOn
+                              : CheckboxOff
+                          }
+                          alt="Checkbox"
+                          className="w-5 h-5 mr-2"
+                          onClick={() => setNewLeaderMemberId(member.userId)}
+                        />
+                      ) : (
+                        ""
+                      )}
                       <img src={UserProfileSvg} alt="User Profile" />
                       <span className="text-body-2-semibold text-gray-400 ml-1">
                         {member.nickname}
@@ -79,8 +103,8 @@ export function StudyMemberModal({
                   </button>
                 ))}
               </div>
-              <div className="flex-1 bg-gray-50 px-5 py-5 rounded-[14px]">
-                {selectedMember ? (
+              {!isSelectMode && selectedMember ? (
+                <div className="flex-1 bg-gray-50 px-5 py-5 rounded-[14px]">
                   <div className="flex flex-col gap-3">
                     <div>
                       <p className="text-body-2-semibold text-bk mb-1">
@@ -125,12 +149,10 @@ export function StudyMemberModal({
                       </p>
                     </div>
                   </div>
-                ) : (
-                  <p className="text-gray-200">
-                    왼쪽에서 멤버를 선택하면 상세 정보가 표시됩니다.
-                  </p>
-                )}
-              </div>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </div>
@@ -138,13 +160,23 @@ export function StudyMemberModal({
           <Button variant="default" onClick={onClose}>
             닫기
           </Button>
-          <Button
-            variant="primary"
-            className="flex-1"
-            onClick={() => onChangeRole(1)}
-          >
-            역할 바꾸기
-          </Button>
+          {!isSelectMode ? (
+            <Button
+              variant="primary"
+              className="flex-1"
+              onClick={() => setIsSelectMode(true)}
+            >
+              역할 바꾸기
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              className="flex-1"
+              onClick={() => onChangeRole(newLeaderMemberId)}
+            >
+              역할 바꾸기
+            </Button>
+          )}
         </div>
       </div>
     </Modal>

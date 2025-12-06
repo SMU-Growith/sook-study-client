@@ -82,6 +82,7 @@ export function MyStudySession() {
   const changeMemberRole = (newLeaderMemberId: number) => {
     // 스터디 멤버 역할 변경 로직 구현
     // changeRole({ studyId: Number(studyId), memberId: newLeaderMemberId });
+    console.log("새로운 스터디장 멤버 ID:", newLeaderMemberId);
     setIsMemberModalOpen(false);
   };
 
