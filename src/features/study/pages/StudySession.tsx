@@ -1,34 +1,47 @@
-import { AuthHeader } from '@/components/layout/AuthHeader';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/button';
-import SettingsSvg from '@/assets/settings.svg';
-import StudyLeader from '@/assets/studyLeader.svg';
-import StudyMember from '@/assets/studyMember.svg';
-import UserProfileSvg from '@/assets/icons/userProfile.svg';
-import BlueCircleSvg from '@/assets/blueCircle.svg';
-import { myStudySessionListData } from '../studySession';
-import PlusSvg from '@/assets/icons/plus.svg';
-import { useState } from 'react';
-import { useAuthStore } from '@/store/authStore';
-import { StudySessionCreateModal } from '../component/StudySessionCreateModal';
-import { StudySessionCard } from '@/features/study/component/MyStudySessionCard';
-import { StudyFinishModal } from '../component/StudyFinishModal';
-import { StudyOutModal } from '../component/StudyOutModal';
-import { useNavigate } from 'react-router';
+import { AuthHeader } from "@/components/layout/AuthHeader";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/button";
+import SettingsSvg from "@/assets/settings.svg";
+import StudyLeaderSvg from "@/assets/studyLeader.svg";
+import StudyMemberSvg from "@/assets/studyMember.svg";
+import UserProfileSvg from "@/assets/icons/userProfile.svg";
+import BlueCircleSvg from "@/assets/blueCircle.svg";
+import { myStudySessionListData } from "../studySession";
+import PlusSvg from "@/assets/icons/plus.svg";
+import { useState } from "react";
+import { useAuthStore } from "@/store/authStore";
+import { StudySessionCreateModal } from "../component/StudySessionCreateModal";
+import { StudySessionCard } from "@/features/study/component/MyStudySessionCard";
+import { StudyFinishModal } from "../component/StudyFinishModal";
+import { StudyOutModal } from "../component/StudyOutModal";
+import { useNavigate, useParams } from "react-router";
+import { StudyMemberModal } from "../component/StudyMemberModal";
+import {
+  fetchStudyById,
+  fetchStudyMembersApi,
+  studyChangeLeaderApi,
+} from "../api/study";
+import type { AxiosError } from "axios";
+import type { ApiResponse } from "@/lib/api";
+import type { Study } from "@/components/ui/StudyCard";
+import type { StudyMember } from "../api/studyType";
+import { defaultStudyMembers } from "../studyMembers";
 
 export function MyStudySession() {
   const auth = useAuthStore();
+  const { studyId } = useParams<{ studyId: string }>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStudyFinishModalOpen, setIsStudyFinishModalOpen] = useState(false);
   const [isStudyOutModalOpen, setIsStudyOutModalOpen] = useState(false);
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [sessions, setSessions] = useState(myStudySessionListData);
 
   const handleCreateStudySession = () => {
     const newSession = {
       id: myStudySessionListData.length + 1,
-      title: 'React 컴포넌트 아키텍처 분석하기',
+      title: "React 컴포넌트 아키텍처 분석하기",
       submittedMembers: 0,
-      status: '진행중',
+      status: "진행중",
     };
 
     setSessions([...sessions, newSession]);
@@ -36,6 +49,41 @@ export function MyStudySession() {
     // 스터디 일지 하나 추가하기
   };
   const navigate = useNavigate();
+
+  // 스터디 멤버 조회
+  // const { data: studyMember } = useQuery<ApiResponse<StudyMember[]>>({
+  //   queryKey: ['StudyMember', studyId],
+  //   queryFn: () => fetchStudyMembersApi(Number(studyId)),
+  //   enabled: !!studyId,
+  // });
+
+  // const members = StudyMember?.result || [];
+  const memberList = defaultStudyMembers;
+
+  const leader = memberList.find((m) => m.studyRole === "leader");
+  const members = memberList.filter((m) => m.studyRole === "member") ?? [];
+
+  // type ChangeLeaderVariables = { studyId: number; memberId: number };
+  // const { mutate: changeRole } = useMutation<
+  //   ApiResponse<Study[]>,               // 성공
+  //   AxiosError<ApiResponse<null>>,      // 실패
+  //   ChangeLeaderVariables
+  // >({
+  //   mutationFn: ({ studyId, memberId }) => studyChangeLeaderApi(studyId, memberId),
+  //   onSuccess: (res) => {
+  //     alert('역할이 변경되었습니다.');
+  //     // 필요하면 res.result 로 Study[] 접근 가능
+  //   },
+  //   onError: (error) => {
+  //     alert(error.response?.data?.message || '역할 변경에 실패했습니다.');
+  //   },
+  // });
+
+  const changeMemberRole = (newLeaderMemberId: number) => {
+    // 스터디 멤버 역할 변경 로직 구현
+    // changeRole({ studyId: Number(studyId), memberId: newLeaderMemberId });
+    setIsMemberModalOpen(false);
+  };
 
   return (
     <div className="flex h-screen bg-white w-full">
@@ -51,41 +99,49 @@ export function MyStudySession() {
           <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
             <div className="flex flex-col gap-y-[12px]">
               <div className="flex justify-between items-center">
-                <p className="text-body-1-semibold">스터디멤버</p>
-                {auth.isLeader && <img src={SettingsSvg} alt="설정 아이콘" />}
+                <p className="text-body-1-semibold">스터디 멤버</p>
+                {auth.isLeader && (
+                  <img
+                    src={SettingsSvg}
+                    alt="설정 아이콘"
+                    onClick={() => setIsMemberModalOpen(true)}
+                  />
+                )}
               </div>
               <hr className="border-t-3 border-gray-100" />
               <div className="flex gap-3">
-                <Badge variant="purple" icon={StudyLeader}>
+                <Badge variant="purple" icon={StudyLeaderSvg}>
                   스터디장
                 </Badge>
                 <div className="flex items-center">
                   <img src={UserProfileSvg} alt="User Profile" />
-                  <span className="text-body-2-semibold text-gray-400 ml-1">김눈송</span>
+                  <span className="text-body-2-semibold text-gray-400 ml-1">
+                    {leader?.nickname}
+                  </span>
                 </div>
               </div>
               <div className="flex flex-col gap-3">
-                <Badge variant="yellow" icon={StudyMember}>
+                <Badge variant="yellow" icon={StudyMemberSvg}>
                   스터디원
                 </Badge>
                 <div className="grid grid-cols-3 gap-3">
-                  {[
-                    '정민송이',
-                    '눈꽃송이',
-                    '행복송이',
-                    '하하송이',
-                    '송송파',
-                    '기쁨송',
-                    '코딩송',
-                    '화학송',
-                    '디자인송',
-                  ].map((studyMember) => (
-                    <div className="flex items-center">
+                  {members.map((member) => (
+                    <div className="flex items-center" key={member.userId}>
                       <img src={UserProfileSvg} alt="User Profile" />
-                      <span className="text-body-2-semibold text-gray-400 ml-1">{studyMember}</span>
+                      <span className="text-body-2-semibold text-gray-400 ml-1">
+                        {member?.nickname}
+                      </span>
                     </div>
                   ))}
                 </div>
+                <StudyMemberModal
+                  isOpen={isMemberModalOpen}
+                  onClose={() => setIsMemberModalOpen(false)}
+                  onChangeRole={changeMemberRole}
+                  studyId={Number(studyId)}
+                  leader={leader}
+                  members={members}
+                />
               </div>
             </div>
           </div>
@@ -119,7 +175,7 @@ export function MyStudySession() {
             <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
               <div className="flex flex-col gap-y-[12px]">
                 <div className="flex justify-between items-center">
-                  <p className="text-body-1-semibold">지원내역</p>
+                  <p className="text-body-1-semibold">지원 내역</p>
                   <div className="flex gap-1 items-start">
                     <p className="text-[#277AFF] text-caption-semibold cursor-pointer">
                       새로운 지원
@@ -129,21 +185,31 @@ export function MyStudySession() {
                 </div>
                 <hr className="border-t-3 border-gray-100" />
                 <div className="flex flex-col gap-3">
-                  {['지송이', '지원송이', '원송이'].map((applierName) => (
+                  {["지송이", "지원송이", "원송이"].map((applierName) => (
                     <div className="flex items-center">
                       <img src={UserProfileSvg} alt="User Profile" />
-                      <span className="text-body-2-semibold text-gray-400 ml-1">{applierName}</span>
+                      <span className="text-body-2-semibold text-gray-400 ml-1">
+                        {applierName}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
           )}
-          <Button variant="default" size="md" onClick={() => setIsStudyOutModalOpen(true)}>
+          <Button
+            variant="default"
+            size="md"
+            onClick={() => setIsStudyOutModalOpen(true)}
+          >
             스터디 나가기
           </Button>
           {auth.isLeader && (
-            <Button variant="deleted" size="md" onClick={() => setIsStudyFinishModalOpen(true)}>
+            <Button
+              variant="deleted"
+              size="md"
+              onClick={() => setIsStudyFinishModalOpen(true)}
+            >
               스터디 종료하기
             </Button>
           )}
@@ -153,7 +219,11 @@ export function MyStudySession() {
             <h2 className="heading-2">스터디 일지</h2>
             {auth.isLeader && (
               <div className="flex gap-2">
-                <Button variant="primary" size="lg" onClick={() => setIsModalOpen(true)}>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={() => setIsModalOpen(true)}
+                >
                   <img src={PlusSvg} alt="플러스 아이콘" />
                   일지 생성하기
                 </Button>
@@ -168,7 +238,11 @@ export function MyStudySession() {
               .slice()
               .reverse()
               .map((study) => (
-                <StudySessionCard id={study.id} isLeader={true} studySession={study} />
+                <StudySessionCard
+                  id={study.id}
+                  isLeader={true}
+                  studySession={study}
+                />
               ))}
           </div>
         </div>
