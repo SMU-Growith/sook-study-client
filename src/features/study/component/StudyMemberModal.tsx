@@ -172,7 +172,9 @@ export function StudyMemberModal({
             <Button
               variant="primary"
               className="flex-1"
-              onClick={() => onChangeRole(newLeaderMemberId)}
+              onClick={() =>
+                newLeaderMemberId !== null && onChangeRole(newLeaderMemberId)
+              }
             >
               역할 바꾸기
             </Button>

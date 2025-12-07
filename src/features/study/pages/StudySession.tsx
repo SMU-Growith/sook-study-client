@@ -24,8 +24,10 @@ import {
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/lib/api";
 import type { Study } from "@/components/ui/StudyCard";
-import type { StudyMember } from "../api/studyType";
+import type { Rules, StudyMember } from "../api/studyType";
 import { defaultStudyMembers } from "../studyMembers";
+import { StudyRuleModal } from "../component/StudyRuleModal";
+import { useMutation } from "@tanstack/react-query";
 
 export function MyStudySession() {
   const auth = useAuthStore();
@@ -34,6 +36,7 @@ export function MyStudySession() {
   const [isStudyFinishModalOpen, setIsStudyFinishModalOpen] = useState(false);
   const [isStudyOutModalOpen, setIsStudyOutModalOpen] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
   const [sessions, setSessions] = useState(myStudySessionListData);
 
   const handleCreateStudySession = () => {
@@ -63,6 +66,7 @@ export function MyStudySession() {
   const leader = memberList.find((m) => m.studyRole === "leader");
   const members = memberList.filter((m) => m.studyRole === "member") ?? [];
 
+  // 스터디 멤버 역할 변경
   // type ChangeLeaderVariables = { studyId: number; memberId: number };
   // const { mutate: changeRole } = useMutation<
   //   ApiResponse<Study[]>,               // 성공
@@ -84,6 +88,12 @@ export function MyStudySession() {
     // changeRole({ studyId: Number(studyId), memberId: newLeaderMemberId });
     console.log("새로운 스터디장 멤버 ID:", newLeaderMemberId);
     setIsMemberModalOpen(false);
+  };
+
+  const updateRules = (updatedRules: Rules[]) => {
+    console.log("업데이트된 규칙:", updatedRules);
+    // changeRule(updatedRules); // 스터디 규칙 변경 api 호출
+    setIsRuleModalOpen(false);
   };
 
   return (
@@ -151,7 +161,41 @@ export function MyStudySession() {
             <div className="flex flex-col gap-y-[12px]">
               <div className="flex justify-between items-center">
                 <p className="text-body-1-semibold">스터디 규칙</p>
-                {auth.isLeader && <img src={SettingsSvg} alt="설정 아이콘" />}
+                {auth.isLeader && (
+                  <img
+                    src={SettingsSvg}
+                    alt="설정 아이콘"
+                    onClick={() => setIsRuleModalOpen(true)}
+                  />
+                )}
+                <StudyRuleModal
+                  isOpen={isRuleModalOpen}
+                  onClose={() => setIsRuleModalOpen(false)}
+                  onChangeRule={updateRules}
+                  studyId={Number(studyId)}
+                  rules={[
+                    {
+                      ruleCategory: "TIME",
+                      description: "매주 월,수,금 아침 7시까지 출석",
+                    },
+                    {
+                      ruleCategory: "FINE",
+                      description: "지각당 1000원, 무단결석 5000원",
+                    },
+                    {
+                      ruleCategory: "DAY_OFF",
+                      description: "월 1회 자유롭게 휴무",
+                    },
+                    {
+                      ruleCategory: "ATMOSPHERE",
+                      description: "긍정적인 분위기 유지",
+                    },
+                    {
+                      ruleCategory: "ETC",
+                      description: "기타 등등",
+                    },
+                  ]}
+                />
               </div>
               <hr className="border-t-3 border-gray-100" />
               <div className="flex flex-col gap-1">
