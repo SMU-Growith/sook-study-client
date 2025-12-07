@@ -1,40 +1,45 @@
-import { Badge } from './Badge';
-import { Tag } from './Tag';
-import UserProfileSvg from '@/assets/icons/userProfile.svg';
-import HeartSvg from '@/assets/icons/heart.svg';
-import HeartFillSvg from '@/assets/icons/heartFill.svg';
-import { useState } from 'react';
-import { useAuthStore } from '@/store/authStore';
-import { useNavigate } from 'react-router-dom';
+import { Badge } from "./Badge";
+import { Tag } from "./Tag";
+import UserProfileSvg from "@/assets/icons/userProfile.svg";
+import HeartSvg from "@/assets/icons/heart.svg";
+import HeartFillSvg from "@/assets/icons/heartFill.svg";
+import { useState } from "react";
+import { useAuthStore } from "@/store/authStore";
+import { useNavigate } from "react-router-dom";
+import type { HomeStudyResult } from "@/features/study/api/studyType";
+import {
+  STUDY_FORMAT_LABEL,
+  STUDY_STYLE_LABEL,
+} from "@/features/study/constants";
 
 export interface Study {
   id: number;
   title: string;
-  status: '모집중' | '모집완료';
+  status: "모집중" | "모집완료";
   tags: string[];
   author: string;
   likeCount: number;
 }
 
 interface StudyCardProps {
-  study: Study;
+  study: HomeStudyResult;
   onCardClick?: () => void;
 }
 
 export function StudyCard({ study, onCardClick }: StudyCardProps) {
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(study.likeCount);
+  const [isScrap, setIsScrap] = useState(study.isScraped);
+  const [scrapCount, setScrapCount] = useState(study.scrapCount);
   const { isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
 
   const handleLikeClick = () => {
-    setIsLiked(!isLiked);
-    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+    setIsScrap(!isScrap);
+    setScrapCount(isScrap ? scrapCount - 1 : scrapCount + 1);
   };
 
   const handleCardClick = () => {
     if (isLoggedIn) {
-      navigate('/study/detail/1');
+      navigate(`/study/detail/${study.studyId}`);
     } else {
       onCardClick?.();
     }
@@ -45,28 +50,37 @@ export function StudyCard({ study, onCardClick }: StudyCardProps) {
       <div className="flex flex-col gap-y-[10px]">
         <div className="flex flex-col gap-y-5" onClick={handleCardClick}>
           <div>
-            <Badge variant={study.status === '모집중' ? 'purple' : 'black'}>{study.status}</Badge>
+            <Badge
+              variant={study.studyStatus === "ACTIVE" ? "purple" : "black"}
+            >
+              {study.studyStatus}
+            </Badge>
           </div>
           <h3 className="heading-3">{study.title}</h3>
-          <div className="flex gap-1">
-            {study.tags.map((tag, index) => (
-              <Tag key={index}>{tag}</Tag>
-            ))}
+          <div className="flex flex-wrap gap-1">
+            <Tag>{STUDY_FORMAT_LABEL[study.studyFormat]}</Tag>
+            <Tag>{study.studyFieldName}</Tag>
+            <Tag>{STUDY_STYLE_LABEL[study.studyStyleCategory]}</Tag>
           </div>
           <hr className="border-t-3 border-gray-100" />
         </div>
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <img src={UserProfileSvg} alt="User Profile" />
-            <span className="text-body-2-semibold text-gray-400 ml-1">{study.author}</span>
+            <span className="text-body-2-semibold text-gray-400 ml-1">
+              {/* {study.nickname} */}
+              임시닉네임
+            </span>
           </div>
           <div className="flex items-center">
             <img
-              src={isLiked ? HeartFillSvg : HeartSvg}
+              src={isScrap ? HeartFillSvg : HeartSvg}
               alt="Heart Background"
               onClick={handleLikeClick}
             />
-            <span className="text-body-2-semibold text-gray-400 ml-1">{likeCount}</span>
+            <span className="text-body-2-semibold text-gray-400 ml-1">
+              {scrapCount}
+            </span>
           </div>
         </div>
       </div>

@@ -34,3 +34,22 @@ export interface Applier {
   motivation: string;
   applicationStatus: string;
 }
+
+export interface HomeStudyResult {
+  studyId: number;
+  title: string;
+  description: string;
+  studyStatus: "ACTIVE" | "CLOSED";
+  userId: number;
+  isScraped: boolean;
+  scrapCount: number;
+  studyFormat: "ONLINE" | "OFFLINE" | "HYBRID";
+  studyFieldId: number;
+  studyFieldName: string;
+  studyStyleCategory: "SYSTEMATIC" | "FREE" | "COOPERATIVE" | "RESULT_ORIENTED";
+}
+
+export interface HomeStudyListResult {
+  studyPreviews: HomeStudyResult[];
+  listSize: number;
+}

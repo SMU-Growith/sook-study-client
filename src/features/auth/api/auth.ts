@@ -1,7 +1,6 @@
 import { apiClient, authApiClient, type ApiResponse } from "@/lib/api/";
 import type {
   TLoginSchema,
-  TProfile,
   TSignUpStep1Schema,
   TSignUpStep2Schema,
   TUpdateProfile,
