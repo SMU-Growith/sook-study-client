@@ -20,7 +20,7 @@ import {
   type SignUpFullData,
 } from "@/lib/api/index";
 import { AxiosError } from "axios";
-import type { LoginResult } from "../api/authRequest";
+import type { LoginResult } from "../api/authType";
 import { MAJOR_MAP, STUDENT_STATUS_MAP } from "../constants";
 
 export function SignUpPage() {

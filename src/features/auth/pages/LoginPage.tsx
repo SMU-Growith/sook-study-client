@@ -11,7 +11,7 @@ import { StampConfirmModal } from "@/components/ui/StampConfirmModal";
 import { useAuthStore } from "@/store/authStore";
 import { loginApi } from "../api/auth";
 import type { AxiosError } from "axios";
-import type { LoginResult } from "../api/authRequest";
+import type { LoginResult } from "../api/authType";
 import type { ApiResponse } from "@/lib/api";
 
 export function LoginPage() {

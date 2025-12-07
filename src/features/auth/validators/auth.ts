@@ -45,7 +45,7 @@ export type TLoginSchema = z.infer<typeof loginSchema>;
 export const myInfoSchema = z.object({
   id: z.string(),
   email: z.email(),
-  nickname: z.string(),
+  nickName: z.string(),
   studentStatus: z.string(),
   major: z.string(),
   phoneNumber: z.string(),
@@ -54,8 +54,8 @@ export type TMyInfo = z.infer<typeof myInfoSchema>;
 
 // 프로필
 export const myProfileSchema = z.object({
-  id: z.string(),
-  nickname: z
+  // id: z.string(),
+  nickName: z
     .string()
     .min(1, "닉네임을 입력해주세요.")
     .max(15, "닉네임은 15자 이하여야 합니다."),
@@ -68,9 +68,9 @@ export const myProfileSchema = z.object({
       /^010-\d{4}-\d{4}$/,
       "올바른 전화번호 형식이 아닙니다. (010-1234-5678)"
     ),
-  studyPreferences: z
-    .array(z.string())
-    .min(1, "최소 하나 이상의 스터디 성향을 선택해주세요."),
-  notificationsEnabled: z.boolean(),
+  studyStyle: z.string(),
+  noticeYn: z.boolean(),
 });
+
 export type TProfile = z.infer<typeof myProfileSchema>;
+export type TUpdateProfile = Omit<TProfile, "studyStyle">;

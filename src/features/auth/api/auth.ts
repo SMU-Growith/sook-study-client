@@ -1,9 +1,12 @@
-import { apiClient, authApiClient } from "@/lib/api/";
+import { apiClient, authApiClient, type ApiResponse } from "@/lib/api/";
 import type {
   TLoginSchema,
+  TProfile,
   TSignUpStep1Schema,
   TSignUpStep2Schema,
+  TUpdateProfile,
 } from "@/features/auth/validators/auth";
+import type { ProfileResult } from "./authType";
 
 export type SignUpFullData = Omit<TSignUpStep1Schema, "verificationCode"> &
   TSignUpStep2Schema;
@@ -38,11 +41,12 @@ export const loginApi = async (data: TLoginSchema) => {
 };
 
 export const fetchMyInfoApi = async () => {
-  const response = await apiClient.get("/auth/profile");
-  return response.data;
+  const response =
+    await apiClient.get<ApiResponse<ProfileResult>>("/users/profile");
+  return response.data.result;
 };
 
-export const profileUpdateApi = async (data: Partial<SignUpFullData>) => {
-  const response = await apiClient.put("/auth/profile", data);
+export const profileUpdateApi = async (data: TUpdateProfile) => {
+  const response = await apiClient.patch("/users/profile", data);
   return response.data;
 };

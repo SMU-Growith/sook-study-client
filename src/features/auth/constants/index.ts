@@ -76,3 +76,12 @@ export const MAJOR_MAP: Record<string, string> = {
 
   미디어학부: "MEDIA_STUDIES",
 };
+
+export const REVERSE_STUDENT_STATUS_MAP: Record<string, string> =
+  Object.fromEntries(
+    Object.entries(STUDENT_STATUS_MAP).map(([ko, en]) => [en, ko])
+  );
+
+export const REVERSE_MAJOR_MAP: Record<string, string> = Object.fromEntries(
+  Object.entries(MAJOR_MAP).map(([ko, en]) => [en, ko])
+);
