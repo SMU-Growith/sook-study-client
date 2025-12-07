@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 interface AuthState {
   isLoggedIn: boolean;
@@ -10,6 +10,8 @@ interface AuthState {
   setNickName: (nickname: string) => void;
   hasWrittenLog: boolean;
   setHasWrittenLog: (hasWritten: boolean) => void;
+  acceessToken?: string;
+  refreshToken?: string;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -18,14 +20,17 @@ export const useAuthStore = create<AuthState>()(
       isLoggedIn: false,
       nickname: null,
       isLeader: false,
-      login: (nickname, isLeader) => set({ isLoggedIn: true, nickname, isLeader }),
+      login: (nickname, isLeader) =>
+        set({ isLoggedIn: true, nickname, isLeader }),
       logout: () => set({ isLoggedIn: false, nickname: null, isLeader: false }),
       setNickName: (nickname) => set({ nickname }),
       hasWrittenLog: false,
       setHasWrittenLog: (hasWritten) => set({ hasWrittenLog: hasWritten }),
+      acceessToken: undefined,
+      refreshToken: undefined,
     }),
     {
-      name: 'auth-status',
+      name: "auth-status",
       storage: createJSONStorage(() => localStorage),
     }
   )
