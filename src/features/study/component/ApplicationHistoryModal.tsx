@@ -136,6 +136,9 @@ export function ApplicationHistoryModal({
             승인하기
           </Button>
         </div>
+        <Button variant="default" size="lg" onClick={onClose}>
+          닫기
+        </Button>
       </div>
     </Modal>
   );
