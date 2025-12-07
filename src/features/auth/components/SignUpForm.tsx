@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useState, useEffect } from "react";
+import { useFormContext } from "react-hook-form";
 
-import { Button } from '@/components/ui/button';
-import { FormField } from '@/components/ui/FormField';
-import { type TSignUpStep1Schema } from '@/features/auth/validators/auth';
+import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/FormField";
+import { type TSignUpStep1Schema } from "@/features/auth/validators/auth";
 
 interface SignUpFormProps {
   onVerified: (isVerified: boolean) => void;
@@ -14,8 +14,8 @@ export function SignUpForm({ onVerified }: SignUpFormProps) {
     watch,
     formState: { errors },
   } = useFormContext<TSignUpStep1Schema>();
-  const emailValue = watch('email');
-  const verificationCodeValue = watch('verificationCode');
+  const emailValue = watch("email");
+  const verificationCodeValue = watch("verificationCode");
 
   const [timer, setTimer] = useState(300);
   const [isCodeSent, setIsCodeSent] = useState(false);
@@ -75,12 +75,16 @@ export function SignUpForm({ onVerified }: SignUpFormProps) {
   const formatTime = (seconds: number) => {
     const min = Math.floor(seconds / 60);
     const sec = seconds % 60;
-    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    return `${min}:${sec < 10 ? "0" : ""}${sec}`;
   };
 
   return (
     <>
-      <FormField name="id" label="아이디" placeholder="아이디를 입력해주세요." />
+      <FormField
+        name="loginId"
+        label="아이디"
+        placeholder="아이디를 입력해주세요."
+      />
       <FormField
         name="password"
         label="패스워드"
@@ -111,7 +115,10 @@ export function SignUpForm({ onVerified }: SignUpFormProps) {
             인증번호 받기
           </Button>
         </div>
-        <FormField name="verificationCode" placeholder="인증번호 5자리를 입력해주세요." />
+        <FormField
+          name="verificationCode"
+          placeholder="인증번호 5자리를 입력해주세요."
+        />
         <Button
           type="button"
           variant="primary"

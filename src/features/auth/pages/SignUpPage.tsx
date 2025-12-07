@@ -21,6 +21,7 @@ import {
 } from "@/lib/api/index";
 import { AxiosError } from "axios";
 import type { LoginResult } from "../api/authRequest";
+import { MAJOR_MAP, STUDENT_STATUS_MAP } from "../constants";
 
 export function SignUpPage() {
   const [step, setStep] = useState(1);
@@ -53,9 +54,15 @@ export function SignUpPage() {
   };
 
   const onStep2Submit = (data: TSignUpStep2Schema) => {
-    console.log("Step 2 Data:", data);
     const finalData = { ...formData, ...data };
-    submitSignUp(finalData);
+    const mappedData: SignUpFullData = {
+      ...finalData,
+      studentStatus:
+        STUDENT_STATUS_MAP[finalData.studentStatus] ?? finalData.studentStatus,
+      major: MAJOR_MAP[finalData.major] ?? finalData.major,
+    };
+    console.log("Step 2 Data:", data);
+    submitSignUp(mappedData);
   };
 
   return (
