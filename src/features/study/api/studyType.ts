@@ -22,3 +22,15 @@ export const RULE_TAG_OPTIONS: { key: RuleCategory; label: string }[] = [
   { key: "ATMOSPHERE", label: "분위기" },
   { key: "ETC", label: "기타" },
 ];
+
+export interface Applier {
+  applicationId: number;
+  studyId: number;
+  userId: number;
+  nickName: string;
+  studentStatus: string;
+  major: string;
+  phoneNumber: string;
+  motivation: string;
+  applicationStatus: string;
+}

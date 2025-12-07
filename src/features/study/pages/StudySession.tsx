@@ -28,6 +28,8 @@ import type { Rules, StudyMember } from "../api/studyType";
 import { defaultStudyMembers } from "../studyMembers";
 import { StudyRuleModal } from "../component/StudyRuleModal";
 import { useMutation } from "@tanstack/react-query";
+import { ApplicationHistoryModal } from "../component/ApplicationHistoryModal";
+import { is } from "zod/v4/locales";
 
 export function MyStudySession() {
   const auth = useAuthStore();
@@ -37,6 +39,7 @@ export function MyStudySession() {
   const [isStudyOutModalOpen, setIsStudyOutModalOpen] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [sessions, setSessions] = useState(myStudySessionListData);
 
   const handleCreateStudySession = () => {
@@ -94,6 +97,15 @@ export function MyStudySession() {
     console.log("업데이트된 규칙:", updatedRules);
     // changeRule(updatedRules); // 스터디 규칙 변경 api 호출
     setIsRuleModalOpen(false);
+  };
+
+  const updateApplicationStatus = (
+    applicationId: number,
+    newStatus: string
+  ) => {
+    console.log("지원서 ID:", applicationId, "새 상태:", newStatus);
+    // changeApplicationStatus(applicationId, newStatus); // 스터디 승인 api 호출
+    setIsApplyModalOpen(false);
   };
 
   return (
@@ -239,6 +251,57 @@ export function MyStudySession() {
                     </div>
                   ))}
                 </div>
+                <Button
+                  variant="solid"
+                  size="md"
+                  onClick={() => setIsApplyModalOpen(true)}
+                >
+                  관리하기
+                </Button>
+                <ApplicationHistoryModal
+                  isOpen={isApplyModalOpen}
+                  onClose={() => setIsApplyModalOpen(false)}
+                  onChangeApplicationStatus={updateApplicationStatus}
+                  studyId={Number(studyId)}
+                  appliers={[
+                    {
+                      applicationId: 1,
+                      studyId: Number(studyId),
+                      userId: 101,
+                      nickName: "지송이",
+                      studentStatus: "재학",
+                      major: "기계공학과",
+                      phoneNumber: "010-1234-5678",
+                      motivation:
+                        "React 스터디를 통해 컴포넌트 설계 감을 잡고 싶어요.",
+                      applicationStatus: "PENDING",
+                    },
+                    {
+                      applicationId: 2,
+                      studyId: Number(studyId),
+                      userId: 102,
+                      nickName: "지원송이",
+                      studentStatus: "휴학",
+                      major: "컴퓨터공학과",
+                      phoneNumber: "010-2345-6789",
+                      motivation:
+                        "프로젝트 경험 쌓고 포트폴리오에 넣을 결과물을 만들고 싶어요.",
+                      applicationStatus: "ACCEPTED",
+                    },
+                    {
+                      applicationId: 3,
+                      studyId: Number(studyId),
+                      userId: 103,
+                      nickName: "원송이",
+                      studentStatus: "졸업",
+                      major: "소프트웨어학과",
+                      phoneNumber: "010-3456-7890",
+                      motivation:
+                        "실무 감각 유지하려고 사이드로 스터디 같이 하고 싶습니다.",
+                      applicationStatus: "REJECTED",
+                    },
+                  ]}
+                />
               </div>
             </div>
           )}
