@@ -35,11 +35,11 @@ export interface Applier {
   applicationStatus: string;
 }
 
-export interface HomeStudyResult {
+export interface StudyResult {
   studyId: number;
   title: string;
   description: string;
-  studyStatus: "ACTIVE" | "CLOSED";
+  studyStatus: "ACTIVE" | "CLOSED" | "ALL";
   userId: number;
   isScraped: boolean;
   scrapCount: number;
@@ -49,7 +49,7 @@ export interface HomeStudyResult {
   studyStyleCategory: "SYSTEMATIC" | "FREE" | "COOPERATIVE" | "RESULT_ORIENTED";
 }
 
-export interface HomeStudyListResult {
-  studyPreviews: HomeStudyResult[];
+export interface StudyListResult {
+  studyPreviews: StudyResult[];
   listSize: number;
 }

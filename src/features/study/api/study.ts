@@ -3,7 +3,7 @@ import type {
   TStudyApplySchema,
   TStudySchema,
 } from "@/features/study/validators/study";
-import type { HomeStudyListResult, HomeStudyResult } from "./studyType";
+import type { StudyListResult } from "./studyType";
 
 type StudyUpdateData = TStudySchema & { isRecruiting: boolean };
 
@@ -57,8 +57,44 @@ export const HomeStudyApi = async (
   size: number,
   sort: string
 ) => {
-  const response = await apiClient.get<ApiResponse<HomeStudyListResult>>(
+  const response = await apiClient.get<ApiResponse<StudyListResult>>(
     `/studies?page=${page}&size=${size}&sort=${sort}`
+  );
+  return response.data.result.studyPreviews;
+};
+
+// 스터디 검색 API (스터디 둘러보기)
+export const SearchStudyApi = async (
+  studyFieldNames: string[],
+  studyFormats: ("ONLINE" | "OFFLINE" | "HYBRID")[],
+  studyStyleCategories: (
+    | "SYSTEMATIC"
+    | "FREE"
+    | "COOPERATIVE"
+    | "RESULT_ORIENTED"
+  )[],
+  studyStatus: "ACTIVE" | "CLOSED" | undefined,
+  searchContent: string,
+  page: number,
+  size: number,
+  sort: string
+) => {
+  const params = new URLSearchParams();
+  studyFieldNames.forEach((name) =>
+    params.append("studyFieldNames", String(name))
+  );
+  studyFormats.forEach((format) => params.append("studyFormats", format));
+  studyStyleCategories.forEach((category) =>
+    params.append("studyStyleCategories", category)
+  );
+  params.append("studyStatus", String(studyStatus));
+  params.append("searchContent", searchContent);
+  params.append("page", String(page));
+  params.append("size", String(size));
+  params.append("sort", sort);
+
+  const response = await apiClient.get<ApiResponse<StudyListResult>>(
+    `/studies/search?${params.toString()}`
   );
   return response.data.result.studyPreviews;
 };

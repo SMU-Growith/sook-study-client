@@ -6,7 +6,7 @@ import HeartFillSvg from "@/assets/icons/heartFill.svg";
 import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
-import type { HomeStudyResult } from "@/features/study/api/studyType";
+import type { StudyResult } from "@/features/study/api/studyType";
 import {
   STUDY_FORMAT_LABEL,
   STUDY_STYLE_LABEL,
@@ -22,7 +22,7 @@ export interface Study {
 }
 
 interface StudyCardProps {
-  study: HomeStudyResult;
+  study: StudyResult;
   onCardClick?: () => void;
 }
 

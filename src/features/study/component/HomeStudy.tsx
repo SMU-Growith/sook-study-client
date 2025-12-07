@@ -3,7 +3,7 @@ import { CarouselNavButtons } from "@/components/ui/CarouselNavButtons";
 // import { popularStudiesData } from "../popularStudy";
 import { StudyCard } from "@/components/ui/StudyCard";
 import { HomeStudyApi } from "../api/study";
-import type { HomeStudyResult } from "../api/studyType";
+import type { StudyResult } from "../api/studyType";
 import { useQuery } from "@tanstack/react-query";
 
 const CARDS_PER_VIEW = 3; // 한 번에 보여줄 카드 수
@@ -19,7 +19,7 @@ export function HomeStudy({ type, onCardClick }: HomeStudyProps) {
   const sortParam = type === "popular" ? "scrapCount" : "createdAt";
 
   // 홈 스터디 데이터 조회
-  const { data: homeStudies = [] } = useQuery<HomeStudyResult[]>({
+  const { data: homeStudies = [] } = useQuery<StudyResult[]>({
     queryKey: ["homeStudies", type, sortParam],
     queryFn: () => HomeStudyApi(0, 10, sortParam),
   });

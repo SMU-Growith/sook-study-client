@@ -1,44 +1,107 @@
-import { AuthHeader } from '@/components/layout/AuthHeader';
-import { SideBar } from '@/components/ui/SideBar';
-import { useEffect, useState } from 'react';
-import { matchingStudiesData } from '../studyMatchIng';
-import { StudyCard, type Study } from '@/components/ui/StudyCard';
-import { matchedStudiesData } from '../studyMatchDone';
-import { matchStudiesData } from '../studyMatch';
-import ArrowLeftSvg from '@/assets/arrow/arrowLeft.svg';
-import ArrowRightSvg from '@/assets/arrow/arrowRight.svg';
-import ArrowBottomSvg from '@/assets/arrow/arrowBottom.svg';
-import BookmarkSvg from '@/assets/icons/bookmark.svg';
-import BookmarkFillSvg from '@/assets/icons/bookmarkFill.svg';
-import SearchSvg from '@/assets/icons/search.svg';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
-import { Tag } from '@/components/ui/Tag';
-import { DropdownList } from '@/components/ui/DropdownList';
-import { CATEGORIES } from '@/constants/index';
+import { AuthHeader } from "@/components/layout/AuthHeader";
+import { SideBar } from "@/components/ui/SideBar";
+import { useState } from "react";
+import { StudyCard } from "@/components/ui/StudyCard";
+import ArrowLeftSvg from "@/assets/arrow/arrowLeft.svg";
+import ArrowRightSvg from "@/assets/arrow/arrowRight.svg";
+import ArrowBottomSvg from "@/assets/arrow/arrowBottom.svg";
+import BookmarkSvg from "@/assets/icons/bookmark.svg";
+import BookmarkFillSvg from "@/assets/icons/bookmarkFill.svg";
+import SearchSvg from "@/assets/icons/search.svg";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/Input";
+import { Tag } from "@/components/ui/Tag";
+import { DropdownList } from "@/components/ui/DropdownList";
+import { CATEGORIES } from "@/constants/index";
+import { useQuery } from "@tanstack/react-query";
+import type { StudyResult } from "../api/studyType";
+import { SearchStudyApi } from "../api/study";
+import { STUDY_STATUS_LABEL } from "../constants";
 
 type TopCategory = keyof typeof CATEGORIES;
-type SubCategory = keyof (typeof CATEGORIES)['분야'];
+type SubCategory = keyof (typeof CATEGORIES)["분야"];
 
 export function StudyMatch() {
-  const [studyStatus, setStudyStatus] = useState('전체');
-  const [, setAllStudies] = useState<Study[]>([]); 
   const [isBookmarkOpen, setIsBookmarkOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
+  type StudyStatusFilter = "ALL" | "ACTIVE" | "CLOSED";
+  const [selectedStatus, setSelectedStatus] =
+    useState<StudyStatusFilter>("ALL");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [activeTopCategory, setActiveTopCategory] = useState<TopCategory>('분야');
-  const [activeSubCategory, setActiveSubCategory] = useState<SubCategory>('학업');
+  const [searchText, setSearchText] = useState("");
+
+  const [activeTopCategory, setActiveTopCategory] =
+    useState<TopCategory>("분야");
+  const [activeSubCategory, setActiveSubCategory] =
+    useState<SubCategory>("학업");
 
   const pageNumbers = [1, 2, 3, 4, 5]; // [lf] 페이지 번호 배열
   const [page, setPage] = useState(1); // [lf] 현재 페이지
 
-  const [searchText, setSearchText] = useState('');
-  const [filteredStudies, setFilteredStudies] = useState<Study[]>([]);
+  type StudyStatusApi = "ACTIVE" | "CLOSED" | undefined;
+  const apiStudyStatus: StudyStatusApi =
+    selectedStatus === "ALL" ? undefined : selectedStatus;
+
+  const studyFieldNames: string[] = [];
+
+  function mapFormats(tags: string[]) {
+    const formats: ("ONLINE" | "OFFLINE" | "HYBRID")[] = [];
+    tags.forEach((tag) => {
+      if (tag === "온라인") formats.push("ONLINE");
+      else if (tag === "오프라인") formats.push("OFFLINE");
+      else if (tag === "온·오프라인 병행") formats.push("HYBRID");
+    });
+    return formats;
+  }
+
+  function mapStyles(tags: string[]) {
+    const styles: (
+      | "SYSTEMATIC"
+      | "FREE"
+      | "COOPERATIVE"
+      | "RESULT_ORIENTED"
+    )[] = [];
+    tags.forEach((tag) => {
+      if (tag === "체계적인") styles.push("SYSTEMATIC");
+      else if (tag === "자유로운") styles.push("FREE");
+      else if (tag === "협력적인") styles.push("COOPERATIVE");
+      else if (tag === "실적중심") styles.push("RESULT_ORIENTED");
+    });
+    return styles;
+  }
+
+  const studyFormats = mapFormats(selectedTags);
+  const studyStyleCategories = mapStyles(selectedTags);
+
+  const { data: studies = [] } = useQuery<StudyResult[]>({
+    queryKey: [
+      "searchStudies",
+      studyFieldNames,
+      studyFormats,
+      studyStyleCategories,
+      apiStudyStatus,
+      searchText,
+      0,
+      9,
+      "createdAt",
+    ],
+    queryFn: () =>
+      SearchStudyApi(
+        studyFieldNames,
+        studyFormats,
+        studyStyleCategories,
+        apiStudyStatus,
+        searchText,
+        0,
+        9,
+        "createdAt"
+      ),
+  });
 
   const renderFilterOptions = () => {
-    if (activeTopCategory === '분야') {
-      const currentOptions = CATEGORIES['분야'];
+    if (activeTopCategory === "분야") {
+      const currentOptions = CATEGORIES["분야"];
       const subCategories = Object.keys(currentOptions) as SubCategory[];
       // 서브카테고리를 드랍다운으로 표시
       // [lf] select box로 변경해야 됨
@@ -46,7 +109,11 @@ export function StudyMatch() {
       return (
         <>
           <div className="relative">
-            <Button variant="default" size="md" onClick={() => setDropdownOpen(!isDropdownOpen)}>
+            <Button
+              variant="default"
+              size="md"
+              onClick={() => setDropdownOpen(!isDropdownOpen)}
+            >
               {activeSubCategory}
               <img src={ArrowBottomSvg} alt="드랍다운" className="ml-1" />
             </Button>
@@ -105,44 +172,7 @@ export function StudyMatch() {
   };
 
   const handleStudyStatus = (status: string) => {
-    setStudyStatus(status);
-    setPage(1);
-  };
-
-  const filterStudies = (studies: Study[], text: string): Study[] => {
-    if (!text) return studies;
-    const lowerText = text.toLowerCase();
-    return studies.filter(
-      (study) =>
-        study.title.toLowerCase().includes(lowerText) ||
-        study.tags.every((tag) => tag.toLowerCase().includes(lowerText))
-    );
-  };
-
-  const applyFilters = () => {
-    // TODO 백엔드에서 필터링된 데이터 받아오기
-
-    let studies = matchStudiesData;
-
-    // 상태 필터링
-    if (studyStatus === '모집중') studies = matchingStudiesData;
-    else if (studyStatus === '모집 완료') studies = matchedStudiesData;
-
-    // 검색 필터링
-    studies = filterStudies(studies, searchText);
-
-    // 태그 필터링
-    if (selectedTags.length > 0) {
-      studies = studies.filter((study) => selectedTags.every((tag) => study.tags.includes(tag)));
-    }
-
-    console.log('selectedTags:', selectedTags);
-    console.log(
-      'study.tags:',
-      studies.map((s) => s.tags)
-    );
-
-    setFilteredStudies(studies);
+    setSelectedStatus(status);
     setPage(1);
   };
 
@@ -150,14 +180,6 @@ export function StudyMatch() {
     setSearchText(text);
     setPage(1);
   };
-
-  useEffect(() => {
-    setAllStudies(matchStudiesData);
-  }, []);
-
-  useEffect(() => {
-    applyFilters();
-  }, [studyStatus, searchText, selectedTags]);
 
   return (
     <div className="flex h-screen bg-white w-full">
@@ -174,7 +196,10 @@ export function StudyMatch() {
                 className="px-3 py-2 gap-2"
                 onClick={() => setIsBookmarkOpen(!isBookmarkOpen)}
               >
-                <img src={isBookmarkOpen ? BookmarkFillSvg : BookmarkSvg} alt="북마크" />
+                <img
+                  src={isBookmarkOpen ? BookmarkFillSvg : BookmarkSvg}
+                  alt="북마크"
+                />
                 태그 검색하기
               </Button>
               <div className="relative w-3/8 ">
@@ -186,7 +211,11 @@ export function StudyMatch() {
                     handleSearch(e.currentTarget.value);
                   }}
                 />
-                <img src={SearchSvg} alt="검색" className="absolute right-5 top-3" />
+                <img
+                  src={SearchSvg}
+                  alt="검색"
+                  className="absolute right-5 top-3"
+                />
               </div>
             </div>
             {isBookmarkOpen && (
@@ -200,7 +229,11 @@ export function StudyMatch() {
                   ) : (
                     <>
                       {selectedTags.map((tag) => (
-                        <Tag key={tag} deleteable onDelete={() => removeTag(tag)}>
+                        <Tag
+                          key={tag}
+                          deleteable
+                          onDelete={() => removeTag(tag)}
+                        >
                           {tag}
                         </Tag>
                       ))}
@@ -217,7 +250,7 @@ export function StudyMatch() {
                         }}
                       >
                         <span
-                          className={`text-body-1-semibold ${activeTopCategory === category ? '' : 'text-gray-200'}`}
+                          className={`text-body-1-semibold ${activeTopCategory === category ? "" : "text-gray-200"}`}
                         >
                           {category}
                         </span>
@@ -231,17 +264,24 @@ export function StudyMatch() {
           </div>
           <div className="flex flex-col gap-5">
             <div className="flex gap-2">
-              {['전체', '모집중', '모집 완료'].map((status) => (
-                <button key={status} onClick={() => handleStudyStatus(status)}>
-                  <h3 className={`heading-3 ${studyStatus === status ? '' : 'text-gray-200'}`}>
-                    {status}
-                  </h3>
-                </button>
-              ))}
+              {(["ALL", "ACTIVE", "CLOSED"] as StudyStatusFilter[]).map(
+                (status) => (
+                  <button
+                    key={status}
+                    onClick={() => handleStudyStatus(status)}
+                  >
+                    <h3
+                      className={`heading-3 ${selectedStatus === status ? "" : "text-gray-200"}`}
+                    >
+                      {STUDY_STATUS_LABEL[status]}
+                    </h3>
+                  </button>
+                )
+              )}
             </div>
             <div className="grid grid-cols-3 gap-5">
-              {filteredStudies.map((study) => (
-                <StudyCard key={study.id} study={study} />
+              {studies.map((study) => (
+                <StudyCard key={study.studyId} study={study} />
               ))}
             </div>
           </div>
@@ -254,7 +294,7 @@ export function StudyMatch() {
                 <button
                   key={p}
                   className={`text-caption-semibold rounded-[4px] px-[8px] py-[2px]
-                ${page == p ? 'text-white bg-gray-400 hover:bg-gray-300' : 'text-gray-400 hover:bg-gray-100'}`}
+                ${page == p ? "text-white bg-gray-400 hover:bg-gray-300" : "text-gray-400 hover:bg-gray-100"}`}
                   onClick={() => setPage(p)}
                 >
                   {p}
