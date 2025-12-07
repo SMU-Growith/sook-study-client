@@ -5,3 +5,10 @@ export const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+export interface ApiResponse<T> {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: T;
+}

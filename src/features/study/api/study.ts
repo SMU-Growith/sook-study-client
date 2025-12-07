@@ -22,3 +22,13 @@ export const studyApplyApi = async (studyId: number, data: TStudyApplySchema) =>
   const response = await apiClient.post(`/studies/${studyId}/applications`, data);
   return response.data;
 };
+
+export const studyChangeLeaderApi = async (studyId: number, memberId: number) => {
+  const response = await apiClient.patch(`/studies/${studyId}/changeLeader?newLeaderUserId=${memberId}`);
+  return response.data;
+}
+
+export const fetchStudyMembersApi = async (studyId: number) => {
+  const response = await apiClient.get(`/studies/${studyId}/users`);
+  return response.data;
+}
