@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./button";
-import { ApplicationDeleteModal } from "./ApplicationDeleteModal";
+import { ApplicationDeleteModal } from "../../features/study/component/ApplicationDeleteModal";
 
 export interface Application {
   // Study 정보 + approved 필드

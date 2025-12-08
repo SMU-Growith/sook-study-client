@@ -1,5 +1,5 @@
 import { Modal } from "@/components/ui/Modal";
-import { Button } from "./button";
+import { Button } from "../../../components/ui/button";
 import CloseSvg from "@/assets/icons/close.svg";
 
 interface ApplicationDeleteModalProps {
@@ -20,10 +20,20 @@ export function ApplicationDeleteModal({
           지원 취소를 하면 작성한 지원 내역을 다시 복구할 수 없어요.
         </p>
         <div className="flex gap-[10px] mt-[12px] mb-[12px]">
-          <Button variant="default" className="flex-1" onClick={onClose}>
+          <Button
+            variant="default"
+            size="lg"
+            className="flex-1"
+            onClick={onClose}
+          >
             닫기
           </Button>
-          <Button variant="deleted" className="flex-1" onClick={onConfirm}>
+          <Button
+            variant="deleted"
+            size="lg"
+            className="flex-1"
+            onClick={onConfirm}
+          >
             취소하기
           </Button>
         </div>
