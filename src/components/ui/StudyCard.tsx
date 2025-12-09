@@ -1,16 +1,16 @@
-import { Badge } from './Badge';
-import { Tag } from './Tag';
-import UserProfileSvg from '@/assets/icons/userProfile.svg';
-import HeartSvg from '@/assets/icons/heart.svg';
-import HeartFillSvg from '@/assets/icons/heartFill.svg';
-import { useState } from 'react';
-import { useAuthStore } from '@/store/authStore';
-import { useNavigate } from 'react-router-dom';
+import { Badge } from "./Badge";
+import { Tag } from "./Tag";
+import UserProfileSvg from "@/assets/icons/userProfile.svg";
+import HeartSvg from "@/assets/icons/heart.svg";
+import HeartFillSvg from "@/assets/icons/heartFill.svg";
+import { useState } from "react";
+import { useAuthStore } from "@/store/authStore";
+import { useNavigate } from "react-router-dom";
 
 export interface Study {
   id: number;
   title: string;
-  status: '모집중' | '모집완료';
+  status: "모집중" | "모집완료";
   tags: string[];
   author: string;
   likeCount: number;
@@ -34,7 +34,7 @@ export function StudyCard({ study, onCardClick }: StudyCardProps) {
 
   const handleCardClick = () => {
     if (isLoggedIn) {
-      navigate('/study/detail/1');
+      navigate("/study/detail/1");
     } else {
       onCardClick?.();
     }
@@ -45,7 +45,9 @@ export function StudyCard({ study, onCardClick }: StudyCardProps) {
       <div className="flex flex-col gap-y-[10px]">
         <div className="flex flex-col gap-y-5" onClick={handleCardClick}>
           <div>
-            <Badge variant={study.status === '모집중' ? 'purple' : 'black'}>{study.status}</Badge>
+            <Badge variant={study.status === "모집중" ? "purple" : "black"}>
+              {study.status}
+            </Badge>
           </div>
           <h3 className="heading-3">{study.title}</h3>
           <div className="flex gap-1">
@@ -58,7 +60,9 @@ export function StudyCard({ study, onCardClick }: StudyCardProps) {
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <img src={UserProfileSvg} alt="User Profile" />
-            <span className="text-body-2-semibold text-gray-400 ml-1">{study.author}</span>
+            <span className="text-body-2-semibold text-gray-400 ml-1">
+              {study.author}
+            </span>
           </div>
           <div className="flex items-center">
             <img
@@ -66,7 +70,9 @@ export function StudyCard({ study, onCardClick }: StudyCardProps) {
               alt="Heart Background"
               onClick={handleLikeClick}
             />
-            <span className="text-body-2-semibold text-gray-400 ml-1">{likeCount}</span>
+            <span className="text-body-2-semibold text-gray-400 ml-1">
+              {likeCount}
+            </span>
           </div>
         </div>
       </div>
