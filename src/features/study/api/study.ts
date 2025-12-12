@@ -3,7 +3,11 @@ import type {
   TStudyApplySchema,
   TStudySchema,
 } from "@/features/study/validators/study";
-import type { StudyListResult, StudySessionList } from "./studyType";
+import type {
+  StudyListResult,
+  StudySessionDetail,
+  StudySessionList,
+} from "./studyType";
 
 type StudyUpdateData = TStudySchema & { isRecruiting: boolean };
 
@@ -109,4 +113,26 @@ export const fetchStudySessionsApi = async (
     `/studies/${studyId}/sessions?page=${page}&size=${size}`
   );
   return response.data.result.studySessions;
+};
+
+// 스터디 세션 생성 API
+export const createStudySessionApi = async (studyId: number, title: string) => {
+  const response = await apiClient.post<ApiResponse<StudySessionDetail>>(
+    `/studies/${studyId}/session`,
+    {
+      title,
+    }
+  );
+  return response.data.result;
+};
+
+// 스터디 세션 수정 API
+export const updateStudySessionApi = async (
+  sessionId: number,
+  title: string
+) => {
+  const response = await apiClient.put(`/studies/session/${sessionId}`, {
+    title,
+  });
+  return response.data;
 };

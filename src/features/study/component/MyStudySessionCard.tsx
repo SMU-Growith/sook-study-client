@@ -7,9 +7,12 @@ import { useState } from "react";
 import { DropdownList } from "../../../components/ui/DropdownList";
 import { StudySessionUpdateModal } from "@/features/study/component/StudySessionUpdateModal";
 import type { StudySessionDetail } from "../api/studyType";
+import type { ApiResponse } from "@/lib/api/apiClient";
+import type { AxiosError } from "axios";
+import { updateStudySessionApi } from "../api/study";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface MyStudySessionCardProps {
-  sessionId: number;
   isLeader: boolean;
   studySession: StudySessionDetail;
 }
@@ -17,6 +20,8 @@ interface MyStudySessionCardProps {
 export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
   const { studyId } = useParams<{ studyId: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   // 버거 아이콘 클릭되었는지 상태 관리
   const [isBurgerIconClicked, setIsBurgerIconClicked] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -29,19 +34,44 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
     );
   };
 
+  const { mutate: updateStudySession } = useMutation<
+    ApiResponse<null>,
+    AxiosError<ApiResponse<null>>,
+    { sessionId: number; title: string }
+  >({
+    mutationFn: ({ sessionId, title }) =>
+      updateStudySessionApi(sessionId, title),
+    onSuccess: async () => {
+      alert("스터디 일지가 수정되었습니다.");
+      setIsUpdateModalOpen(false);
+      await queryClient.invalidateQueries({
+        queryKey: ["studySessions", studyId],
+      });
+    },
+    onError: (error) => {
+      alert(
+        error.response?.data?.message || "스터디 일지 수정에 실패했습니다."
+      );
+    },
+  });
+
+  const handleUpdateStudySession = (title: string) => {
+    console.log("Updating study session:", studySession.sessionId, title);
+    updateStudySession({ sessionId: studySession.sessionId, title });
+  };
+
   const handleBurgerIconSelect = (option: string) => {
     console.log(`선택된 옵션: ${option}`);
     if (option == "수정하기") {
       setIsUpdateModalOpen(true);
+    } else if (option == "삭제하기") {
+      // TODO 삭제하기 기능 구현
+    } else if (option == "상태변경") {
+      // TODO 상태변경 기능 구현
     }
     setIsBurgerIconClicked(false);
-    // 여기에 각 옵션에 대한 실제 동작을 구현하세요.
   };
 
-  const handleUpdateStudySession = () => {
-    studySession.title = "React 컴포넌트 아키텍처 설계하기";
-    setIsUpdateModalOpen(false);
-  };
   return (
     <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
       <div className="flex flex-col gap-y-[10px]">

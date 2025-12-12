@@ -19,7 +19,7 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       isLoggedIn: false,
       nickname: null,
-      isLeader: false,
+      isLeader: true,
       login: (nickname, isLeader) =>
         set({ isLoggedIn: true, nickname, isLeader }),
       logout: () => set({ isLoggedIn: false, nickname: null, isLeader: false }),

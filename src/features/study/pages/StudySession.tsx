@@ -16,6 +16,7 @@ import { StudyOutModal } from "../component/StudyOutModal";
 import { useNavigate, useParams } from "react-router";
 import { StudyMemberModal } from "../component/StudyMemberModal";
 import {
+  createStudySessionApi,
   fetchStudyById,
   fetchStudyMembersApi,
   fetchStudySessionsApi,
@@ -27,6 +28,8 @@ import { StudyRuleModal } from "../component/StudyRuleModal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ApplicationHistoryModal } from "../component/ApplicationHistoryModal";
 import { MemberDetailModal } from "@/components/ui/MemberDetailModal";
+import type { ApiResponse } from "@/lib/api/apiClient";
+import type { AxiosError } from "axios";
 
 interface StampLevel {
   stampId: number;
@@ -96,14 +99,33 @@ export function MyStudySession() {
   const studyIdNum = Number(studyId);
   const { data: sessions = [] } = useQuery<StudySessionDetail[]>({
     queryKey: ["studySessions", studyId],
-    queryFn: () => fetchStudySessionsApi(studyIdNum, 0, 10),
+    queryFn: () => fetchStudySessionsApi(studyIdNum, 0, 20),
     enabled: Number.isFinite(studyIdNum),
   });
 
-  const handleCreateStudySession = () => {
+  const { mutate: submitStudySession } = useMutation<
+    StudySessionDetail,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number; title: string }
+  >({
+    mutationFn: ({ studyId, title }) => createStudySessionApi(studyId, title),
+    onSuccess: (res) => {
+      console.log("스터디 세션 생성 성공:", res);
+    },
+    onError: (error: unknown) => {
+      const err = error as AxiosError<{ message?: string }>;
+      alert(err.response?.data?.message || "프로필 업데이트 실패");
+    },
+  });
+
+  const handleCreateStudySession = (title: string) => {
+    submitStudySession({
+      studyId: studyIdNum,
+      title,
+    });
     setIsModalOpen(false);
-    // 스터디 일지 하나 추가하기
   };
+
   const navigate = useNavigate();
 
   // 스터디 멤버 조회
@@ -415,18 +437,17 @@ export function MyStudySession() {
             )}
           </div>
           <p className="text-subtitle-1">
-            총 <span className="text-primary-500">5개</span>
+            총 <span className="text-primary-500">{sessions.length}개</span>
           </p>
           <div className="grid grid-cols-2 gap-5">
             {sessions
               .slice()
               .reverse()
-              .map((study) => (
+              .map((session) => (
                 <StudySessionCard
-                  key={study.sessionId}
-                  sessionId={study.sessionId}
+                  key={session.sessionId}
                   isLeader={true}
-                  studySession={study}
+                  studySession={session}
                 />
               ))}
           </div>
