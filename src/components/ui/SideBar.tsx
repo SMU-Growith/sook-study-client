@@ -9,7 +9,7 @@ export function SideBar() {
     { name: "숙터디 둘러보기", path: "/study/match" },
     { name: "숙터디 만들기", path: "/study/create" },
     { name: "내 숙터디", path: "/study/my" },
-    { name: "지원 내역", path: "/applications" },
+    { name: "지원 내역", path: "/my-applications" },
   ];
   return (
     <aside className="fixed top-[88px] left-0 z-30 w-[160px] flex flex-col px-5 pt-10 gap-5 text-body-1">
