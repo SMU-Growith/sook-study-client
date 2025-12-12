@@ -11,7 +11,6 @@ import {
   STUDY_FORMAT_LABEL,
   STUDY_STYLE_LABEL,
 } from "@/features/study/constants";
-
 export interface Study {
   id: number;
   title: string;

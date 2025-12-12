@@ -30,6 +30,55 @@ import { StudyRuleModal } from "../component/StudyRuleModal";
 import { useMutation } from "@tanstack/react-query";
 import { ApplicationHistoryModal } from "../component/ApplicationHistoryModal";
 import { is } from "zod/v4/locales";
+import { MemberDetailModal } from "@/components/ui/MemberDetailModal";
+
+interface StampLevel {
+  stampId: number;
+  level: "NONE" | "LEVEL_1" | "LEVEL_2";
+  levelName: string;
+  levelDescription: string;
+  isAchieved: boolean;
+}
+
+export interface Stamp {
+  stampType: "WELCOME" | "LEADER" | "RECORD" | "CHEER" | "SUPERSTAR ";
+  stampName: string;
+  description: string;
+  achievedLevel: "NONE" | "LEVEL_1" | "LEVEL_2";
+  isAchieved: boolean;
+  isCompleted: boolean;
+  levels?: StampLevel[];
+}
+
+const exampleStampData: Stamp[] = [
+  {
+    stampType: "WELCOME",
+    stampName: "웰컴숙",
+    description:
+      "숙터디 회원가입을 축하해요! 숙터디에서 다양한 활동을 이용해보세요.",
+    achievedLevel: "NONE",
+    isAchieved: true,
+    isCompleted: true,
+  },
+  {
+    stampType: "LEADER",
+    stampName: "리더숙",
+    description:
+      "스터디 개설을 하셨네요. 스터디장은 스터디 일지를 회차별로 생성할 수 있어요.",
+    achievedLevel: "LEVEL_1",
+    isAchieved: true,
+    isCompleted: false,
+    levels: [
+      {
+        stampId: 1,
+        level: "LEVEL_1",
+        levelName: "과대송",
+        levelDescription: "스터디 1회 개설",
+        isAchieved: true,
+      },
+    ],
+  },
+];
 
 export function MyStudySession() {
   const auth = useAuthStore();
@@ -40,6 +89,14 @@ export function MyStudySession() {
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const [isMemberDetailModalOpen, setIsMemberDetailModalOpen] = useState(false);
+  const [selectedMemberStamp, setSelectedMemberStamp] = useState<
+    Stamp[] | null
+  >(null);
+  const [selectedMemberNickname, setSelectedMemberNickname] = useState<
+    string | null
+  >(null);
+
   const [sessions, setSessions] = useState(myStudySessionListData);
 
   const handleCreateStudySession = () => {
@@ -136,12 +193,21 @@ export function MyStudySession() {
                 <Badge variant="purple" icon={StudyLeaderSvg}>
                   스터디장
                 </Badge>
-                <div className="flex items-center">
-                  <img src={UserProfileSvg} alt="User Profile" />
-                  <span className="text-body-2-semibold text-gray-400 ml-1">
-                    {leader?.nickname}
-                  </span>
-                </div>
+                <button
+                  onClick={() => {
+                    // member.userId를 파라미터로 받는 멤버스탬프조회api 호출
+                    setSelectedMemberNickname(leader?.nickname || null);
+                    setSelectedMemberStamp(exampleStampData);
+                    setIsMemberDetailModalOpen(true);
+                  }}
+                >
+                  <div className="flex items-center">
+                    <img src={UserProfileSvg} alt="User Profile" />
+                    <span className="text-body-2-semibold text-gray-400 ml-1">
+                      {leader?.nickname}
+                    </span>
+                  </div>
+                </button>
               </div>
               <div className="flex flex-col gap-3">
                 <Badge variant="yellow" icon={StudyMemberSvg}>
@@ -149,14 +215,30 @@ export function MyStudySession() {
                 </Badge>
                 <div className="grid grid-cols-3 gap-3">
                   {members.map((member) => (
-                    <div className="flex items-center" key={member.userId}>
-                      <img src={UserProfileSvg} alt="User Profile" />
-                      <span className="text-body-2-semibold text-gray-400 ml-1">
-                        {member?.nickname}
-                      </span>
-                    </div>
+                    <button
+                      onClick={() => {
+                        // member.userId를 파라미터로 받는 멤버스탬프조회api 호출
+                        setSelectedMemberNickname(member?.nickname || null);
+                        setSelectedMemberStamp(exampleStampData);
+                        setIsMemberDetailModalOpen(true);
+                      }}
+                    >
+                      <div className="flex items-center" key={member.userId}>
+                        <img src={UserProfileSvg} alt="User Profile" />
+                        <span className="text-body-2-semibold text-gray-400 ml-1">
+                          {member?.nickname}
+                        </span>
+                      </div>
+                    </button>
                   ))}
                 </div>
+                <MemberDetailModal
+                  isOpen={isMemberDetailModalOpen}
+                  onClose={() => setIsMemberDetailModalOpen(false)}
+                  onConfirm={() => setIsMemberDetailModalOpen(false)}
+                  stamps={selectedMemberStamp}
+                  nickname={selectedMemberNickname || undefined}
+                />
                 <StudyMemberModal
                   isOpen={isMemberModalOpen}
                   onClose={() => setIsMemberModalOpen(false)}

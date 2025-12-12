@@ -1,10 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Logo } from '@/components/ui/Logo';
-import { Button } from '@/components/ui/button';
-import UserProfileSvg from '@/assets/icons/userProfile.svg';
-import { useAuthStore } from '@/store/authStore';
-import { useState } from 'react';
-import { DropdownList } from '../ui/DropdownList';
+import { Link, useNavigate } from "react-router-dom";
+import { Logo } from "@/components/ui/Logo";
+import { Button } from "@/components/ui/button";
+import UserProfileSvg from "@/assets/icons/userProfile.svg";
+import { useAuthStore } from "@/store/authStore";
+import { useState } from "react";
+import { DropdownList } from "../ui/DropdownList";
 
 interface AuthHeaderProps {
   className?: string;
@@ -17,11 +17,11 @@ export function AuthHeader({ className }: AuthHeaderProps) {
   const handleMenuSelect = (option: string) => {
     setIsProfileClicked(false);
     // Handle menu option selection
-    if (option === '프로필 수정') {
-      navigate('/my-page');
-    } else if (option === '스탬프 관리') {
-      navigate('/my-page/stamp');
-    } else if (option === '내 스크랩 스터디') {
+    if (option === "프로필 수정") {
+      navigate("/my-page");
+    } else if (option === "스탬프 관리") {
+      navigate("/my-page/stamp");
+    } else if (option === "내 스크랩 스터디") {
     }
   };
 
@@ -45,9 +45,9 @@ export function AuthHeader({ className }: AuthHeaderProps) {
         </Button>
       )}
       {isProfileClicked && (
-        <div className="absolute left-270 w-[170px]">
+        <div className="absolute right-4 top-16 w-[170px]">
           <DropdownList
-            options={['프로필 수정', '스탬프 관리', '내 스크랩 스터디']}
+            options={["프로필 수정", "스탬프 관리", "내 스크랩 스터디"]}
             onSelect={handleMenuSelect}
           />
         </div>
