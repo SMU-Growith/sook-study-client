@@ -53,3 +53,15 @@ export interface StudyListResult {
   studyPreviews: StudyResult[];
   listSize: number;
 }
+
+export interface StudySessionDetail {
+  sessionId: number;
+  sessionNumber: string;
+  title: string;
+  submittedCount: string;
+}
+
+export interface StudySessionList {
+  studySessions: StudySessionDetail[];
+  totalCount: number;
+}

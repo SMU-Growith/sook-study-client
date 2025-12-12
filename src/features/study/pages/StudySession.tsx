@@ -6,7 +6,6 @@ import StudyLeaderSvg from "@/assets/studyLeader.svg";
 import StudyMemberSvg from "@/assets/studyMember.svg";
 import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import BlueCircleSvg from "@/assets/blueCircle.svg";
-import { myStudySessionListData } from "../studySession";
 import PlusSvg from "@/assets/icons/plus.svg";
 import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
@@ -19,17 +18,14 @@ import { StudyMemberModal } from "../component/StudyMemberModal";
 import {
   fetchStudyById,
   fetchStudyMembersApi,
+  fetchStudySessionsApi,
   studyChangeLeaderApi,
 } from "../api/study";
-import type { AxiosError } from "axios";
-import type { ApiResponse } from "@/lib/api";
-import type { Study } from "@/components/ui/StudyCard";
-import type { Rules, StudyMember } from "../api/studyType";
+import type { Rules, StudyMember, StudySessionDetail } from "../api/studyType";
 import { defaultStudyMembers } from "../studyMembers";
 import { StudyRuleModal } from "../component/StudyRuleModal";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ApplicationHistoryModal } from "../component/ApplicationHistoryModal";
-import { is } from "zod/v4/locales";
 import { MemberDetailModal } from "@/components/ui/MemberDetailModal";
 
 interface StampLevel {
@@ -97,17 +93,14 @@ export function MyStudySession() {
     string | null
   >(null);
 
-  const [sessions, setSessions] = useState(myStudySessionListData);
+  const studyIdNum = Number(studyId);
+  const { data: sessions = [] } = useQuery<StudySessionDetail[]>({
+    queryKey: ["studySessions", studyId],
+    queryFn: () => fetchStudySessionsApi(studyIdNum, 0, 10),
+    enabled: Number.isFinite(studyIdNum),
+  });
 
   const handleCreateStudySession = () => {
-    const newSession = {
-      id: myStudySessionListData.length + 1,
-      title: "React 컴포넌트 아키텍처 분석하기",
-      submittedMembers: 0,
-      status: "진행중",
-    };
-
-    setSessions([...sessions, newSession]);
     setIsModalOpen(false);
     // 스터디 일지 하나 추가하기
   };
@@ -216,6 +209,7 @@ export function MyStudySession() {
                 <div className="grid grid-cols-3 gap-3">
                   {members.map((member) => (
                     <button
+                      key={member.userId}
                       onClick={() => {
                         // member.userId를 파라미터로 받는 멤버스탬프조회api 호출
                         setSelectedMemberNickname(member?.nickname || null);
@@ -223,7 +217,7 @@ export function MyStudySession() {
                         setIsMemberDetailModalOpen(true);
                       }}
                     >
-                      <div className="flex items-center" key={member.userId}>
+                      <div className="flex items-center">
                         <img src={UserProfileSvg} alt="User Profile" />
                         <span className="text-body-2-semibold text-gray-400 ml-1">
                           {member?.nickname}
@@ -325,7 +319,7 @@ export function MyStudySession() {
                 <hr className="border-t-3 border-gray-100" />
                 <div className="flex flex-col gap-3">
                   {["지송이", "지원송이", "원송이"].map((applierName) => (
-                    <div className="flex items-center">
+                    <div key={applierName} className="flex items-center">
                       <img src={UserProfileSvg} alt="User Profile" />
                       <span className="text-body-2-semibold text-gray-400 ml-1">
                         {applierName}
@@ -429,7 +423,8 @@ export function MyStudySession() {
               .reverse()
               .map((study) => (
                 <StudySessionCard
-                  id={study.id}
+                  key={study.sessionId}
+                  sessionId={study.sessionId}
                   isLeader={true}
                   studySession={study}
                 />
@@ -443,7 +438,7 @@ export function MyStudySession() {
           setIsModalOpen(false);
         }}
         onConfirm={handleCreateStudySession}
-        nextSessionId={myStudySessionListData.length + 1}
+        nextSessionId={sessions.length + 1}
       />
       <StudyOutModal
         isOpen={isStudyOutModalOpen}

@@ -3,7 +3,7 @@ import type {
   TStudyApplySchema,
   TStudySchema,
 } from "@/features/study/validators/study";
-import type { StudyListResult } from "./studyType";
+import type { StudyListResult, StudySessionList } from "./studyType";
 
 type StudyUpdateData = TStudySchema & { isRecruiting: boolean };
 
@@ -97,4 +97,16 @@ export const SearchStudyApi = async (
     `/studies/search?${params.toString()}`
   );
   return response.data.result.studyPreviews;
+};
+
+// 스터디 세션 리스트 조회 API
+export const fetchStudySessionsApi = async (
+  studyId: number,
+  page: number,
+  size: number
+) => {
+  const response = await apiClient.get<ApiResponse<StudySessionList>>(
+    `/studies/${studyId}/sessions?page=${page}&size=${size}`
+  );
+  return response.data.result.studySessions;
 };

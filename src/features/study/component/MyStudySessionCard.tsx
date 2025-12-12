@@ -1,23 +1,17 @@
 // import { useAuthStore } from '@/store/authStore';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Button } from '../../../components/ui/button';
-import BurgerIconSvg from '@/assets/burgerIcon.svg';
-import People from '@/assets/people.svg';
-import { useState } from 'react';
-import { DropdownList } from '../../../components/ui/DropdownList';
-import { StudySessionUpdateModal } from '@/features/study/component/StudySessionUpdateModal';
-
-export type MyStudySession = {
-  id: number;
-  title: string;
-  submittedMembers: number;
-  status: string;
-};
+import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "../../../components/ui/button";
+import BurgerIconSvg from "@/assets/burgerIcon.svg";
+import People from "@/assets/people.svg";
+import { useState } from "react";
+import { DropdownList } from "../../../components/ui/DropdownList";
+import { StudySessionUpdateModal } from "@/features/study/component/StudySessionUpdateModal";
+import type { StudySessionDetail } from "../api/studyType";
 
 interface MyStudySessionCardProps {
-  id: number;
+  sessionId: number;
   isLeader: boolean;
-  studySession: MyStudySession;
+  studySession: StudySessionDetail;
 }
 
 export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
@@ -29,7 +23,7 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
 
   const handleCardClick = () => {
     navigate(
-      `/study/my/${studyId}/${studySession.id}?sessionTitle=${encodeURIComponent(
+      `/study/my/${studyId}/${studySession.sessionId}?sessionTitle=${encodeURIComponent(
         studySession.title
       )}`
     );
@@ -37,7 +31,7 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
 
   const handleBurgerIconSelect = (option: string) => {
     console.log(`선택된 옵션: ${option}`);
-    if (option == '수정하기') {
+    if (option == "수정하기") {
       setIsUpdateModalOpen(true);
     }
     setIsBurgerIconClicked(false);
@@ -45,7 +39,7 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
   };
 
   const handleUpdateStudySession = () => {
-    studySession.title = 'React 컴포넌트 아키텍처 설계하기';
+    studySession.title = "React 컴포넌트 아키텍처 설계하기";
     setIsUpdateModalOpen(false);
   };
   return (
@@ -54,7 +48,9 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
         <div className="flex flex-col gap-y-5">
           <div className="flex justify-between items-start">
             <div className="flex flex-col">
-              <p className="text-gray-300 text-body-1-semibold">{studySession.id}회차</p>
+              <p className="text-gray-300 text-body-1-semibold">
+                {studySession.sessionId}회차
+              </p>
               <h3 className="heading-3">{studySession.title}</h3>
             </div>
             <div className="relative">
@@ -62,12 +58,16 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
                 onClick={() => setIsBurgerIconClicked(!isBurgerIconClicked)}
                 className="relative"
               >
-                <img src={BurgerIconSvg} alt="버거 아이콘" className="w-6 h-6" />
+                <img
+                  src={BurgerIconSvg}
+                  alt="버거 아이콘"
+                  className="w-6 h-6"
+                />
               </button>
               {isBurgerIconClicked && (
                 <div className="absolute top-full left-[-90px] mt-1 w-[200px]">
                   <DropdownList
-                    options={['상태변경', '수정하기', '삭제하기']}
+                    options={["상태변경", "수정하기", "삭제하기"]}
                     onSelect={handleBurgerIconSelect}
                   />
                 </div>
@@ -78,7 +78,7 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
           <div className="flex items-center gap-1">
             <img src={People} alt="People" className="px-[2px] w-5 h-5" />
             <span className="text-body-2-semibold text-gray-400">
-              제출 멤버 {studySession.submittedMembers}명
+              제출 멤버 {studySession.submittedCount}명
             </span>
           </div>
           <Button variant="solid" onClick={handleCardClick}>
@@ -90,7 +90,7 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
         isOpen={isUpdateModalOpen}
         onClose={() => setIsUpdateModalOpen(false)}
         onConfirm={handleUpdateStudySession}
-        currSessionId={studySession.id}
+        currSessionId={studySession.sessionId}
         currTitle={studySession.title}
       />
     </div>
