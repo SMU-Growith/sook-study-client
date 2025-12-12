@@ -82,6 +82,7 @@ const exampleStampData: Stamp[] = [
 
 export function MyStudySession() {
   const auth = useAuthStore();
+  const isLeader = false;
   const { studyId } = useParams<{ studyId: string }>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStudyFinishModalOpen, setIsStudyFinishModalOpen] = useState(false);
@@ -102,7 +103,7 @@ export function MyStudySession() {
   const handleCreateStudySession = () => {
     const newSession = {
       id: myStudySessionListData.length + 1,
-      title: "React 컴포넌트 아키텍처 분석하기",
+      title: "최종 발표: 내가 만든 3분 영어 스피치",
       submittedMembers: 0,
       status: "진행중",
     };
@@ -170,8 +171,8 @@ export function MyStudySession() {
       <AuthHeader />
       <main className="flex w-full mt-[88px]">
         <div className="flex flex-col px-[18px] py-6 gap-5 w-[336px]">
-          <h2 className="heading-2">React 실력 키우실 분! 초보도 환영!</h2>
-          {auth.isLeader && (
+          <h2 className="heading-2">영어 회화 깨부수기 스터디</h2>
+          {isLeader && (
             <Button variant="default" size="md">
               모집글 수정하기
             </Button>
@@ -180,7 +181,7 @@ export function MyStudySession() {
             <div className="flex flex-col gap-y-[12px]">
               <div className="flex justify-between items-center">
                 <p className="text-body-1-semibold">스터디 멤버</p>
-                {auth.isLeader && (
+                {isLeader && (
                   <img
                     src={SettingsSvg}
                     alt="설정 아이콘"
@@ -255,7 +256,7 @@ export function MyStudySession() {
             <div className="flex flex-col gap-y-[12px]">
               <div className="flex justify-between items-center">
                 <p className="text-body-1-semibold">스터디 규칙</p>
-                {auth.isLeader && (
+                {isLeader && (
                   <img
                     src={SettingsSvg}
                     alt="설정 아이콘"
@@ -270,23 +271,24 @@ export function MyStudySession() {
                   rules={[
                     {
                       ruleCategory: "TIME",
-                      description: "매주 월,수,금 아침 7시까지 출석",
+                      description: "매주 토요일 오후 7시 ~ 9시",
                     },
                     {
                       ruleCategory: "FINE",
-                      description: "지각당 1000원, 무단결석 5000원",
+                      description: "",
                     },
                     {
                       ruleCategory: "DAY_OFF",
-                      description: "월 1회 자유롭게 휴무",
+                      description: "월 1회까지 휴무 가능",
                     },
                     {
                       ruleCategory: "ATMOSPHERE",
-                      description: "긍정적인 분위기 유지",
+                      description:
+                        "영어를 잘 못해도 편하게 이야기할 수 있는 분위기",
                     },
                     {
                       ruleCategory: "ETC",
-                      description: "기타 등등",
+                      description: "",
                     },
                   ]}
                 />
@@ -294,23 +296,24 @@ export function MyStudySession() {
               <hr className="border-t-3 border-gray-100" />
               <div className="flex flex-col gap-1">
                 <p className="text-body-1-semibold text-gray-300">시간</p>
-                <p className="text-body-1 text-black">아침 7시 입실</p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-body-1-semibold text-gray-300">벌금</p>
                 <p className="text-body-1 text-black">
-                  지각당 1000원 <br />
-                  무단 결석 5000원
+                  매주 토요일 오후 7시 ~ 9시
                 </p>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-body-1-semibold text-gray-300">휴무</p>
-                <p className="text-body-1 text-black">아침 7시 입실</p>
+                <p className="text-body-1 text-black">월 1회까지 휴무 가능</p>
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="text-body-1-semibold text-gray-300">분위기</p>
+                <p className="text-body-1 text-black">
+                  영어를 잘 못해도 편하게 이야기할 수 있는 분위기
+                </p>
               </div>
             </div>
           </div>
 
-          {auth.isLeader && (
+          {isLeader && (
             <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
               <div className="flex flex-col gap-y-[12px]">
                 <div className="flex justify-between items-center">
@@ -394,7 +397,7 @@ export function MyStudySession() {
           >
             스터디 나가기
           </Button>
-          {auth.isLeader && (
+          {isLeader && (
             <Button
               variant="deleted"
               size="md"
@@ -407,7 +410,7 @@ export function MyStudySession() {
         <div className="flex flex-1 flex-col px-10 py-10 gap-5">
           <div className="flex justify-between items-center">
             <h2 className="heading-2">스터디 일지</h2>
-            {auth.isLeader && (
+            {isLeader && (
               <div className="flex gap-2">
                 <Button
                   variant="primary"
@@ -421,7 +424,7 @@ export function MyStudySession() {
             )}
           </div>
           <p className="text-subtitle-1">
-            총 <span className="text-primary-500">5개</span>
+            총 <span className="text-primary-500">{sessions.length}개</span>
           </p>
           <div className="grid grid-cols-2 gap-5">
             {sessions
@@ -430,7 +433,7 @@ export function MyStudySession() {
               .map((study) => (
                 <StudySessionCard
                   id={study.id}
-                  isLeader={true}
+                  isLeader={isLeader}
                   studySession={study}
                 />
               ))}
