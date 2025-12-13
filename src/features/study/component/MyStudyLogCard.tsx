@@ -36,10 +36,14 @@ export function StudyLogCard({ sessionId, log }: MyStudyLogProps) {
     { journalId: number }
   >({
     mutationFn: ({ journalId }) => deleteStudyLogApi(journalId),
-    onSuccess: (res) => {
-      console.log("스터디 로그 삭제 성공:", res);
+    onSuccess: (_res, vars) => {
+      console.log("스터디 로그 삭제 성공:", _res);
+
       queryClient.invalidateQueries({
         queryKey: studyQueryKeys.studyLogs(sessionId),
+      });
+      queryClient.removeQueries({
+        queryKey: studyQueryKeys.studyLogDetail(vars.journalId),
       });
     },
     onError: (error: unknown) => {
@@ -59,10 +63,10 @@ export function StudyLogCard({ sessionId, log }: MyStudyLogProps) {
     { journalId: number; data: TStudyLogSchema }
   >({
     mutationFn: ({ journalId, data }) => updateStudyLogApi(journalId, data),
-    onSuccess: (res) => {
-      console.log("스터디 로그 수정 성공:", res);
+    onSuccess: (_res, vars) => {
+      console.log("스터디 로그 수정 성공:", _res);
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.studyLogDetail(log.journalId),
+        queryKey: studyQueryKeys.studyLogDetail(vars.journalId),
       });
     },
     onError: (error: unknown) => {
@@ -118,7 +122,10 @@ export function StudyLogCard({ sessionId, log }: MyStudyLogProps) {
             <Button
               variant="solid"
               size="sm"
-              onClick={() => setIsReadModalOpen(true)}
+              onClick={() => {
+                setIsReadModalOpen(true);
+                console.log("journalId: " + log.journalId);
+              }}
               className="flex-1"
             >
               상세보기

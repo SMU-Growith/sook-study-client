@@ -26,13 +26,20 @@ import StudyLog1 from "@/assets/studyLogs/studyLog1.svg";
 import StudyLog2 from "@/assets/studyLogs/studyLog2.svg";
 import StudyLog3 from "@/assets/studyLogs/studyLog3.svg";
 import { CarouselNavButtons } from "@/components/ui/CarouselNavButtons";
-import type { StudyLogDetail } from "../api/studyType";
+import type { EmojiCounts, StudyLogDetail } from "../api/studyType";
 import { Badge } from "@/components/ui/Badge";
 import StudyLeader from "@/assets/studyLeader.svg";
 import StudyMember from "@/assets/studyMember.svg";
+import type { ApiResponse } from "@/lib/api/apiClient";
+import type { AxiosError } from "axios";
+import { toggleStudyLogEmojiApi } from "../api/study";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { studyQueryKeys } from "../api/queries";
 
 const CARDS_PER_VIEW = 1;
 const MOVE_BY = 1;
+
+type EmojiType = "heart" | "like" | "laugh" | "surprise" | "curiosity";
 
 interface StudyLogReadModalProps {
   isOpen: boolean;
@@ -47,66 +54,57 @@ export function StudyLogReadModal({
   sessionId,
   logDetail,
 }: StudyLogReadModalProps) {
-  const emojiCounts = logDetail?.emojiCounts;
-  const emojiStatus = logDetail?.emojiStatus;
-
-  const [isHearted, setIsHearted] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isLaughing, setIsLaughing] = useState(false);
-  const [isSurprised, setIsSurprised] = useState(false);
-  const [isCuriosity, setIsCuriosity] = useState(false);
-
-  const [heartCount, setHeartCount] = useState(0);
-  const [likeCount, setLikeCount] = useState(0);
-  const [laughCount, setLaughCount] = useState(0);
-  const [surpriseCount, setSurpriseCount] = useState(0);
-  const [curiosityCount, setCuriosityCount] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!isOpen || !logDetail) return;
-
-    setIsHearted(emojiStatus?.heart ?? false);
-    setIsLiked(emojiStatus?.like ?? false);
-    setIsLaughing(emojiStatus?.laugh ?? false);
-    setIsSurprised(emojiStatus?.surprise ?? false);
-    setIsCuriosity(emojiStatus?.curiosity ?? false);
-
-    setHeartCount(emojiCounts?.heart ?? 0);
-    setLikeCount(emojiCounts?.like ?? 0);
-    setLaughCount(emojiCounts?.laugh ?? 0);
-    setSurpriseCount(emojiCounts?.surprise ?? 0);
-    setCuriosityCount(emojiCounts?.curiosity ?? 0);
   }, [isOpen, logDetail]);
 
+  const { mutate: toggleEmoji } = useMutation<
+    EmojiCounts,
+    AxiosError<ApiResponse<null>>,
+    { journalId: number; emojiType: EmojiType }
+  >({
+    mutationFn: ({ journalId, emojiType }) =>
+      toggleStudyLogEmojiApi(journalId, emojiType),
+    onSuccess: async (_data, vars) => {
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studyLogDetail(vars.journalId),
+      });
+    },
+    onError: (error) => {
+      alert(
+        error.response?.data?.message || "스터디 일지 반응 수정에 실패했습니다."
+      );
+    },
+  });
+
+  const [currentIndex, setCurrentIndex] = useState(0);
   const images = [StudyLog1, StudyLog2, StudyLog3]; // TODO 실제 이미지 데이터로 교체 필요
   const totalStudies = images.length;
 
   if (!logDetail) return null;
 
-  const handleHeartClick = () => {
-    setIsHearted(!isHearted);
-    setHeartCount(isHearted ? heartCount - 1 : heartCount + 1);
-  };
+  const journalId = logDetail.journalId;
 
-  const handleLikeClick = () => {
-    setIsLiked(!isLiked);
-    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
-  };
+  const emojiCounts = logDetail.emojiCounts;
+  const emojiStatus = logDetail.emojiStatus;
 
-  const handleLaughClick = () => {
-    setIsLaughing(!isLaughing);
-    setLaughCount(isLaughing ? laughCount - 1 : laughCount + 1);
-  };
+  const heartCount = emojiCounts?.heart ?? 0;
+  const likeCount = emojiCounts?.like ?? 0;
+  const laughCount = emojiCounts?.laugh ?? 0;
+  const surpriseCount = emojiCounts?.surprise ?? 0;
+  const curiosityCount = emojiCounts?.curiosity ?? 0;
 
-  const handleSurpriseClick = () => {
-    setIsSurprised(!isSurprised);
-    setSurpriseCount(isSurprised ? surpriseCount - 1 : surpriseCount + 1);
-  };
+  const isHearted = Boolean(emojiStatus?.heart);
+  const isLiked = Boolean(emojiStatus?.like);
+  const isLaughing = Boolean(emojiStatus?.laugh);
+  const isSurprised = Boolean(emojiStatus?.surprise);
+  const isCuriosity = Boolean(emojiStatus?.curiosity);
 
-  const handleCuriosityClick = () => {
-    setIsCuriosity(!isCuriosity);
-    setCuriosityCount(isCuriosity ? curiosityCount - 1 : curiosityCount + 1);
+  const handleToggle = (emojiType: EmojiType) => {
+    if (!journalId) return;
+    toggleEmoji({ journalId, emojiType });
   };
 
   const handlePrev = () => {
@@ -223,27 +221,27 @@ export function StudyLogReadModal({
             <img
               src={isHearted ? HeartFillSvg : HeartReactionSvg}
               alt="하트 아이콘"
-              onClick={handleHeartClick}
+              onClick={() => handleToggle("heart")}
             />
             <img
               src={isLiked ? LikeFillSvg : LikeReactionSvg}
               alt="좋아요 아이콘"
-              onClick={handleLikeClick}
+              onClick={() => handleToggle("like")}
             />
             <img
               src={isLaughing ? LaughFillSvg : SmileReactionSvg}
               alt="웃음 아이콘"
-              onClick={handleLaughClick}
+              onClick={() => handleToggle("laugh")}
             />
             <img
               src={isSurprised ? SurpriseFillSvg : SurpriseReactionSvg}
               alt="놀람 아이콘"
-              onClick={handleSurpriseClick}
+              onClick={() => handleToggle("surprise")}
             />
             <img
               src={isCuriosity ? CuriosityFillSvg : CuriosityReactionSvg}
               alt="궁금해요 아이콘"
-              onClick={handleCuriosityClick}
+              onClick={() => handleToggle("curiosity")}
             />
           </div>
         </div>

@@ -20,6 +20,7 @@ interface MyStudySessionCardProps {
 
 export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
   const { studyId } = useParams<{ studyId: string }>();
+  const studyIdNum = Number(studyId);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -42,7 +43,7 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
       alert("스터디 일지가 수정되었습니다.");
       setIsUpdateModalOpen(false);
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.studySessions(Number(studyId)),
+        queryKey: studyQueryKeys.studySessions(studyIdNum),
       });
     },
     onError: (error) => {

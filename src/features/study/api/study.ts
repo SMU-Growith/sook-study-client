@@ -5,6 +5,7 @@ import type {
   TStudySchema,
 } from "@/features/study/validators/study";
 import type {
+  EmojiCounts,
   StudyListResult,
   StudyLogDetail,
   StudyLogList,
@@ -190,4 +191,18 @@ export const deleteStudyLogApi = async (journalId: number) => {
     `/studies/journal/${journalId}`
   );
   return response.data;
+};
+
+// 스터디 일지 반응 API
+export const toggleStudyLogEmojiApi = async (
+  studyJournalId: number,
+  emojiType: string
+) => {
+  const response = await apiClient.patch<ApiResponse<EmojiCounts>>(
+    `/studies/journals/${studyJournalId}/emoji`,
+    {
+      emojiType,
+    }
+  );
+  return response.data.result;
 };

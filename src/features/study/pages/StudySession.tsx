@@ -111,9 +111,11 @@ export function MyStudySession() {
     { studyId: number; title: string }
   >({
     mutationFn: ({ studyId, title }) => createStudySessionApi(studyId, title),
-    onSuccess: (res) => {
-      console.log("스터디 세션 생성 성공:", res);
-      queryClient.invalidateQueries({ queryKey: ["studySessions", studyId] });
+    onSuccess: (_res, vars) => {
+      console.log("스터디 세션 생성 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studySessions(vars.studyId),
+      });
     },
     onError: (error: unknown) => {
       const err = error as AxiosError<{ message?: string }>;
