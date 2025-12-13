@@ -30,6 +30,7 @@ import { ApplicationHistoryModal } from "../component/ApplicationHistoryModal";
 import { MemberDetailModal } from "@/components/ui/MemberDetailModal";
 import type { ApiResponse } from "@/lib/api/apiClient";
 import type { AxiosError } from "axios";
+import { studyQueryKeys } from "../api/queries";
 
 interface StampLevel {
   stampId: number;
@@ -99,7 +100,7 @@ export function MyStudySession() {
 
   const studyIdNum = Number(studyId);
   const { data: sessions = [] } = useQuery<StudySessionDetail[]>({
-    queryKey: ["studySessions", studyId],
+    queryKey: studyQueryKeys.studySessions(studyIdNum),
     queryFn: () => fetchStudySessionsApi(studyIdNum, 0, 20),
     enabled: Number.isFinite(studyIdNum),
   });

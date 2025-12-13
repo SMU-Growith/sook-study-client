@@ -5,6 +5,7 @@ import { StudyCard } from "@/components/ui/StudyCard";
 import { HomeStudyApi } from "../api/study";
 import type { StudyResult } from "../api/studyType";
 import { useQuery } from "@tanstack/react-query";
+import { studyQueryKeys } from "../api/queries";
 
 const CARDS_PER_VIEW = 3; // 한 번에 보여줄 카드 수
 const MOVE_BY = 2; // 한 번에 이동할 카드 수
@@ -20,7 +21,7 @@ export function HomeStudy({ type, onCardClick }: HomeStudyProps) {
 
   // 홈 스터디 데이터 조회
   const { data: homeStudies = [] } = useQuery<StudyResult[]>({
-    queryKey: ["homeStudies", type, sortParam],
+    queryKey: studyQueryKeys.homeStudies(type, sortParam),
     queryFn: () => HomeStudyApi(0, 10, sortParam),
   });
 

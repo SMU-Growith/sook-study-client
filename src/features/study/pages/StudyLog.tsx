@@ -16,6 +16,7 @@ import { createStudyLogApi, fetchStudyLogsApi } from "../api/study";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/lib/api";
 import type { TStudyLogSchema } from "../validators/study";
+import { studyQueryKeys } from "../api/queries";
 
 export function MyStudyLog() {
   const auth = useAuthStore();
@@ -27,7 +28,7 @@ export function MyStudyLog() {
   // 일지 리스트 불러오기
   const sessionIdNum = Number(sessionId);
   const { data: logData } = useQuery<StudyLogList>({
-    queryKey: ["studySessionLog", sessionIdNum],
+    queryKey: studyQueryKeys.studyLogs(sessionIdNum),
     queryFn: () => fetchStudyLogsApi(sessionIdNum, 0, 20),
     enabled: Number.isFinite(sessionIdNum),
   });
@@ -47,7 +48,7 @@ export function MyStudyLog() {
     onSuccess: (res) => {
       console.log("스터디 로그 생성 성공:", res);
       queryClient.invalidateQueries({
-        queryKey: ["studySessionLog", sessionIdNum],
+        queryKey: studyQueryKeys.studyLogs(sessionIdNum),
       });
       setIsWriteModalOpen(false);
     },

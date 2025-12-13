@@ -11,6 +11,7 @@ import type { ApiResponse } from "@/lib/api/apiClient";
 import type { AxiosError } from "axios";
 import { updateStudySessionApi } from "../api/study";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { studyQueryKeys } from "../api/queries";
 
 interface MyStudySessionCardProps {
   isLeader: boolean;
@@ -41,7 +42,7 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
       alert("스터디 일지가 수정되었습니다.");
       setIsUpdateModalOpen(false);
       queryClient.invalidateQueries({
-        queryKey: ["studySessions", studyId],
+        queryKey: studyQueryKeys.studySessions(Number(studyId)),
       });
     },
     onError: (error) => {
