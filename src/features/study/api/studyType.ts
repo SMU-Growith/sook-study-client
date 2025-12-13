@@ -65,3 +65,54 @@ export interface StudySessionList {
   studySessions: StudySessionDetail[];
   totalCount: number;
 }
+
+export interface StudyLogPreview {
+  journalId: number;
+  title: number;
+  nickName: string;
+  studyRole: string;
+  viewCount: string;
+}
+
+export interface StudyLogList {
+  totalCount: number;
+  sessionNumber: string;
+  title: string;
+  journals: StudyLogPreview[];
+}
+
+export interface StudyLogDetail {
+  journalId: number;
+  title: string;
+  content: string;
+  url: string;
+  nickName: string;
+  studyRole: "LEADER" | "MEMBER";
+  viewCount: number;
+  attachments: attachment[];
+  emojiCounts: EmojiCounts;
+  emojiStatus: EmojiStatus;
+}
+
+export interface attachment {
+  attachmentId: number;
+  fileUrl: string;
+  fileName: string;
+  fileSize: number;
+}
+
+export interface EmojiCounts {
+  heart: number;
+  like: number;
+  laugh: number;
+  surprise: number;
+  curiosity: number;
+}
+
+export interface EmojiStatus {
+  heart: boolean;
+  like: boolean;
+  laugh: boolean;
+  surprise: boolean;
+  curiosity: boolean;
+}

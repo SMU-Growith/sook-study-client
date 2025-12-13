@@ -5,6 +5,8 @@ import type {
 } from "@/features/study/validators/study";
 import type {
   StudyListResult,
+  StudyLogDetail,
+  StudyLogList,
   StudySessionDetail,
   StudySessionList,
 } from "./studyType";
@@ -135,4 +137,24 @@ export const updateStudySessionApi = async (
     title,
   });
   return response.data;
+};
+
+// 스터디 로그 리스트 조회 API
+export const fetchStudyLogsApi = async (
+  sessionId: number,
+  page: number,
+  size: number
+) => {
+  const response = await apiClient.get<ApiResponse<StudyLogList>>(
+    `/studies/session/${sessionId}/journals?page=${page}&size=${size}`
+  );
+  return response.data.result;
+};
+
+// 스터디 로그 상세 조회 API
+export const fetchStudyLogDetailApi = async (journalId: number) => {
+  const response = await apiClient.get<ApiResponse<StudyLogDetail>>(
+    `/studies/journal/${journalId}`
+  );
+  return response.data.result;
 };

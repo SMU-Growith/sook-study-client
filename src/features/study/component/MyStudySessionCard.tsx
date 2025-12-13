@@ -27,11 +27,7 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   const handleCardClick = () => {
-    navigate(
-      `/study/my/${studyId}/${studySession.sessionId}?sessionTitle=${encodeURIComponent(
-        studySession.title
-      )}`
-    );
+    navigate(`/study/my/${studyId}/${studySession.sessionId}`);
   };
 
   const { mutate: updateStudySession } = useMutation<
