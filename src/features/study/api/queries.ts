@@ -6,4 +6,5 @@ export const studyQueryKeys = {
   studyLogs: (sessionId: number) => ["studyLogs", sessionId] as const,
   studyLogDetail: (journalId: number) => ["studyLogDetail", journalId] as const,
   myApplications: () => ["myApplications"] as const,
+  studyMatch: () => ["studyMatch"] as const,
 };

@@ -8,12 +8,12 @@ import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { ApplicationDeleteModal } from "./ApplicationDeleteModal";
-import type { MyApplication } from "../api/studyType";
+import type { MyApplication, ToggleScrap } from "../api/studyType";
 import type { ApiResponse } from "@/lib/api/apiClient";
 import type { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { studyQueryKeys } from "../api/queries";
-import { deleteStudyApplicationApi } from "../api/study";
+import { deleteStudyApplicationApi, toggleStudyScrapApi } from "../api/study";
 
 interface ApplicationCardProps {
   application: MyApplication;
@@ -25,15 +25,30 @@ export function ApplicationCard({
   onCardClick,
 }: ApplicationCardProps) {
   const queryClient = useQueryClient();
-  const [isScrapped, setIsScrapped] = useState(false);
-  const [scrapCount, setScrapCount] = useState(application.scrapCount);
   const { isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
+  const { mutate: toggleScrap } = useMutation<
+    ToggleScrap,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number }
+  >({
+    mutationFn: ({ studyId }) => toggleStudyScrapApi(studyId),
+    onSuccess: async (_data, vars) => {
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studyMatch(),
+      });
+    },
+    onError: (error) => {
+      alert(
+        error.response?.data?.message || "스터디 스크랩 수정에 실패했습니다."
+      );
+    },
+  });
+
   const handleScrapClick = () => {
-    setIsScrapped(!isScrapped);
-    setScrapCount(isScrapped ? scrapCount - 1 : scrapCount + 1);
+    toggleScrap({ studyId: application.studyId });
   };
 
   const handleCardClick = () => {
@@ -96,12 +111,12 @@ export function ApplicationCard({
           </div>
           <div className="flex items-center">
             <img
-              src={isScrapped ? HeartFillSvg : HeartSvg}
+              src={application.isScraped ? HeartFillSvg : HeartSvg}
               alt="Heart Background"
               onClick={handleScrapClick}
             />
             <span className="text-body-2-semibold text-gray-400 ml-1">
-              {scrapCount}
+              {application.scrapCount}
             </span>
           </div>
         </div>

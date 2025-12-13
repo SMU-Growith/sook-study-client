@@ -12,6 +12,7 @@ import type {
   StudyLogList,
   StudySessionDetail,
   StudySessionList,
+  ToggleScrap,
 } from "./studyType";
 
 type StudyUpdateData = TStudySchema & { isRecruiting: boolean };
@@ -222,4 +223,12 @@ export const deleteStudyApplicationApi = async (applicationId: number) => {
     `/studies/applications/${applicationId}`
   );
   return response.data;
+};
+
+// 스터디 스크랩 API
+export const toggleStudyScrapApi = async (studyId: number) => {
+  const response = await apiClient.post<ApiResponse<ToggleScrap>>(
+    `/studies/${studyId}/scrap/toggle`
+  );
+  return response.data.result;
 };

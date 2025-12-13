@@ -131,3 +131,9 @@ export interface MyApplication {
   createdAt: string;
   applicationStatus: "ACCEPTED" | "PENDING" | "REJECTED";
 }
+
+export interface ToggleScrap {
+  studyId: number;
+  isScraped: boolean;
+  scrapCount: number;
+}
