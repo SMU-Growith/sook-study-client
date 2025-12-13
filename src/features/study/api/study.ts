@@ -6,6 +6,7 @@ import type {
 } from "@/features/study/validators/study";
 import type {
   EmojiCounts,
+  MyApplication,
   StudyListResult,
   StudyLogDetail,
   StudyLogList,
@@ -203,6 +204,14 @@ export const toggleStudyLogEmojiApi = async (
     {
       emojiType,
     }
+  );
+  return response.data.result;
+};
+
+// 스터디 지원내역 API
+export const fetchMyApplicationsApi = async () => {
+  const response = await apiClient.get<ApiResponse<MyApplication[]>>(
+    `/studies/my-applications`
   );
   return response.data.result;
 };

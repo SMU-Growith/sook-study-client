@@ -116,3 +116,18 @@ export interface EmojiStatus {
   surprise: boolean;
   curiosity: boolean;
 }
+
+export interface MyApplication {
+  applicationId: number;
+  studyId: number;
+  title: string;
+  studyStatus: "ACTIVE" | "CLOSED";
+  studyFormat: string;
+  studyFieldName: string;
+  studyStyleCategory: string;
+  nickname: string;
+  scrapCount: number;
+  isScraped: boolean;
+  createdAt: string;
+  applicationStatus: "ACCEPTED" | "PENDING" | "REJECTED";
+}

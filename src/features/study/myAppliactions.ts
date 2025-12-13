@@ -1,4 +1,4 @@
-import type { Application } from "@/components/ui/ApplicationCard";
+import type { Application } from "@/features/study/component/ApplicationCard";
 
 export const myApplicationsData: Application[] = [
   {

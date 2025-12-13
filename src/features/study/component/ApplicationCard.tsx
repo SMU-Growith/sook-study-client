@@ -1,28 +1,17 @@
-import { Badge } from "./Badge";
-import { Tag } from "./Tag";
+import { Badge } from "../../../components/ui/Badge";
+import { Tag } from "../../../components/ui/Tag";
 import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import HeartSvg from "@/assets/icons/heart.svg";
 import HeartFillSvg from "@/assets/icons/heartFill.svg";
 import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
-import { Button } from "./button";
-import { ApplicationDeleteModal } from "../../features/study/component/ApplicationDeleteModal";
-
-export interface Application {
-  // Study 정보 + approved 필드
-  id: number;
-  title: string;
-  status: "모집중" | "모집완료";
-  tags: string[];
-  author: string;
-  likeCount: number;
-  applyStatus: "APPROVED" | "PENDING" | "REJECTED";
-  applicationDate: string;
-}
+import { Button } from "../../../components/ui/button";
+import { ApplicationDeleteModal } from "./ApplicationDeleteModal";
+import type { MyApplication } from "../api/studyType";
 
 interface ApplicationCardProps {
-  application: Application;
+  application: MyApplication;
   onCardClick?: () => void;
 }
 
@@ -30,15 +19,15 @@ export function ApplicationCard({
   application,
   onCardClick,
 }: ApplicationCardProps) {
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(application.likeCount);
+  const [isScrapped, setIsScrapped] = useState(false);
+  const [scrapCount, setScrapCount] = useState(application.scrapCount);
   const { isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const handleLikeClick = () => {
-    setIsLiked(!isLiked);
-    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+  const handleScrapClick = () => {
+    setIsScrapped(!isScrapped);
+    setScrapCount(isScrapped ? scrapCount - 1 : scrapCount + 1);
   };
 
   const handleCardClick = () => {
@@ -60,46 +49,48 @@ export function ApplicationCard({
         <div className="flex flex-col gap-y-5" onClick={handleCardClick}>
           <div>
             <Badge
-              variant={application.status === "모집중" ? "purple" : "black"}
+              variant={
+                application.studyStatus === "ACTIVE" ? "purple" : "black"
+              }
             >
-              {application.status}
+              {application.studyStatus === "ACTIVE" ? "모집중" : "모집종료"}
             </Badge>
           </div>
           <h3 className="heading-3">{application.title}</h3>
-          <div className="flex gap-1">
-            {application.tags.map((tag, index) => (
-              <Tag key={index}>{tag}</Tag>
-            ))}
+          <div className="flex flex-wrap gap-1">
+            <Tag>{application.studyFormat}</Tag>
+            <Tag>{application.studyFieldName}</Tag>
+            <Tag>{application.studyStyleCategory}</Tag>
           </div>
         </div>
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <img src={UserProfileSvg} alt="User Profile" />
             <span className="text-body-2-semibold text-gray-400 ml-1">
-              {application.author}
+              {application.nickname}
             </span>
           </div>
           <div className="flex items-center">
             <img
-              src={isLiked ? HeartFillSvg : HeartSvg}
+              src={isScrapped ? HeartFillSvg : HeartSvg}
               alt="Heart Background"
-              onClick={handleLikeClick}
+              onClick={handleScrapClick}
             />
             <span className="text-body-2-semibold text-gray-400 ml-1">
-              {likeCount}
+              {scrapCount}
             </span>
           </div>
         </div>
         <hr className="border-t-3 border-gray-100" />
         <p className="text-caption text-gray-300">
-          신청날짜 {application.applicationDate}
+          신청날짜 {application.createdAt.split("T")[0]}
         </p>
-        {application.applyStatus === "APPROVED" && (
+        {application.applicationStatus === "ACCEPTED" && (
           <Button variant="disabled" size="md" disabled>
             승인이 완료되었어요
           </Button>
         )}
-        {application.applyStatus === "PENDING" && (
+        {application.applicationStatus === "PENDING" && (
           <div className="flex gap-2">
             <Button variant="disabled" size="md" className="flex-1" disabled>
               승인 대기중
@@ -114,7 +105,7 @@ export function ApplicationCard({
             </Button>
           </div>
         )}
-        {application.applyStatus === "REJECTED" && (
+        {application.applicationStatus === "REJECTED" && (
           <Button variant="disabled" size="md" disabled>
             거절되었어요🥹
           </Button>
