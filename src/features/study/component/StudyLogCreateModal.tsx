@@ -1,14 +1,16 @@
-import { Modal } from '@/components/ui/Modal';
-import CloseSvg from '@/assets/icons/close.svg';
-import { Button } from '@/components/ui/button';
-import { InputField } from '@/components/ui/InputField';
-import { TextAreaField } from '@/components/ui/TextAreaField';
-import { useRef, useState, type ChangeEvent } from 'react';
+import { Modal } from "@/components/ui/Modal";
+import CloseSvg from "@/assets/icons/close.svg";
+import { Button } from "@/components/ui/button";
+import { InputField } from "@/components/ui/InputField";
+import { useRef, useState, type ChangeEvent } from "react";
+import { FormField } from "@/components/ui/FormField";
+import { Form } from "@/components/ui/Form";
+import { studyLogSchema, type TStudyLogSchema } from "../validators/study";
 
 interface StudyLogCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (data: TStudyLogSchema) => void;
   nextSessionId?: number;
   sessionTitle?: string;
 }
@@ -35,8 +37,15 @@ export function StudyLogCreateModal({
     }
   };
 
+  const onSubmit = (data: TStudyLogSchema) => {
+    console.log("Study Log Form Data:", data);
+    onConfirm(data);
+  };
+
   const fileNames =
-    selectedFiles.length > 0 ? selectedFiles.map((file) => file.name).join(', ') : '';
+    selectedFiles.length > 0
+      ? selectedFiles.map((file) => file.name).join(", ")
+      : "";
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[550px]">
@@ -46,29 +55,37 @@ export function StudyLogCreateModal({
         </button>
         <h3 className="heading-3 mb-2">스터디 일지 작성하기</h3>
         <hr className="border-t-3 border-gray-100 mb-[22px]" />
-        <p className="text-gray-300 text-body-1-semibold mb-[22px]">{nextSessionId}회차</p>
-        <div className="flex flex-col gap-4">
-          <InputField
-            label="스터디 일지"
-            placeholder="이번 회차에는 어떤 스터디 일지를 작성할 지 입력해주세요."
-            value={sessionTitle}
-            disabled
-          />
-          <TextAreaField
-            label="스터디 내용"
-            placeholder="이번 주차에 어떤 스터디를 했는지 작성해주세요."
-            rows={6}
-          />
-          <InputField label="링크" placeholder="따로 정리한 링크가 있다면 첨부해주세요." />
-          <input
-            type="file"
-            multiple
-            accept=".png,.jpg,.jpeg,application/pdf"
-            ref={fileInputRef}
-            className="hidden"
-            onChange={handleFileChange}
-          />
-          <div className="flex gap-[10px] items-end">
+        <Form schema={studyLogSchema} onSubmit={onSubmit}>
+          <p className="text-gray-300 text-body-1-semibold mb-[22px]">
+            {nextSessionId}회차
+          </p>
+          <div className="flex flex-col gap-4">
+            <InputField
+              label="스터디 일지"
+              placeholder="이번 회차에는 어떤 스터디 일지를 작성할 지 입력해주세요."
+              value={sessionTitle}
+              readOnly
+            />
+            <FormField
+              name="content"
+              label="스터디 내용"
+              placeholder="이번 주차에 어떤 스터디를 했는지 작성해주세요."
+              type="textarea"
+            />
+            <FormField
+              name="url"
+              label="링크"
+              placeholder="따로 정리한 링크가 있다면 첨부해주세요."
+            />
+            <input
+              type="file"
+              multiple
+              accept=".png,.jpg,.jpeg,application/pdf"
+              ref={fileInputRef}
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            {/* <div className="flex gap-[10px] items-end">
             <div className="grow">
               <InputField
                 label="첨부파일"
@@ -82,19 +99,20 @@ export function StudyLogCreateModal({
             </Button>
           </div>
           <p className="text-body-2-semibold text-gray-300">
-            {' '}
+            {" "}
             ⦁ 이미지 (png,jpeg)는 최대 10장까지 가능해요.
             <br /> ⦁ PDF는 최대 30MB까지 가능해요.
-          </p>
-        </div>
-        <div className="flex gap-[10px] mt-[12px] mb-[12px]">
-          <Button variant="default" onClick={onClose}>
-            닫기
-          </Button>
-          <Button variant="primary" className="flex-1" onClick={onConfirm}>
-            생성하기
-          </Button>
-        </div>
+          </p> */}
+          </div>
+          <div className="flex gap-[10px] mt-[12px] mb-[12px]">
+            <Button variant="default" onClick={onClose}>
+              닫기
+            </Button>
+            <Button variant="primary" className="flex-1" type="submit">
+              생성하기
+            </Button>
+          </div>
+        </Form>
       </div>
     </Modal>
   );

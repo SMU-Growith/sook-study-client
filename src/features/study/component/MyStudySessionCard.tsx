@@ -40,7 +40,7 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
     onSuccess: async () => {
       alert("스터디 일지가 수정되었습니다.");
       setIsUpdateModalOpen(false);
-      await queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: ["studySessions", studyId],
       });
     },
@@ -75,7 +75,7 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
           <div className="flex justify-between items-start">
             <div className="flex flex-col">
               <p className="text-gray-300 text-body-1-semibold">
-                {studySession.sessionId}회차
+                {studySession.sessionNumber}회차
               </p>
               <h3 className="heading-3">{studySession.title}</h3>
             </div>

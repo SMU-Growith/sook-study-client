@@ -1,6 +1,7 @@
 import { apiClient, type ApiResponse } from "@/lib/api/";
 import type {
   TStudyApplySchema,
+  TStudyLogSchema,
   TStudySchema,
 } from "@/features/study/validators/study";
 import type {
@@ -155,6 +156,18 @@ export const fetchStudyLogsApi = async (
 export const fetchStudyLogDetailApi = async (journalId: number) => {
   const response = await apiClient.get<ApiResponse<StudyLogDetail>>(
     `/studies/journal/${journalId}`
+  );
+  return response.data.result;
+};
+
+// 스터디 로그 생성 API
+export const createStudyLogApi = async (
+  sessionId: number,
+  data: TStudyLogSchema
+) => {
+  const response = await apiClient.post<ApiResponse<StudyLogDetail>>(
+    `/studies/session/${sessionId}/journal`,
+    data
   );
   return response.data.result;
 };

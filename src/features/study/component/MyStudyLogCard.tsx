@@ -35,7 +35,6 @@ export function StudyLogCard({ sessionId, log }: MyStudyLogProps) {
     queryFn: () => fetchStudyLogDetailApi(journalId),
     enabled: Number.isFinite(journalId),
   });
-  console.log("log", log);
 
   return (
     <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">

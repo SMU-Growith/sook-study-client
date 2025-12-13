@@ -6,9 +6,16 @@ import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useParams } from "react-router-dom";
 import { StudyLogCard } from "@/features/study/component/MyStudyLogCard";
-import type { StudyLogList } from "../api/studyType";
-import { useQuery } from "@tanstack/react-query";
-import { fetchStudyLogsApi } from "../api/study";
+import type {
+  StudyLogDetail,
+  StudyLogList,
+  StudySessionDetail,
+} from "../api/studyType";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createStudyLogApi, fetchStudyLogsApi } from "../api/study";
+import type { AxiosError } from "axios";
+import type { ApiResponse } from "@/lib/api";
+import type { TStudyLogSchema } from "../validators/study";
 
 export function MyStudyLog() {
   const auth = useAuthStore();
@@ -21,41 +28,41 @@ export function MyStudyLog() {
   const sessionIdNum = Number(sessionId);
   const { data: logData } = useQuery<StudyLogList>({
     queryKey: ["studySessionLog", sessionIdNum],
-    queryFn: () => fetchStudyLogsApi(sessionIdNum, 0, 10),
+    queryFn: () => fetchStudyLogsApi(sessionIdNum, 0, 20),
     enabled: Number.isFinite(sessionIdNum),
   });
 
   // const totalCount = logData?.totalCount ?? 0;
   // const title = logData?.title ?? "";
   const logs = logData?.journals ?? [];
+  const isWritten = false; // logData?.isWritten ??
+  const queryClient = useQueryClient();
 
-  const handleCreateStudyLog = () => {
-    const newLog = {
-      id: 5,
-      title: "React 컴포넌트 구조 리팩터링으로 성능 높이기",
-      role: "스터디장",
-      writerNickname: "김눈송",
-      viewCount: 0,
-      content:
-        "컴포넌트가 비효율적으로 분리된 구조를 개선하고, props drilling을 최소화하는 방향으로 리팩터링했습니다. Context API와 Zustand를 비교하며 가장 적합한 구조를 선택하는 연습을 했습니다.",
-      link: "https://react.dev/learn/thinking-in-react",
-      attachments: [
-        {
-          id: 1,
-          name: "commit1.png, commit2.png, commit3.png",
-          type: "png" as const,
-          url: "/mock/files/component_refactoring_before_after.site",
-        },
-      ],
-      likeCount: 4,
-      heartCount: 6,
-      laughCount: 1,
-      surpriseCount: 1,
-      questionCount: 2,
-    };
-    // setLogs((prevLogs) => [...prevLogs, newLog]);
+  const { mutate: submitStudyLog } = useMutation<
+    StudyLogDetail,
+    AxiosError<ApiResponse<null>>,
+    { sessionId: number; data: TStudyLogSchema }
+  >({
+    mutationFn: ({ sessionId, data }) => createStudyLogApi(sessionId, data),
+    onSuccess: (res) => {
+      console.log("스터디 로그 생성 성공:", res);
+      queryClient.invalidateQueries({
+        queryKey: ["studySessionLog", sessionIdNum],
+      });
+      setIsWriteModalOpen(false);
+    },
+    onError: (error: unknown) => {
+      const err = error as AxiosError<{ message?: string }>;
+      alert(err.response?.data?.message || "스터디 일지 작성 실패");
+    },
+  });
+
+  const handleCreateStudyLog = (data: TStudyLogSchema) => {
+    submitStudyLog({
+      sessionId: sessionIdNum,
+      data,
+    });
     setIsWriteModalOpen(false);
-    auth.setHasWrittenLog(true);
   };
 
   return (
@@ -73,7 +80,7 @@ export function MyStudyLog() {
             {auth.isLeader && (
               <div className="flex gap-2">
                 <Button
-                  variant={auth.hasWrittenLog ? "disabled" : "primary"}
+                  variant={isWritten ? "disabled" : "primary"}
                   size="lg"
                   onClick={() => setIsWriteModalOpen(true)}
                 >
@@ -87,7 +94,7 @@ export function MyStudyLog() {
             총 <span className="text-primary-500">{logs.length}개</span>
           </p>
           <div className="grid grid-cols-2 gap-5">
-            {auth.hasWrittenLog ? null : (
+            {isWritten ? null : (
               <div className="w-full border-2 border-dashed border-gray-200 rounded-[20px] px-[18px] py-10 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-5">
                   <p className="text-body-1-semibold text-gray-300">

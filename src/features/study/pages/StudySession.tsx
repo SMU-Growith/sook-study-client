@@ -7,7 +7,7 @@ import StudyMemberSvg from "@/assets/studyMember.svg";
 import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import BlueCircleSvg from "@/assets/blueCircle.svg";
 import PlusSvg from "@/assets/icons/plus.svg";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { StudySessionCreateModal } from "../component/StudySessionCreateModal";
 import { StudySessionCard } from "@/features/study/component/MyStudySessionCard";
@@ -25,7 +25,7 @@ import {
 import type { Rules, StudyMember, StudySessionDetail } from "../api/studyType";
 import { defaultStudyMembers } from "../studyMembers";
 import { StudyRuleModal } from "../component/StudyRuleModal";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApplicationHistoryModal } from "../component/ApplicationHistoryModal";
 import { MemberDetailModal } from "@/components/ui/MemberDetailModal";
 import type { ApiResponse } from "@/lib/api/apiClient";
@@ -81,6 +81,7 @@ const exampleStampData: Stamp[] = [
 
 export function MyStudySession() {
   const auth = useAuthStore();
+  const queryClient = useQueryClient();
   const { studyId } = useParams<{ studyId: string }>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStudyFinishModalOpen, setIsStudyFinishModalOpen] = useState(false);
@@ -111,6 +112,7 @@ export function MyStudySession() {
     mutationFn: ({ studyId, title }) => createStudySessionApi(studyId, title),
     onSuccess: (res) => {
       console.log("스터디 세션 생성 성공:", res);
+      queryClient.invalidateQueries({ queryKey: ["studySessions", studyId] });
     },
     onError: (error: unknown) => {
       const err = error as AxiosError<{ message?: string }>;

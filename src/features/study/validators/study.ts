@@ -48,3 +48,11 @@ export const studySessionSchema = z.object({
   title: z.string().nonempty("스터디 일지 제목을 입력해주세요."),
 });
 export type TStudySessionSchema = z.infer<typeof studySessionSchema>;
+
+// 로그 생성/수정
+export const studyLogSchema = z.object({
+  content: z.string().nonempty("스터디 일지 내용을 입력해주세요."),
+  url: z.url("올바른 URL 형식이 아닙니다.").optional().or(z.literal("")),
+});
+
+export type TStudyLogSchema = z.infer<typeof studyLogSchema>;
