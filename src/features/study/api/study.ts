@@ -215,3 +215,11 @@ export const fetchMyApplicationsApi = async () => {
   );
   return response.data.result;
 };
+
+// 스터디 지원취소 API
+export const deleteStudyApplicationApi = async (applicationId: number) => {
+  const response = await apiClient.delete<ApiResponse<null>>(
+    `/studies/applications/${applicationId}`
+  );
+  return response.data;
+};

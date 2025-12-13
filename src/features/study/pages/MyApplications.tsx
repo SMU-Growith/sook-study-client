@@ -1,9 +1,8 @@
 import { AuthHeader } from "@/components/layout/AuthHeader";
 import { SideBar } from "@/components/ui/SideBar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ArrowLeftSvg from "@/assets/arrow/arrowLeft.svg";
 import ArrowRightSvg from "@/assets/arrow/arrowRight.svg";
-import { myApplicationsData } from "../myAppliactions";
 import { ApplicationCard } from "@/features/study/component/ApplicationCard";
 import { useQuery } from "@tanstack/react-query";
 import type { MyApplication } from "../api/studyType";

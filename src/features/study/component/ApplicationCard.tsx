@@ -9,6 +9,11 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { ApplicationDeleteModal } from "./ApplicationDeleteModal";
 import type { MyApplication } from "../api/studyType";
+import type { ApiResponse } from "@/lib/api/apiClient";
+import type { AxiosError } from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { studyQueryKeys } from "../api/queries";
+import { deleteStudyApplicationApi } from "../api/study";
 
 interface ApplicationCardProps {
   application: MyApplication;
@@ -19,6 +24,7 @@ export function ApplicationCard({
   application,
   onCardClick,
 }: ApplicationCardProps) {
+  const queryClient = useQueryClient();
   const [isScrapped, setIsScrapped] = useState(false);
   const [scrapCount, setScrapCount] = useState(application.scrapCount);
   const { isLoggedIn } = useAuthStore();
@@ -38,8 +44,26 @@ export function ApplicationCard({
     }
   };
 
+  const { mutate: cancelAppliation } = useMutation<
+    ApiResponse<null>,
+    AxiosError<ApiResponse<null>>,
+    { applicationId: number }
+  >({
+    mutationFn: ({ applicationId }) => deleteStudyApplicationApi(applicationId),
+    onSuccess: (_res, vars) => {
+      console.log("스터디 지원내역 삭제 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.myApplications(),
+      });
+    },
+    onError: (error: unknown) => {
+      const err = error as AxiosError<{ message?: string }>;
+      alert(err.response?.data?.message || "스터디 지원내역 삭제 실패");
+    },
+  });
+
   const deleteApplication = () => {
-    // 지원 취소 api 연동
+    cancelAppliation({ applicationId: application.applicationId });
     setDeleteModalOpen(false);
   };
 
