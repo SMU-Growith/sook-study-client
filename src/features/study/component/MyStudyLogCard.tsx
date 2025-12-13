@@ -6,8 +6,17 @@ import eyeSvg from "@/assets/eye.svg";
 import { Button } from "@/components/ui/button";
 import { StudyLogReadModal } from "./StudyLogReadModal";
 import type { StudyLogDetail, StudyLogPreview } from "../api/studyType";
-import { fetchStudyLogDetailApi } from "../api/study";
-import { useQuery } from "@tanstack/react-query";
+import {
+  deleteStudyLogApi,
+  fetchStudyLogDetailApi,
+  updateStudyLogApi,
+} from "../api/study";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { StudyLogUpdateModal } from "./StudyLogUpdateModal";
+import type { TStudyLogSchema } from "../validators/study";
+import type { ApiResponse } from "@/lib/api/apiClient";
+import type { AxiosError } from "axios";
+import { studyQueryKeys } from "../api/queries";
 
 interface MyStudyLogProps {
   sessionId: number;
@@ -17,21 +26,60 @@ interface MyStudyLogProps {
 }
 
 export function StudyLogCard({ sessionId, log }: MyStudyLogProps) {
-  const [, setIsUpdateModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
 
-  const handleReadStudyLog = () => {
-    setIsReadModalOpen(true);
+  const { mutate: deleteStudyLog } = useMutation<
+    ApiResponse<null>,
+    AxiosError<ApiResponse<null>>,
+    { journalId: number }
+  >({
+    mutationFn: ({ journalId }) => deleteStudyLogApi(journalId),
+    onSuccess: (res) => {
+      console.log("스터디 로그 삭제 성공:", res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studyLogs(sessionId),
+      });
+    },
+    onError: (error: unknown) => {
+      const err = error as AxiosError<{ message?: string }>;
+      alert(err.response?.data?.message || "스터디 일지 삭제 실패");
+    },
+  });
+
+  const handleDeleteStudyLog = () => {
+    deleteStudyLog({ journalId: log.journalId });
+    setIsUpdateModalOpen(false);
   };
 
-  const handleUpdateStudyLog = () => {
-    setIsUpdateModalOpen(true);
+  const { mutate: updateStudyLog } = useMutation<
+    StudyLogDetail,
+    AxiosError<ApiResponse<null>>,
+    { journalId: number; data: TStudyLogSchema }
+  >({
+    mutationFn: ({ journalId, data }) => updateStudyLogApi(journalId, data),
+    onSuccess: (res) => {
+      console.log("스터디 로그 수정 성공:", res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studyLogDetail(log.journalId),
+      });
+    },
+    onError: (error: unknown) => {
+      const err = error as AxiosError<{ message?: string }>;
+      alert(err.response?.data?.message || "스터디 일지 수정 실패");
+    },
+  });
+
+  const handleUpdateStudyLog = (data: TStudyLogSchema) => {
+    updateStudyLog({ journalId: log.journalId, data });
+    setIsUpdateModalOpen(false);
   };
 
   const journalId = log?.journalId;
   // 스터디 일지 상세조회 API 호출
   const { data: logDetail } = useQuery<StudyLogDetail>({
-    queryKey: ["studyLogDetail", journalId],
+    queryKey: studyQueryKeys.studyLogDetail(journalId),
     queryFn: () => fetchStudyLogDetailApi(journalId),
     enabled: Number.isFinite(journalId),
   });
@@ -70,7 +118,7 @@ export function StudyLogCard({ sessionId, log }: MyStudyLogProps) {
             <Button
               variant="solid"
               size="sm"
-              onClick={handleReadStudyLog}
+              onClick={() => setIsReadModalOpen(true)}
               className="flex-1"
             >
               상세보기
@@ -78,7 +126,7 @@ export function StudyLogCard({ sessionId, log }: MyStudyLogProps) {
             <Button
               variant="secondary"
               size="sm"
-              onClick={handleUpdateStudyLog}
+              onClick={() => setIsUpdateModalOpen(true)}
             >
               수정하기
             </Button>
@@ -89,6 +137,14 @@ export function StudyLogCard({ sessionId, log }: MyStudyLogProps) {
         isOpen={isReadModalOpen}
         onClose={() => setIsReadModalOpen(false)}
         onConfirm={() => setIsReadModalOpen(false)}
+        sessionId={Number(sessionId)}
+        logDetail={logDetail}
+      />
+      <StudyLogUpdateModal
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        onConfirm={handleUpdateStudyLog}
+        onDelete={handleDeleteStudyLog}
         sessionId={Number(sessionId)}
         logDetail={logDetail}
       />

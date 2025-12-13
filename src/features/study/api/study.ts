@@ -171,3 +171,23 @@ export const createStudyLogApi = async (
   );
   return response.data.result;
 };
+
+// 스터디 로그 수정 API
+export const updateStudyLogApi = async (
+  journalId: number,
+  data: TStudyLogSchema
+) => {
+  const response = await apiClient.put<ApiResponse<StudyLogDetail>>(
+    `/studies/journal/${journalId}`,
+    data
+  );
+  return response.data.result;
+};
+
+// 스터디 로그 삭제 API
+export const deleteStudyLogApi = async (journalId: number) => {
+  const response = await apiClient.delete<ApiResponse<null>>(
+    `/studies/journal/${journalId}`
+  );
+  return response.data;
+};
