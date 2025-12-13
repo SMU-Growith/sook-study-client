@@ -6,18 +6,13 @@ import {
   type TUpdateProfile,
 } from "../validators/auth";
 import { useNavigate } from "react-router-dom";
-// import { useSignUpStore } from '@/store/useSignUpStore';
-// import { useMutation } from '@tanstack/react-query';
-// import { profileUpdateApi } from '@/lib/api/index';
-// import { AxiosError } from 'axios';
 import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import { AuthHeader } from "@/components/layout/AuthHeader";
 import { ProfileForm } from "../components/ProfileForm";
 import { fetchMyInfoApi, profileUpdateApi } from "../api/auth";
 import type { ProfileResult } from "../api/authType";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import { useSignUpStore } from "@/store/useSignUpStore";
 import type { ApiResponse } from "@/lib/api/apiClient";
 import {
   MAJOR_MAP,
@@ -25,10 +20,11 @@ import {
   REVERSE_STUDENT_STATUS_MAP,
   STUDENT_STATUS_MAP,
 } from "../constants";
+import { authQueryKeys } from "../api/queries";
 
 export function MyPage() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { reset } = useSignUpStore();
 
   // 프로필 수정 api
   const { mutate: submitProfileUpdate } = useMutation<
@@ -38,8 +34,7 @@ export function MyPage() {
   >({
     mutationFn: profileUpdateApi,
     onSuccess: () => {
-      alert("프로필이 성공적으로 업데이트되었습니다.");
-      reset();
+      queryClient.invalidateQueries({ queryKey: authQueryKeys.myProfile() });
     },
     onError: (error: unknown) => {
       const err = error as AxiosError<{ message?: string }>;
@@ -62,14 +57,14 @@ export function MyPage() {
 
   // 프로필 정보 조회 api
   const { data: userInfo, isLoading } = useQuery<ProfileResult>({
-    queryKey: ["myProfile"],
+    queryKey: authQueryKeys.myProfile(),
     queryFn: fetchMyInfoApi,
   });
-  // console.log("userInfo >>>", userInfo);
 
   if (isLoading || !userInfo) {
-    return <div></div>;
+    return null;
   }
+  // console.log("userInfo >>>", userInfo);
 
   const mapToProfileFormValues = (api: ProfileResult): TProfile => ({
     nickName: api.nickName,

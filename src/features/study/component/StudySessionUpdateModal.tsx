@@ -40,6 +40,7 @@ export function StudySessionUpdateModal({
           {currSessionId}회차
         </p>
         <Form
+          key={`${currSessionId}-${currTitle}`}
           schema={studySessionSchema}
           defaultValues={{ title: currTitle || "" }}
           onSubmit={onSubmit}
