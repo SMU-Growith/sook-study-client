@@ -13,23 +13,42 @@ import { Input } from "@/components/ui/Input";
 import { Tag } from "@/components/ui/Tag";
 import { DropdownList } from "@/components/ui/DropdownList";
 import { CATEGORIES } from "@/constants/index";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { StudyResult } from "../api/studyType";
 import { SearchStudyApi } from "../api/study";
-import { STUDY_STATUS_LABEL } from "../constants";
+import {
+  STUDY_STATUS_FILTER_LABEL,
+  type StudyStatusFilter,
+} from "../constants";
+import { studyQueryKeys } from "../api/queries";
 
 type TopCategory = keyof typeof CATEGORIES;
 type SubCategory = keyof (typeof CATEGORIES)["분야"];
 
 export function StudyMatch() {
+  const queryClient = useQueryClient();
+
   const [isBookmarkOpen, setIsBookmarkOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
-  type StudyStatusFilter = "ALL" | "ACTIVE" | "CLOSED";
+  // 1. 스터디 모집 상태 필터
   const [selectedStatus, setSelectedStatus] =
     useState<StudyStatusFilter>("ALL");
+  const isRecruiting =
+    selectedStatus === "ALL" ? null : selectedStatus === "ACTIVE";
+
+  // 2. 스터디 분야, 진행방식, 성향의 태그 풀 만든 뒤 분리
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [searchText, setSearchText] = useState("");
+  const FIELD_TAGS = new Set(Object.values(CATEGORIES["분야"]).flat());
+  const FORMAT_TAGS = new Set(CATEGORIES["진행방식"]);
+  const STYLE_TAGS = new Set(CATEGORIES["스터디 성향"]);
+
+  const studyFieldNames = selectedTags.filter((t) => FIELD_TAGS.has(t));
+  const studyFormats = selectedTags.filter((t) => FORMAT_TAGS.has(t));
+  const studyStyleCategories = selectedTags.filter((t) => STYLE_TAGS.has(t));
+
+  // 3. 스터디 검색 필터
+  const [searchContent, setSearchContent] = useState("");
 
   const [activeTopCategory, setActiveTopCategory] =
     useState<TopCategory>("분야");
@@ -39,60 +58,24 @@ export function StudyMatch() {
   const pageNumbers = [1, 2, 3, 4, 5]; // [lf] 페이지 번호 배열
   const [page, setPage] = useState(1); // [lf] 현재 페이지
 
-  type StudyStatusApi = "ACTIVE" | "CLOSED" | undefined;
-  const apiStudyStatus: StudyStatusApi =
-    selectedStatus === "ALL" ? undefined : selectedStatus;
-
-  const studyFieldNames: string[] = [];
-
-  function mapFormats(tags: string[]) {
-    const formats: ("ONLINE" | "OFFLINE" | "HYBRID")[] = [];
-    tags.forEach((tag) => {
-      if (tag === "온라인") formats.push("ONLINE");
-      else if (tag === "오프라인") formats.push("OFFLINE");
-      else if (tag === "온·오프라인 병행") formats.push("HYBRID");
-    });
-    return formats;
-  }
-
-  function mapStyles(tags: string[]) {
-    const styles: (
-      | "SYSTEMATIC"
-      | "FREE"
-      | "COOPERATIVE"
-      | "RESULT_ORIENTED"
-    )[] = [];
-    tags.forEach((tag) => {
-      if (tag === "체계적인") styles.push("SYSTEMATIC");
-      else if (tag === "자유로운") styles.push("FREE");
-      else if (tag === "협력적인") styles.push("COOPERATIVE");
-      else if (tag === "실적중심") styles.push("RESULT_ORIENTED");
-    });
-    return styles;
-  }
-
-  const studyFormats = mapFormats(selectedTags);
-  const studyStyleCategories = mapStyles(selectedTags);
-
   const { data: studies = [] } = useQuery<StudyResult[]>({
-    queryKey: [
-      "searchStudies",
+    queryKey: studyQueryKeys.searchStudies(
       studyFieldNames,
       studyFormats,
       studyStyleCategories,
-      apiStudyStatus,
-      searchText,
+      isRecruiting,
+      searchContent,
       0,
       9,
-      "createdAt",
-    ],
+      "createdAt"
+    ),
     queryFn: () =>
       SearchStudyApi(
         studyFieldNames,
         studyFormats,
         studyStyleCategories,
-        apiStudyStatus,
-        searchText,
+        isRecruiting,
+        searchContent,
         0,
         9,
         "createdAt"
@@ -172,12 +155,12 @@ export function StudyMatch() {
   };
 
   const handleStudyStatus = (status: string) => {
-    setSelectedStatus(status);
+    setSelectedStatus(status as StudyStatusFilter);
     setPage(1);
   };
 
   const handleSearch = (text: string) => {
-    setSearchText(text);
+    setSearchContent(text);
     setPage(1);
   };
 
@@ -273,7 +256,7 @@ export function StudyMatch() {
                     <h3
                       className={`heading-3 ${selectedStatus === status ? "" : "text-gray-200"}`}
                     >
-                      {STUDY_STATUS_LABEL[status]}
+                      {STUDY_STATUS_FILTER_LABEL[status]}
                     </h3>
                   </button>
                 )

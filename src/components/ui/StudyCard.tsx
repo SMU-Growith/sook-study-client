@@ -6,23 +6,12 @@ import HeartFillSvg from "@/assets/icons/heartFill.svg";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
 import type { StudyResult, ToggleScrap } from "@/features/study/api/studyType";
-import {
-  STUDY_FORMAT_LABEL,
-  STUDY_STYLE_LABEL,
-} from "@/features/study/constants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/lib/api/apiClient";
 import { toggleStudyScrapApi } from "@/features/study/api/study";
 import { studyQueryKeys } from "@/features/study/api/queries";
-export interface Study {
-  id: number;
-  title: string;
-  status: "모집중" | "모집완료";
-  tags: string[];
-  author: string;
-  likeCount: number;
-}
+import { STUDY_STATUS_FILTER_LABEL } from "@/features/study/constants";
 
 interface StudyCardProps {
   study: StudyResult;
@@ -72,14 +61,14 @@ export function StudyCard({ study, onCardClick }: StudyCardProps) {
             <Badge
               variant={study.studyStatus === "ACTIVE" ? "purple" : "black"}
             >
-              {study.studyStatus}
+              {STUDY_STATUS_FILTER_LABEL[study.studyStatus]}
             </Badge>
           </div>
           <h3 className="heading-3">{study.title}</h3>
           <div className="flex flex-wrap gap-1">
-            <Tag>{STUDY_FORMAT_LABEL[study.studyFormat]}</Tag>
+            <Tag>{study.studyFormat}</Tag>
             <Tag>{study.studyFieldName}</Tag>
-            <Tag>{STUDY_STYLE_LABEL[study.studyStyleCategory]}</Tag>
+            <Tag>{study.studyStyleCategory}</Tag>
           </div>
           <hr className="border-t-3 border-gray-100" />
         </div>
@@ -87,8 +76,7 @@ export function StudyCard({ study, onCardClick }: StudyCardProps) {
           <div className="flex items-center">
             <img src={UserProfileSvg} alt="User Profile" />
             <span className="text-body-2-semibold text-gray-400 ml-1">
-              {/* {study.nickname} */}
-              임시닉네임
+              {study.nickname}
             </span>
           </div>
           <div className="flex items-center">

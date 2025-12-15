@@ -77,35 +77,30 @@ export const HomeStudyApi = async (
 // 스터디 검색 API (스터디 둘러보기)
 export const SearchStudyApi = async (
   studyFieldNames: string[],
-  studyFormats: ("ONLINE" | "OFFLINE" | "HYBRID")[],
-  studyStyleCategories: (
-    | "SYSTEMATIC"
-    | "FREE"
-    | "COOPERATIVE"
-    | "RESULT_ORIENTED"
-  )[],
-  studyStatus: "ACTIVE" | "CLOSED" | undefined,
+  studyFormats: string[],
+  studyStyleCategories: string[],
+  isRecruiting: boolean | null,
   searchContent: string,
   page: number,
   size: number,
   sort: string
 ) => {
   const params = new URLSearchParams();
-  studyFieldNames.forEach((name) =>
-    params.append("studyFieldNames", String(name))
-  );
-  studyFormats.forEach((format) => params.append("studyFormats", format));
-  studyStyleCategories.forEach((category) =>
-    params.append("studyStyleCategories", category)
-  );
-  params.append("studyStatus", String(studyStatus));
-  params.append("searchContent", searchContent);
   params.append("page", String(page));
   params.append("size", String(size));
   params.append("sort", sort);
 
-  const response = await apiClient.get<ApiResponse<StudyListResult>>(
-    `/studies/search?${params.toString()}`
+  const body = {
+    studyFieldNames,
+    studyFormats,
+    studyStyleCategories,
+    isRecruiting,
+    searchContent,
+  };
+
+  const response = await apiClient.post<ApiResponse<StudyListResult>>(
+    `/studies/search?${params.toString()}`,
+    body
   );
   return response.data.result.studyPreviews;
 };

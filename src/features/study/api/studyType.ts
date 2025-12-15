@@ -39,14 +39,14 @@ export interface StudyResult {
   studyId: number;
   title: string;
   description: string;
-  studyStatus: "ACTIVE" | "CLOSED" | "ALL";
+  studyStatus: "ACTIVE" | "CLOSED";
   userId: number;
+  nickname: string;
   isScraped: boolean;
   scrapCount: number;
-  studyFormat: "ONLINE" | "OFFLINE" | "HYBRID";
-  studyFieldId: number;
+  studyFormat: string;
   studyFieldName: string;
-  studyStyleCategory: "SYSTEMATIC" | "FREE" | "COOPERATIVE" | "RESULT_ORIENTED";
+  studyStyleCategory: string;
 }
 
 export interface StudyListResult {

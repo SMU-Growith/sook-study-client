@@ -16,7 +16,9 @@ export const STUDY_STYLE_LABEL: Record<
   RESULT_ORIENTED: "실적중심",
 };
 
-export const STUDY_STATUS_LABEL: Record<StudyResult["studyStatus"], string> = {
+export type StudyStatusFilter = "ALL" | "ACTIVE" | "CLOSED";
+
+export const STUDY_STATUS_FILTER_LABEL: Record<StudyStatusFilter, string> = {
   ALL: "전체",
   ACTIVE: "모집중",
   CLOSED: "모집완료",
