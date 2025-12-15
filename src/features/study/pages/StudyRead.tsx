@@ -7,6 +7,7 @@ import {
   type TStudySchema,
   studyApplySchema,
   type TStudyApplySchema,
+  type TStudyApplyRequest,
 } from "../validators/study";
 import { FormField } from "@/components/ui/FormField";
 import { SideBar } from "@/components/ui/SideBar";
@@ -16,9 +17,17 @@ import { Modal } from "@/components/ui/Modal";
 import { majorOptions, studentStatusOptions } from "@/constants";
 import { useFormContext } from "react-hook-form";
 import { useAuthStore } from "@/store/authStore";
-import { useQuery } from "@tanstack/react-query";
-import { fetchStudyById } from "../api/study";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { fetchStudyById, studyApplyApi } from "../api/study";
 import { studyQueryKeys } from "../api/queries";
+import type { AxiosError } from "axios";
+import type { ApiResponse } from "@/lib/api";
+import {
+  MAJOR_MAP,
+  REVERSE_MAJOR_MAP,
+  REVERSE_STUDENT_STATUS_MAP,
+  STUDENT_STATUS_MAP,
+} from "@/features/auth/constants";
 
 // 스터디 분야, 스터디 성향, 진행 방식, 연락 방식 드롭다운 옵션
 // const STUDY_FIELD_OPTIONS = ['학업', '언어', '취업/커리어', '자기계발'] as const;
@@ -69,11 +78,12 @@ export function StudyRead() {
   // const [, setActiveRuleTags] = useState<string[]>([]);
   // const [, setIsRecruiting] = useState<boolean | null>(null);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
-  const { nickname } = useAuthStore();
+  const { nickname, major, studentStatus, phoneNumber } = useAuthStore();
+  const studyIdNumber = Number(studyId);
 
   const { data: studyData } = useQuery({
-    queryKey: studyQueryKeys.studyDetail(Number(studyId)),
-    queryFn: () => fetchStudyById(Number(studyId)),
+    queryKey: studyQueryKeys.studyDetail(studyIdNumber),
+    queryFn: () => fetchStudyById(studyIdNumber),
     enabled: !!studyId,
   });
 
@@ -93,10 +103,15 @@ export function StudyRead() {
     //   }
     // };
     const handleAutoFillTemp = () => {
+      console.log(major, studentStatus, phoneNumber);
+      const majorMapped = REVERSE_MAJOR_MAP[major || "인공지능공학부"];
+      const studentStatusMapped =
+        REVERSE_STUDENT_STATUS_MAP[studentStatus || "휴학생"];
+
       methods.reset({
-        studentStatus: "휴학생",
-        major: "인공지능공학부",
-        phoneNumber: "010-5432-9813",
+        studentStatus: studentStatusMapped,
+        major: majorMapped,
+        phoneNumber: phoneNumber || "010-5432-9813",
       });
     };
 
@@ -123,25 +138,33 @@ export function StudyRead() {
   //   }
   // }, [studyData]);
 
-  // const { mutate: submitStudyApply } = useMutation({
-  //   mutationFn: (studyApplyData: TStudyApplySchema) =>
-  //     studyApplyApi(Number(studyId), studyApplyData),
-  //   onSuccess: (res) => {
-  //     alert('스터디 지원이 완료되었습니다.');
-  //     setIsApplyModalOpen(false);
-  //     navigate(`/study/detail/${studyId}`);
-  //   },
-  //   onError: (error: AxiosError<{ message: string }>) => {
-  //     alert(error.response?.data?.message || '스터디 지원에 실패했습니다.');
-  //   },
-  // });
+  const { mutate: submitStudyApply } = useMutation<
+    ApiResponse<null>,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number; data: TStudyApplyRequest }
+  >({
+    mutationFn: ({ studyId, data }) => studyApplyApi(studyId, data),
+    onSuccess: async (_data) => {
+      navigate("/my-applications");
+    },
+    onError: (error) => {
+      alert(error.response?.data?.message || "스터디 지원에 실패했습니다.");
+    },
+  });
 
   const onSubmit = (data: TStudyApplySchema) => {
     console.log("Study Apply Data:", data);
-    // submitStudyApply(data);
-    // 임시로 웰컴 스탬프 모달 띄우기
-    setIsApplyModalOpen(false); //[ld]
-    navigate(`/study/detail/${studyId}`);
+    const mappedData: TStudyApplyRequest = {
+      ...data,
+      major: MAJOR_MAP[data.major] ?? data.major,
+      studentStatus:
+        STUDENT_STATUS_MAP[data.studentStatus] ?? data.studentStatus,
+      applicationStatus: "PENDING",
+    };
+    submitStudyApply({
+      studyId: studyIdNumber,
+      data: mappedData,
+    });
   };
 
   return (
@@ -271,7 +294,7 @@ export function StudyRead() {
               label="닉네임"
               placeholder={nickname || "다함송이"}
               defaultValue={nickname || ""}
-              disabled
+              readOnly
             />
             <FormField
               name="studentStatus"

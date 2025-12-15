@@ -20,16 +20,21 @@ export function LoginPage() {
   const [isModalOpen, setIsModalOpen] = useState(false); // 웰컴 스탬프 모달 상태
 
   const { mutate: submitLogin } = useMutation<
-    ApiResponse<LoginResult>,
+    LoginResult,
     AxiosError<ApiResponse<null>>,
     TLoginSchema
   >({
     mutationFn: loginApi,
     onSuccess: (res) => {
-      const { accessToken, refreshToken } = res.result;
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      // auth.login(res.result.nickname, true);
+      localStorage.setItem("accessToken", res.accessToken);
+      localStorage.setItem("refreshToken", res.refreshToken);
+      auth.login(
+        res.nickName,
+        res.email,
+        res.major,
+        res.studentStatus,
+        res.phoneNumber
+      );
       auth.isLoggedIn = true;
       // alert("로그인이 완료되었습니다.");
       // const isFirstLogin = res.data?.isFirstLogin ?? true; // 실제로는 서버 응답을 통해 확인
@@ -43,7 +48,6 @@ export function LoginPage() {
   const onSubmit = (data: TLoginSchema) => {
     console.log("Login Data:", data);
     submitLogin(data);
-    // TODO 회원 정보 조회 api 한번 더 호출
   };
 
   const handleConfirmStamp = () => {

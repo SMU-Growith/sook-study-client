@@ -44,10 +44,10 @@ export const studyApplyApi = async (
   data: TStudyApplySchema
 ) => {
   const response = await apiClient.post(
-    `/studies/${studyId}/applications`,
+    `/studies/${studyId}/application`,
     data
   );
-  return response.data;
+  return response.data.result;
 };
 
 export const studyChangeLeaderApi = async (

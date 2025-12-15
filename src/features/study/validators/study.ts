@@ -42,6 +42,9 @@ export const studyApplySchema = z.object({
     .max(150, "지원 동기는 150자 이하로 입력해주세요."),
 });
 export type TStudyApplySchema = z.infer<typeof studyApplySchema>;
+export type TStudyApplyRequest = TStudyApplySchema & {
+  applicationStatus: "PENDING" | "ACCEPTED" | "REJECTED";
+};
 
 // 세션 생성/수정
 export const studySessionSchema = z.object({

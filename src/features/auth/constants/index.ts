@@ -30,7 +30,7 @@ export const MAJOR_MAP: Record<string, string> = {
   "첨단소재·전자융합공학부 지능형전자시스템전공":
     "INTELLIGENT_ELECTRONIC_SYSTEMS",
   "첨단소재·전자융합공학부 신소재물리전공": "ADVANCED_MATERIALS_PHYSICS",
-  "소프트웨어학부 컴퓨터과학전공": "COMPUTER", // COMPUTER_SCIENCE로 나중에 바꾸기
+  "소프트웨어학부 컴퓨터과학전공": "COMPUTER_SCIENCE",
   "소프트웨어학부 데이터사이언스전공": "DATA_SCIENCE",
   기계시스템학부: "MECHANICAL_SYSTEMS_ENGINEERING",
   기초공학부: "BASIC_ENGINEERING",

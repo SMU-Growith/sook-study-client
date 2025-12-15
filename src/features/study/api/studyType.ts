@@ -46,6 +46,7 @@ export interface StudyResult {
   title: string;
   description: string;
   studyStatus: "ACTIVE" | "CLOSED";
+  isRecruiting: boolean;
   userId: number;
   nickname: string;
   isScraped: boolean;

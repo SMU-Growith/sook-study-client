@@ -58,10 +58,12 @@ export function StudyCard({ study, onCardClick }: StudyCardProps) {
       <div className="flex flex-col gap-y-[10px]">
         <div className="flex flex-col gap-y-5" onClick={handleCardClick}>
           <div>
-            <Badge
-              variant={study.studyStatus === "ACTIVE" ? "purple" : "black"}
-            >
-              {STUDY_STATUS_FILTER_LABEL[study.studyStatus]}
+            <Badge variant={study.isRecruiting ? "purple" : "black"}>
+              {
+                STUDY_STATUS_FILTER_LABEL[
+                  study.isRecruiting ? "ACTIVE" : "CLOSED"
+                ]
+              }
             </Badge>
           </div>
           <h3 className="heading-3">{study.title}</h3>

@@ -5,7 +5,7 @@ import type {
   TSignUpStep2Schema,
   TUpdateProfile,
 } from "@/features/auth/validators/auth";
-import type { ProfileResult } from "./authType";
+import type { LoginResult, ProfileResult } from "./authType";
 
 export type SignUpFullData = Omit<TSignUpStep1Schema, "verificationCode"> &
   TSignUpStep2Schema;
@@ -35,8 +35,11 @@ export const signUpApi = async (data: SignUpFullData) => {
 };
 
 export const loginApi = async (data: TLoginSchema) => {
-  const response = await authApiClient.post("/auth/login", data);
-  return response.data;
+  const response = await authApiClient.post<ApiResponse<LoginResult>>(
+    "/auth/login",
+    data
+  );
+  return response.data.result;
 };
 
 export const fetchMyInfoApi = async () => {
