@@ -7,6 +7,7 @@ import type {
 import type {
   EmojiCounts,
   MyApplication,
+  StampList,
   StudyListResult,
   StudyLogDetail,
   StudyLogList,
@@ -229,6 +230,17 @@ export const deleteStudyApplicationApi = async (applicationId: number) => {
 export const toggleStudyScrapApi = async (studyId: number) => {
   const response = await apiClient.post<ApiResponse<ToggleScrap>>(
     `/studies/${studyId}/scrap/toggle`
+  );
+  return response.data.result;
+};
+
+// 스탬프 조회 API
+export const fetchStudyStampsApi = async (userId?: number) => {
+  const response = await apiClient.get<ApiResponse<StampList>>(
+    "/users/stamps",
+    {
+      params: userId != null ? { userId } : undefined,
+    }
   );
   return response.data.result;
 };

@@ -137,3 +137,27 @@ export interface ToggleScrap {
   isScraped: boolean;
   scrapCount: number;
 }
+
+export interface StampList {
+  inProgressCount: number;
+  completedCount: number;
+  stamps: Stamp[];
+}
+
+export interface Stamp {
+  stampType: "WELCOME" | "LEADER" | "RECORD" | "CHEER" | "SUPERSTAR";
+  stampName: string;
+  description: string;
+  achievedLevel: "NONE" | "LEVEL_1" | "LEVEL_2";
+  isAchieved: boolean;
+  isCompleted: boolean;
+  levels: Level[];
+}
+
+export interface Level {
+  stampId: number;
+  level: "NONE" | "LEVEL_1" | "LEVEL_2";
+  levelName: string;
+  levelDescription: string;
+  isAchieved: boolean;
+}
