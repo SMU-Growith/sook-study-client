@@ -28,4 +28,5 @@ export const studyQueryKeys = {
       limit,
       sortParam,
     ] as const,
+  studyDetail: (studyId: number) => ["studyDetail", studyId] as const,
 };

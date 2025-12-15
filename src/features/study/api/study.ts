@@ -8,6 +8,7 @@ import type {
   EmojiCounts,
   MyApplication,
   StampList,
+  StudyDetail,
   StudyListResult,
   StudyLogDetail,
   StudyLogList,
@@ -32,8 +33,10 @@ export const studyUpdateApi = async (
 };
 
 export const fetchStudyById = async (studyId: number) => {
-  const response = await apiClient.get(`/studies/${studyId}`);
-  return response.data;
+  const response = await apiClient.get<ApiResponse<StudyDetail>>(
+    `/studies/${studyId}`
+  );
+  return response.data.result;
 };
 
 export const studyApplyApi = async (

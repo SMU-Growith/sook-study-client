@@ -9,9 +9,15 @@ export interface StudyMember {
 }
 
 export type RuleCategory = "TIME" | "FINE" | "DAY_OFF" | "ATMOSPHERE" | "ETC";
+export type RuleCategoryLabel = "시간" | "벌금" | "휴무" | "분위기" | "기타";
 
 export interface Rules {
   ruleCategory: RuleCategory;
+  description: string;
+}
+
+export interface RulesLabel {
+  ruleCategory: RuleCategoryLabel;
   description: string;
 }
 
@@ -52,6 +58,24 @@ export interface StudyResult {
 export interface StudyListResult {
   studyPreviews: StudyResult[];
   listSize: number;
+}
+
+// 스터디 상세 조회
+export interface StudyDetail {
+  title: string;
+  description: string;
+  studyStatus: "ACTIVE" | "CLOSED";
+  contactType: string;
+  url: string;
+  isRecruiting: boolean;
+  studyFieldName: string;
+  studyFormat: string;
+  studyStyleCategory: string;
+  ruleDTO: RulesLabel[];
+  userId: number;
+  nickname: string;
+  isScraped: boolean;
+  createdAt: string;
 }
 
 export interface StudySessionDetail {
