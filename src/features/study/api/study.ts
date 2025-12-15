@@ -1,5 +1,6 @@
 import { apiClient, type ApiResponse } from "@/lib/api/";
 import type {
+  StudyCreateRequest,
   TStudyApplySchema,
   TStudyLogSchema,
   TStudySchema,
@@ -19,11 +20,16 @@ import type {
 
 type StudyUpdateData = TStudySchema & { isRecruiting: boolean };
 
-export const studyCreateApi = async (data: TStudySchema) => {
-  const response = await apiClient.post("/studies", data);
-  return response.data;
+// 스터디 생성 API
+export const studyCreateApi = async (data: StudyCreateRequest) => {
+  const response = await apiClient.post<ApiResponse<StudyDetail>>(
+    "/studies",
+    data
+  );
+  return response.data.result;
 };
 
+// 스터디 수정 API
 export const studyUpdateApi = async (
   studyId: number,
   data: StudyUpdateData
