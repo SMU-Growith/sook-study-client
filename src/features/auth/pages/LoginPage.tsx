@@ -52,7 +52,7 @@ export function LoginPage() {
 
   const handleConfirmStamp = () => {
     setIsModalOpen(false);
-    navigate("/my/stamps");
+    navigate("/my-page/stamp");
   };
 
   return (

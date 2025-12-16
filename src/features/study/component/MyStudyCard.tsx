@@ -17,14 +17,18 @@ interface MyStudyCardProps {
 export function MyStudyCard({ study, studyStatus }: MyStudyCardProps) {
   const navigate = useNavigate();
 
-  const handleCardClick = () => {
+  const handleStudyInClick = () => {
     navigate(`/study/my/${study.studyId}`);
+  };
+
+  const handleCardClick = () => {
+    navigate(`/study/detail/${study.studyId}`);
   };
 
   return (
     <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
       <div className="flex flex-col gap-y-[10px]">
-        <div className="flex flex-col gap-y-5">
+        <div className="flex flex-col gap-y-5" onClick={handleCardClick}>
           <div>
             <Badge
               variant={study.studyRole === "LEADER" ? "purple" : "yellow"}
@@ -54,7 +58,7 @@ export function MyStudyCard({ study, studyStatus }: MyStudyCardProps) {
               </span>
             </div>
           </div>
-          <Button variant="solid" onClick={handleCardClick}>
+          <Button variant="solid" onClick={handleStudyInClick}>
             {studyStatus === "ACTIVE" ? "스터디 참여하기" : "스터디 보기"}
           </Button>
         </div>

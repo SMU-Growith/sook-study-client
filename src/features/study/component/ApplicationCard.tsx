@@ -54,7 +54,7 @@ export function ApplicationCard({
 
   const handleCardClick = () => {
     if (isLoggedIn) {
-      navigate("/study/detail/1");
+      navigate("/study/detail/" + application.studyId);
     } else {
       onCardClick?.();
     }
