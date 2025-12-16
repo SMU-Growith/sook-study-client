@@ -17,14 +17,21 @@ import { useNavigate, useParams, useSearchParams } from "react-router";
 import { StudyMemberModal } from "../component/StudyMemberModal";
 import {
   createStudySessionApi,
+  fetchMyApplicationsListApi,
+  fetchMyStudyDetailApi,
   fetchStudyById,
   fetchStudyMembersApi,
   fetchStudyRulesApi,
   fetchStudySessionsApi,
+  respondToStudyApplicationApi,
   studyChangeLeaderApi,
   updateStudyRulesApi,
 } from "../api/study";
 import type {
+  ApplicationStatus,
+  Applier,
+  MyStudyDetail,
+  RespondToStudyApplication,
   Rules,
   RulesLabel,
   StudyMember,
@@ -87,13 +94,12 @@ const exampleStampData: Stamp[] = [
 ];
 
 export function MyStudySession() {
-  let isLeader = false;
-  // TODO: 상세조회 api 연동 후 role 설정
-  const [sp] = useSearchParams();
-  const role = sp.get("role");
-  if (role === "LEADER") {
-    isLeader = true;
-  }
+  // // TODO: 상세조회 api 연동 후 role 설정
+  // const [sp] = useSearchParams();
+  // const role = sp.get("role");
+  // if (role === "LEADER") {
+  //   isLeader = true;
+  // }
 
   const queryClient = useQueryClient();
   const { studyId } = useParams<{ studyId: string }>();
@@ -110,8 +116,18 @@ export function MyStudySession() {
   const [selectedMemberNickname, setSelectedMemberNickname] = useState<
     string | null
   >(null);
-
   const studyIdNum = Number(studyId);
+
+  // 내 스터디 상세 조회 API
+  const { data: myStudyDetail = {} as MyStudyDetail } = useQuery<MyStudyDetail>(
+    {
+      queryKey: studyQueryKeys.myStudyDetail(studyIdNum),
+      queryFn: () => fetchMyStudyDetailApi(studyIdNum),
+      enabled: Number.isFinite(studyIdNum),
+    }
+  );
+
+  // 스터디 세션 조회 API
   const { data: sessions = [] } = useQuery<StudySessionDetail[]>({
     queryKey: studyQueryKeys.studySessions(studyIdNum),
     queryFn: () => fetchStudySessionsApi(studyIdNum, 0, 20),
@@ -216,12 +232,43 @@ export function MyStudySession() {
     setIsRuleModalOpen(false);
   };
 
+  // 스터디별 지원내역 조회 API
+  const { data: appliers = [] } = useQuery<Applier[]>({
+    queryKey: studyQueryKeys.studyApplication(studyIdNum),
+    queryFn: () => fetchMyApplicationsListApi(studyIdNum),
+    enabled: !!studyIdNum,
+  });
+
+  // 스터디 지원서 상태 변경 API
+  const { mutate: changeApplicationStatus } = useMutation<
+    RespondToStudyApplication,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number; status: ApplicationStatus }
+  >({
+    mutationFn: ({ studyId, status }) =>
+      respondToStudyApplicationApi(studyId, status),
+    onSuccess: (_res, _vars) => {
+      console.log("스터디 지원서 상태 변경 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studyApplication(_vars.studyId),
+      });
+    },
+    onError: (error) => {
+      alert(
+        error.response?.data?.message || "지원서 상태 변경에 실패했습니다."
+      );
+    },
+  });
+
   const updateApplicationStatus = (
     applicationId: number,
     newStatus: string
   ) => {
     console.log("지원서 ID:", applicationId, "새 상태:", newStatus);
-    // changeApplicationStatus(applicationId, newStatus); // 스터디 승인 api 호출
+    changeApplicationStatus({
+      studyId: applicationId,
+      status: newStatus as ApplicationStatus,
+    });
     setIsApplyModalOpen(false);
   };
 
@@ -231,7 +278,7 @@ export function MyStudySession() {
       <main className="flex w-full mt-[88px]">
         <div className="flex flex-col px-[18px] py-6 gap-5 w-[336px]">
           <h2 className="heading-2">React 실력 키우실 분! 초보도 환영!</h2>
-          {isLeader && (
+          {myStudyDetail.myRole === "LEADER" && (
             <Button variant="default" size="md">
               모집글 수정하기
             </Button>
@@ -240,7 +287,7 @@ export function MyStudySession() {
             <div className="flex flex-col gap-y-[12px]">
               <div className="flex justify-between items-center">
                 <p className="text-body-1-semibold">스터디 멤버</p>
-                {isLeader && (
+                {myStudyDetail.myRole === "LEADER" && (
                   <img
                     src={SettingsSvg}
                     alt="설정 아이콘"
@@ -316,7 +363,7 @@ export function MyStudySession() {
             <div className="flex flex-col gap-y-[12px]">
               <div className="flex justify-between items-center">
                 <p className="text-body-1-semibold">스터디 규칙</p>
-                {isLeader && (
+                {myStudyDetail.myRole === "LEADER" && (
                   <img
                     src={SettingsSvg}
                     alt="설정 아이콘"
@@ -348,7 +395,7 @@ export function MyStudySession() {
             </div>
           </div>
 
-          {isLeader && (
+          {myStudyDetail.myRole === "LEADER" && (
             <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
               <div className="flex flex-col gap-y-[12px]">
                 <div className="flex justify-between items-center">
@@ -362,11 +409,14 @@ export function MyStudySession() {
                 </div>
                 <hr className="border-t-3 border-gray-100" />
                 <div className="flex flex-col gap-3">
-                  {["지송이", "지원송이", "원송이"].map((applierName) => (
-                    <div key={applierName} className="flex items-center">
+                  {appliers.map((applier) => (
+                    <div
+                      key={applier.applicationId}
+                      className="flex items-center"
+                    >
                       <img src={UserProfileSvg} alt="User Profile" />
                       <span className="text-body-2-semibold text-gray-400 ml-1">
-                        {applierName}
+                        {applier.nickName}
                       </span>
                     </div>
                   ))}
@@ -382,45 +432,7 @@ export function MyStudySession() {
                   isOpen={isApplyModalOpen}
                   onClose={() => setIsApplyModalOpen(false)}
                   onChangeApplicationStatus={updateApplicationStatus}
-                  studyId={Number(studyId)}
-                  appliers={[
-                    {
-                      applicationId: 1,
-                      studyId: Number(studyId),
-                      userId: 101,
-                      nickName: "지송이",
-                      studentStatus: "재학",
-                      major: "기계공학과",
-                      phoneNumber: "010-1234-5678",
-                      motivation:
-                        "React 스터디를 통해 컴포넌트 설계 감을 잡고 싶어요.",
-                      applicationStatus: "PENDING",
-                    },
-                    {
-                      applicationId: 2,
-                      studyId: Number(studyId),
-                      userId: 102,
-                      nickName: "지원송이",
-                      studentStatus: "휴학",
-                      major: "컴퓨터공학과",
-                      phoneNumber: "010-2345-6789",
-                      motivation:
-                        "프로젝트 경험 쌓고 포트폴리오에 넣을 결과물을 만들고 싶어요.",
-                      applicationStatus: "ACCEPTED",
-                    },
-                    {
-                      applicationId: 3,
-                      studyId: Number(studyId),
-                      userId: 103,
-                      nickName: "원송이",
-                      studentStatus: "졸업",
-                      major: "소프트웨어학과",
-                      phoneNumber: "010-3456-7890",
-                      motivation:
-                        "실무 감각 유지하려고 사이드로 스터디 같이 하고 싶습니다.",
-                      applicationStatus: "REJECTED",
-                    },
-                  ]}
+                  appliers={appliers}
                 />
               </div>
             </div>
@@ -432,7 +444,7 @@ export function MyStudySession() {
           >
             스터디 나가기
           </Button>
-          {isLeader && (
+          {myStudyDetail.myRole === "LEADER" && (
             <Button
               variant="deleted"
               size="md"
@@ -445,7 +457,7 @@ export function MyStudySession() {
         <div className="flex flex-1 flex-col px-10 py-10 gap-5">
           <div className="flex justify-between items-center">
             <h2 className="heading-2">스터디 일지</h2>
-            {isLeader && (
+            {myStudyDetail.myRole === "LEADER" && (
               <div className="flex gap-2">
                 <Button
                   variant="primary"

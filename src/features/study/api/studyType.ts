@@ -11,6 +11,7 @@ export interface StudyMember {
 
 export type RuleCategory = "TIME" | "FINE" | "DAY_OFF" | "ATMOSPHERE" | "ETC";
 export type RuleCategoryLabel = "시간" | "벌금" | "휴무" | "분위기" | "기타";
+export type ApplicationStatus = "ACCEPTED" | "PENDING" | "REJECTED";
 
 export interface Rules {
   ruleCategory: RuleCategory;
@@ -40,6 +41,7 @@ export interface Applier {
   phoneNumber: string;
   motivation: string;
   applicationStatus: string;
+  personalityType: string;
 }
 
 export interface StudyResult {
@@ -156,7 +158,7 @@ export interface MyApplication {
   scrapCount: number;
   isScraped: boolean;
   createdAt: string;
-  applicationStatus: "ACCEPTED" | "PENDING" | "REJECTED";
+  applicationStatus: ApplicationStatus;
 }
 
 export interface ToggleScrap {
@@ -201,4 +203,15 @@ export interface MyStudy {
   studyFormat: string;
   studyFieldName: string;
   studyStyleCategory: string;
+}
+
+export interface MyStudyDetail {
+  studyId: number;
+  myRole: "LEADER" | "MEMBER";
+}
+
+export interface RespondToStudyApplication {
+  applicationId: number;
+  studyId: number;
+  applicationStatus: ApplicationStatus;
 }

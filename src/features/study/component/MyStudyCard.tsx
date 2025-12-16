@@ -17,7 +17,7 @@ export function MyStudyCard({ study }: MyStudyCardProps) {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/study/my/${study.studyId}?role=${study.studyRole}`);
+    navigate(`/study/my/${study.studyId}`);
   };
 
   return (

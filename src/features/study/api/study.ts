@@ -6,9 +6,13 @@ import type {
   StudyUpdateRequest,
 } from "@/features/study/validators/study";
 import type {
+  ApplicationStatus,
+  Applier,
   EmojiCounts,
   MyApplication,
   MyStudy,
+  MyStudyDetail,
+  RespondToStudyApplication,
   RuleCategoryLabel,
   RulesLabel,
   StampList,
@@ -58,6 +62,15 @@ export const studyApplyApi = async (
   return response.data.result;
 };
 
+// 내 스터디 상세 조회 API
+export const fetchMyStudyDetailApi = async (studyId: number) => {
+  const response = await apiClient.get<ApiResponse<MyStudyDetail>>(
+    `/studies/${studyId}/me`
+  );
+  return response.data.result;
+};
+
+// 스터디 리더 변경 API
 export const studyChangeLeaderApi = async (
   studyId: number,
   memberId: number
@@ -286,5 +299,24 @@ export const fetchMyStudiesApi = async (
     { params: { page, size } }
   );
 
+  return response.data.result;
+};
+
+// 스터디 지원내역 조회 API
+export const fetchMyApplicationsListApi = async (studyId: number) => {
+  const response = await apiClient.get<ApiResponse<Applier[]>>(
+    `/studies/${studyId}/applications`
+  );
+  return response.data.result;
+};
+
+// 스터디 승인/거절 API
+export const respondToStudyApplicationApi = async (
+  applicationId: number,
+  status: ApplicationStatus
+) => {
+  const response = await apiClient.patch<
+    ApiResponse<RespondToStudyApplication>
+  >(`/studies/${applicationId}/status`, { status });
   return response.data.result;
 };

@@ -32,4 +32,6 @@ export const studyQueryKeys = {
   myStudies: (studyStatus: string) => ["myStudies", studyStatus] as const,
   studyMembers: (studyId: number) => ["studyMembers", studyId] as const,
   studyRules: (studyId: number) => ["studyRules", studyId] as const,
+  myStudyDetail: (studyId: number) => ["myStudyDetail", studyId] as const,
+  studyApplication: (studyId: number) => ["studyApplication", studyId] as const,
 };
