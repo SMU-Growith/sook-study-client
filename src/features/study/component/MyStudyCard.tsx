@@ -28,7 +28,7 @@ export function MyStudyCard({ study, studyStatus }: MyStudyCardProps) {
   return (
     <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
       <div className="flex flex-col gap-y-[10px]">
-        <div className="flex flex-col gap-y-5" onClick={handleCardClick}>
+        <div className="flex flex-col gap-y-5">
           <div>
             <Badge
               variant={study.studyRole === "LEADER" ? "purple" : "yellow"}
@@ -37,7 +37,9 @@ export function MyStudyCard({ study, studyStatus }: MyStudyCardProps) {
               {study.studyRole === "LEADER" ? "스터디장" : "스터디원"}
             </Badge>
           </div>
-          <h3 className="heading-3">{study.title}</h3>
+          <h3 className="heading-3" onClick={handleCardClick}>
+            {study.title}
+          </h3>
           <div className="flex flex-wrap gap-1">
             <Tag>{study.studyFormat}</Tag>
             <Tag>{study.studyFieldName}</Tag>

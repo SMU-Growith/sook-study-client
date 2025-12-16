@@ -3,7 +3,7 @@ import { Tag } from "../../../components/ui/Tag";
 import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import HeartSvg from "@/assets/icons/heart.svg";
 import HeartFillSvg from "@/assets/icons/heartFill.svg";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
@@ -29,28 +29,52 @@ export function ApplicationCard({
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   console.log("application:", application);
+  const [isScraped, setIsScraped] = useState(application.isScraped);
+  const [scrapCount, setScrapCount] = useState(application.scrapCount);
 
-  const { mutate: toggleScrap } = useMutation<
+  const isScrapedRef = useRef(isScraped);
+  useEffect(() => {
+    isScrapedRef.current = isScraped;
+  }, [isScraped]);
+
+  useEffect(() => {
+    setIsScraped(application.isScraped);
+    setScrapCount(application.scrapCount);
+  }, [application.isScraped, application.scrapCount]);
+
+  const handleScrapClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isPending) return;
+
+    const current = isScrapedRef.current;
+    const delta = current ? -1 : 1;
+
+    setIsScraped(!current);
+    setScrapCount((prev) => prev + delta);
+
+    toggleScrap({ studyId: application.studyId });
+  };
+
+  const { mutate: toggleScrap, isPending } = useMutation<
     ToggleScrap,
     AxiosError<ApiResponse<null>>,
     { studyId: number }
   >({
     mutationFn: ({ studyId }) => toggleStudyScrapApi(studyId),
-    onSuccess: async (_data, vars) => {
-      queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.studyMatch(),
-      });
-    },
+    // onSuccess: async (_data, vars) => {
+    //   queryClient.invalidateQueries({
+    //     queryKey: studyQueryKeys.studyMatch(),
+    //   });
+    // },
     onError: (error) => {
+      setIsScraped(application.isScraped);
+      setScrapCount(application.scrapCount);
       alert(
         error.response?.data?.message || "스터디 스크랩 수정에 실패했습니다."
       );
     },
   });
-
-  const handleScrapClick = () => {
-    toggleScrap({ studyId: application.studyId });
-  };
 
   const handleCardClick = () => {
     if (isLoggedIn) {
@@ -111,13 +135,15 @@ export function ApplicationCard({
             </span>
           </div>
           <div className="flex items-center">
-            <img
-              src={application.isScraped ? HeartFillSvg : HeartSvg}
-              alt="Heart Background"
+            <button
+              type="button"
               onClick={handleScrapClick}
-            />
+              disabled={isPending}
+            >
+              <img src={isScraped ? HeartFillSvg : HeartSvg} alt="Heart" />
+            </button>
             <span className="text-body-2-semibold text-gray-400 ml-1">
-              {application.scrapCount}
+              {scrapCount}
             </span>
           </div>
         </div>

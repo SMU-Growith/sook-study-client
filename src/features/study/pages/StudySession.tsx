@@ -282,6 +282,9 @@ export function MyStudySession() {
       queryClient.invalidateQueries({
         queryKey: studyQueryKeys.myStudies("CLOSED"),
       });
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.myStudies("ACTIVE"),
+      });
       setIsStudyOutModalOpen(false);
       navigate("/study/my");
     },
@@ -300,6 +303,9 @@ export function MyStudySession() {
       console.log("스터디 종료 성공:", _res);
       queryClient.invalidateQueries({
         queryKey: studyQueryKeys.myStudies("CLOSED"),
+      });
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.myStudies("ACTIVE"),
       });
       setIsStudyFinishModalOpen(false);
       navigate("/study/my");
