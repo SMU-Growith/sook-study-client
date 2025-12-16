@@ -28,6 +28,7 @@ export function ApplicationCard({
   const { isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  console.log("application:", application);
 
   const { mutate: toggleScrap } = useMutation<
     ToggleScrap,

@@ -1,9 +1,7 @@
 import { Modal } from "@/components/ui/Modal";
 import CloseSvg from "@/assets/icons/close.svg";
 import { Button } from "@/components/ui/button";
-import { InputField } from "@/components/ui/InputField";
-import { TextAreaField } from "@/components/ui/TextAreaField";
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import StudyLeaderSvg from "@/assets/studyLeader.svg";
 import StudyMemberSvg from "@/assets/studyMember.svg";
@@ -11,7 +9,6 @@ import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import type { StudyMember } from "../api/studyType";
 import CheckboxOff from "@/assets/checkBoxOff.svg";
 import CheckboxOn from "@/assets/checkBoxOn.svg";
-import { is } from "zod/v4/locales";
 
 interface StudyMemberModalProps {
   isOpen: boolean;
@@ -29,7 +26,6 @@ export function StudyMemberModal({
   leader,
   members,
 }: StudyMemberModalProps) {
-  // 기본값을 members의 첫번째 값으로 설정
   const [selectedMember, setSelectedMember] = useState<StudyMember | null>(
     members && members.length > 0 ? members[0] : null
   );
@@ -55,7 +51,7 @@ export function StudyMemberModal({
           <div className="flex items-center">
             <img src={UserProfileSvg} alt="User Profile" />
             <span className="text-body-2-semibold text-gray-400 ml-1">
-              {leader?.nickname}
+              {leader?.nickName}
             </span>
           </div>
         </div>
@@ -97,7 +93,7 @@ export function StudyMemberModal({
                       )}
                       <img src={UserProfileSvg} alt="User Profile" />
                       <span className="text-body-2-semibold text-gray-400 ml-1">
-                        {member.nickname}
+                        {member.nickName}
                       </span>
                     </div>
                   </button>

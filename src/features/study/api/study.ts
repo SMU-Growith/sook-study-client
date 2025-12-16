@@ -14,6 +14,7 @@ import type {
   StudyListResult,
   StudyLogDetail,
   StudyLogList,
+  StudyMember,
   StudySessionDetail,
   StudySessionList,
   ToggleScrap,
@@ -59,15 +60,18 @@ export const studyChangeLeaderApi = async (
   studyId: number,
   memberId: number
 ) => {
-  const response = await apiClient.patch(
+  const response = await apiClient.patch<ApiResponse<null>>(
     `/studies/${studyId}/changeLeader?newLeaderUserId=${memberId}`
   );
-  return response.data;
+  return response.data.result;
 };
 
+// 스터디 멤버 조회 API
 export const fetchStudyMembersApi = async (studyId: number) => {
-  const response = await apiClient.get(`/studies/${studyId}/users`);
-  return response.data;
+  const response = await apiClient.get<ApiResponse<StudyMember[]>>(
+    `/studies/${studyId}/users`
+  );
+  return response.data.result;
 };
 
 // 홈화면 스터디 조회 API

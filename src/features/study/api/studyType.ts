@@ -1,11 +1,12 @@
 export interface StudyMember {
   userId: number;
-  nickname: string;
+  nickName: string;
   studentStatus: string;
   major: string;
   phoneNumber: string;
   motivation: string;
   studyRole: string;
+  personalityType: string;
 }
 
 export type RuleCategory = "TIME" | "FINE" | "DAY_OFF" | "ATMOSPHERE" | "ETC";
