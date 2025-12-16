@@ -11,9 +11,10 @@ import type { MyStudy } from "../api/studyType";
 interface MyStudyCardProps {
   study: MyStudy;
   onCardClick?: () => void;
+  studyStatus: "ACTIVE" | "CLOSED";
 }
 
-export function MyStudyCard({ study }: MyStudyCardProps) {
+export function MyStudyCard({ study, studyStatus }: MyStudyCardProps) {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
@@ -26,10 +27,10 @@ export function MyStudyCard({ study }: MyStudyCardProps) {
         <div className="flex flex-col gap-y-5">
           <div>
             <Badge
-              variant={study.studyRole === "MEMBER" ? "yellow" : "purple"}
-              icon={study.studyRole === "MEMBER" ? StudyMember : StudyLeader}
+              variant={study.studyRole === "LEADER" ? "purple" : "yellow"}
+              icon={study.studyRole === "LEADER" ? StudyLeader : StudyMember}
             >
-              {study.studyRole === "MEMBER" ? "스터디원" : "스터디장"}
+              {study.studyRole === "LEADER" ? "스터디장" : "스터디원"}
             </Badge>
           </div>
           <h3 className="heading-3">{study.title}</h3>
@@ -54,7 +55,7 @@ export function MyStudyCard({ study }: MyStudyCardProps) {
             </div>
           </div>
           <Button variant="solid" onClick={handleCardClick}>
-            {study.studyStatus === "ACTIVE" ? "스터디 참여하기" : "스터디 보기"}
+            {studyStatus === "ACTIVE" ? "스터디 참여하기" : "스터디 보기"}
           </Button>
         </div>
       </div>

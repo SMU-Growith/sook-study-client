@@ -320,3 +320,19 @@ export const respondToStudyApplicationApi = async (
   >(`/studies/${applicationId}/status`, { status });
   return response.data.result;
 };
+
+// 스터디 나가기
+export const studyLeaveApi = async (studyId: number) => {
+  const response = await apiClient.patch<ApiResponse<null>>(
+    `/studies/${studyId}/withdraw`
+  );
+  return response.data.result;
+};
+
+// 스터디 종료하기
+export const studyFinishApi = async (studyId: number) => {
+  const response = await apiClient.patch<ApiResponse<null>>(
+    `/studies/${studyId}/close`
+  );
+  return response.data.result;
+};

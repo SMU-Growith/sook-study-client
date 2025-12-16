@@ -8,23 +8,23 @@ import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import BlueCircleSvg from "@/assets/blueCircle.svg";
 import PlusSvg from "@/assets/icons/plus.svg";
 import { useState } from "react";
-import { useAuthStore } from "@/store/authStore";
 import { StudySessionCreateModal } from "../component/StudySessionCreateModal";
 import { StudySessionCard } from "@/features/study/component/MyStudySessionCard";
 import { StudyFinishModal } from "../component/StudyFinishModal";
 import { StudyOutModal } from "../component/StudyOutModal";
-import { useNavigate, useParams, useSearchParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { StudyMemberModal } from "../component/StudyMemberModal";
 import {
   createStudySessionApi,
   fetchMyApplicationsListApi,
   fetchMyStudyDetailApi,
-  fetchStudyById,
   fetchStudyMembersApi,
   fetchStudyRulesApi,
   fetchStudySessionsApi,
   respondToStudyApplicationApi,
   studyChangeLeaderApi,
+  studyFinishApi,
+  studyLeaveApi,
   updateStudyRulesApi,
 } from "../api/study";
 import type {
@@ -32,7 +32,6 @@ import type {
   Applier,
   MyStudyDetail,
   RespondToStudyApplication,
-  Rules,
   RulesLabel,
   StudyMember,
   StudySessionDetail,
@@ -243,15 +242,16 @@ export function MyStudySession() {
   const { mutate: changeApplicationStatus } = useMutation<
     RespondToStudyApplication,
     AxiosError<ApiResponse<null>>,
-    { studyId: number; status: ApplicationStatus }
+    { applicationId: number; status: ApplicationStatus }
   >({
-    mutationFn: ({ studyId, status }) =>
-      respondToStudyApplicationApi(studyId, status),
+    mutationFn: ({ applicationId, status }) =>
+      respondToStudyApplicationApi(applicationId, status),
     onSuccess: (_res, _vars) => {
       console.log("스터디 지원서 상태 변경 성공:", _res);
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.studyApplication(_vars.studyId),
+        queryKey: studyQueryKeys.studyApplication(_vars.applicationId),
       });
+      setIsApplyModalOpen(false);
     },
     onError: (error) => {
       alert(
@@ -266,10 +266,57 @@ export function MyStudySession() {
   ) => {
     console.log("지원서 ID:", applicationId, "새 상태:", newStatus);
     changeApplicationStatus({
-      studyId: applicationId,
+      applicationId: applicationId,
       status: newStatus as ApplicationStatus,
     });
-    setIsApplyModalOpen(false);
+  };
+
+  const { mutate: studyLeave } = useMutation<
+    null,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number }
+  >({
+    mutationFn: ({ studyId }) => studyLeaveApi(studyId),
+    onSuccess: (_res, _vars) => {
+      console.log("스터디 나가기 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.myStudies("CLOSED"),
+      });
+      setIsStudyOutModalOpen(false);
+      navigate("/study/my");
+    },
+    onError: (error) => {
+      alert(error.response?.data?.message || "스터디 나가기에 실패했습니다.");
+    },
+  });
+
+  const { mutate: studyFinish } = useMutation<
+    null,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number }
+  >({
+    mutationFn: ({ studyId }) => studyFinishApi(studyId),
+    onSuccess: (_res, _vars) => {
+      console.log("스터디 종료 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.myStudies("CLOSED"),
+      });
+      setIsStudyFinishModalOpen(false);
+      navigate("/study/my");
+    },
+    onError: (error) => {
+      alert(error.response?.data?.message || "스터디 종료에 실패했습니다.");
+    },
+  });
+
+  // 스터디 나가기 API
+  const handleStudyOut = () => {
+    studyLeave({ studyId: studyIdNum });
+  };
+
+  // 스터디 종료하기 API
+  const handleStudyFinish = () => {
+    studyFinish({ studyId: studyIdNum });
   };
 
   return (
@@ -498,19 +545,12 @@ export function MyStudySession() {
       <StudyOutModal
         isOpen={isStudyOutModalOpen}
         onClose={() => setIsStudyOutModalOpen(false)}
-        onConfirm={() => {
-          setIsStudyOutModalOpen(false);
-          navigate(-1);
-        }}
+        onConfirm={handleStudyOut}
       />
       <StudyFinishModal
         isOpen={isStudyFinishModalOpen}
         onClose={() => setIsStudyFinishModalOpen(false)}
-        onConfirm={() => {
-          setIsStudyFinishModalOpen(false);
-          // 이전페이지로 이동
-          navigate(-1);
-        }}
+        onConfirm={handleStudyFinish}
       />
     </div>
   );

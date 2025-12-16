@@ -17,7 +17,6 @@ export function ApplicationHistoryModal({
   onChangeApplicationStatus,
   appliers,
 }: ApplicationHistoryModalProps) {
-  // 기본값을 members의 첫번째 값으로 설정
   const [selectedMember, setSelectedMember] = useState<Applier | null>(
     appliers && appliers.length > 0 ? appliers[0] : null
   );
@@ -39,8 +38,8 @@ export function ApplicationHistoryModal({
               <div className="flex flex-col gap-[10px] w-[170px]">
                 {appliers?.map((member) => (
                   <button
-                    key={member.userId}
-                    className={`h-[40px] px-[12px] rounded-[8px] hover:bg-gray-100 ${selectedMember?.userId === member.userId ? "bg-gray-100" : ""}`}
+                    key={member.applicationId}
+                    className={`h-[40px] px-[12px] rounded-[8px] hover:bg-gray-100 ${selectedMember?.applicationId === member.applicationId ? "bg-gray-100" : ""}`}
                     onClick={() => handleMemberClick(member)}
                   >
                     <div className="flex items-center">
@@ -53,7 +52,7 @@ export function ApplicationHistoryModal({
                 ))}
               </div>
               {selectedMember ? (
-                <div className="flex-1 bg-gray-50 px-5 py-5 rounded-[14px]">
+                <div className="flex-1 w-full bg-gray-50 px-5 py-5 rounded-[14px]">
                   {selectedMember.applicationStatus === "ACCEPTED" ? (
                     <p className="text-body-2-semibold text-success-200 mb-4">
                       승인된 지원서입니다.

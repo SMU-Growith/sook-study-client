@@ -46,7 +46,11 @@ export function MyStudyList() {
             </div>
             <div className="grid grid-cols-2 gap-5">
               {myStudies.map((study) => (
-                <MyStudyCard key={study.studyId} study={study} />
+                <MyStudyCard
+                  key={study.studyId}
+                  study={study}
+                  studyStatus={studyStatus}
+                />
               ))}
             </div>
           </div>
