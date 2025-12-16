@@ -1,50 +1,58 @@
-import { Logo } from '@/components/ui/Logo';
-import { AuthHeader } from '@/components/layout/AuthHeader';
-import { Link, useNavigate } from 'react-router-dom';
-// import type { AxiosError } from 'axios';
-// import { loginApi } from '@/lib/api/index';
-// import { useMutation } from '@tanstack/react-query';
-import { loginSchema, type TLoginSchema } from '../validators/auth';
-import { LoginForm } from '../components/LoginForm';
-import { Form } from '@/components/ui/Form';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { StampConfirmModal } from '@/components/ui/StampConfirmModal';
-import { useAuthStore } from '@/store/authStore';
+import { Logo } from "@/components/ui/Logo";
+import { AuthHeader } from "@/components/layout/AuthHeader";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { loginSchema, type TLoginSchema } from "../validators/auth";
+import { LoginForm } from "../components/LoginForm";
+import { Form } from "@/components/ui/Form";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { StampConfirmModal } from "@/components/ui/StampConfirmModal";
+import { useAuthStore } from "@/store/authStore";
+import { loginApi } from "../api/auth";
+import type { AxiosError } from "axios";
+import type { LoginResult } from "../api/authType";
+import type { ApiResponse } from "@/lib/api";
 
 export function LoginPage() {
   const navigate = useNavigate();
   const auth = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false); // 웰컴 스탬프 모달 상태
 
-  // const { mutate: submitLogin } = useMutation({
-  //   mutationFn: loginApi,
-  //   onSuccess: (res) => {
-  //     auth.login(res.data.nickname, true);
-  //     alert('로그인이 완료되었습니다.');
-  //     const isFirstLogin = res.data?.isFirstLogin ?? true; // 실제로는 서버 응답을 통해 확인
-  //     // 만약 처음 로그인한 사람이라면 웰컴 스탬프 모달 띄우기
-  //     if (isFirstLogin) {
-  //       setIsModalOpen(true);
-  //     }
-  //     navigate('/home');
-  //   },
-  //   onError: (error: AxiosError<{ message: string }>) => {
-  //     alert(error.response?.data?.message || '로그인에 실패했습니다.');
-  //   },
-  // });
+  const { mutate: submitLogin } = useMutation<
+    LoginResult,
+    AxiosError<ApiResponse<null>>,
+    TLoginSchema
+  >({
+    mutationFn: loginApi,
+    onSuccess: (res) => {
+      localStorage.setItem("accessToken", res.accessToken);
+      localStorage.setItem("refreshToken", res.refreshToken);
+      auth.login(
+        res.nickName,
+        res.email,
+        res.major,
+        res.studentStatus,
+        res.phoneNumber
+      );
+      auth.isLoggedIn = true;
+      // alert("로그인이 완료되었습니다.");
+      // const isFirstLogin = res.data?.isFirstLogin ?? true; // 실제로는 서버 응답을 통해 확인
+      setIsModalOpen(true);
+    },
+    onError: (error) => {
+      alert(`로그인에 실패했습니다: ${error.message}`);
+    },
+  });
 
   const onSubmit = (data: TLoginSchema) => {
-    console.log('Login Data:', data);
-    // submitLogin(data);
-    // 임시로 웰컴 스탬프 모달 띄우기
-    setIsModalOpen(true); //[ld]
-    auth.login('다함송이', true); //[ld]
+    console.log("Login Data:", data);
+    submitLogin(data);
   };
 
   const handleConfirmStamp = () => {
     setIsModalOpen(false);
-    navigate('/my/stamps');
+    navigate("/my-page/stamp");
   };
 
   return (
@@ -57,7 +65,11 @@ export function LoginPage() {
           <br />
           숙터디
         </h1>
-        <Form schema={loginSchema} onSubmit={onSubmit} className="w-full space-y-5">
+        <Form
+          schema={loginSchema}
+          onSubmit={onSubmit}
+          className="w-full space-y-5"
+        >
           <LoginForm />
           <Button variant="primary" type="submit" size="lg" className="w-full">
             로그인하기
@@ -75,7 +87,7 @@ export function LoginPage() {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-          navigate('/home');
+          navigate("/home");
         }}
         onConfirm={handleConfirmStamp}
       />

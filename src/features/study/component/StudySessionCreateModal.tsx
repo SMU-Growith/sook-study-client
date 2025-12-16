@@ -1,12 +1,14 @@
-import { Modal } from '@/components/ui/Modal';
-import CloseSvg from '@/assets/icons/close.svg';
-import { Button } from '@/components/ui/button';
-import { InputField } from '@/components/ui/InputField';
+import { Modal } from "@/components/ui/Modal";
+import CloseSvg from "@/assets/icons/close.svg";
+import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/FormField";
+import { Form } from "@/components/ui/Form";
+import { studySessionSchema } from "../validators/study";
 
 interface StudySessionCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (title: string) => void;
   nextSessionId?: number;
 }
 export function StudySessionCreateModal({
@@ -15,6 +17,10 @@ export function StudySessionCreateModal({
   onConfirm,
   nextSessionId,
 }: StudySessionCreateModalProps) {
+  const onSubmit = (data: { title: string }) => {
+    onConfirm(data.title);
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[550px]">
       <div className="flex flex-col text-left relative pt-4">
@@ -23,19 +29,28 @@ export function StudySessionCreateModal({
         </button>
         <h3 className="heading-3 mb-2">스터디 일지 생성하기</h3>
         <hr className="border-t-3 border-gray-100 mb-[22px]" />
-        <p className="text-gray-300 text-body-1-semibold mb-[22px]">{nextSessionId}회차</p>
-        <InputField
-          label="스터디 일지"
-          placeholder="이번 회차에는 어떤 스터디 일지를 작성할 지 입력해주세요."
-        />
-        <div className="flex gap-[10px] mt-[12px] mb-[12px]">
-          <Button variant="default" onClick={onClose}>
-            닫기
-          </Button>
-          <Button variant="primary" className="flex-1" onClick={onConfirm}>
-            생성하기
-          </Button>
-        </div>
+        <p className="text-gray-300 text-body-1-semibold mb-[22px]">
+          {nextSessionId}회차
+        </p>
+        <Form
+          schema={studySessionSchema}
+          onSubmit={onSubmit}
+          className="w-full space-y-5"
+        >
+          <FormField
+            name="title"
+            label="스터디 일지"
+            placeholder="이번 회차에는 어떤 스터디 일지를 작성할 지 입력해주세요."
+          />
+          <div className="flex gap-[10px] mt-[12px] mb-[12px]">
+            <Button variant="default" onClick={onClose}>
+              닫기
+            </Button>
+            <Button variant="primary" className="flex-1" type="submit">
+              생성하기
+            </Button>
+          </div>
+        </Form>
       </div>
     </Modal>
   );

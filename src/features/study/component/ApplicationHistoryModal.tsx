@@ -9,17 +9,14 @@ interface ApplicationHistoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   onChangeApplicationStatus: (applicationId: number, newStatus: string) => void;
-  studyId?: number;
   appliers?: Applier[];
 }
 export function ApplicationHistoryModal({
   isOpen,
   onClose,
   onChangeApplicationStatus,
-  studyId,
   appliers,
 }: ApplicationHistoryModalProps) {
-  // 기본값을 members의 첫번째 값으로 설정
   const [selectedMember, setSelectedMember] = useState<Applier | null>(
     appliers && appliers.length > 0 ? appliers[0] : null
   );
@@ -41,8 +38,8 @@ export function ApplicationHistoryModal({
               <div className="flex flex-col gap-[10px] w-[170px]">
                 {appliers?.map((member) => (
                   <button
-                    key={member.userId}
-                    className={`h-[40px] px-[12px] rounded-[8px] hover:bg-gray-100 ${selectedMember?.userId === member.userId ? "bg-gray-100" : ""}`}
+                    key={member.applicationId}
+                    className={`h-[40px] px-[12px] rounded-[8px] hover:bg-gray-100 ${selectedMember?.applicationId === member.applicationId ? "bg-gray-100" : ""}`}
                     onClick={() => handleMemberClick(member)}
                   >
                     <div className="flex items-center">
@@ -55,7 +52,20 @@ export function ApplicationHistoryModal({
                 ))}
               </div>
               {selectedMember ? (
-                <div className="flex-1 bg-gray-50 px-5 py-5 rounded-[14px]">
+                <div className="flex-1 w-full bg-gray-50 px-5 py-5 rounded-[14px]">
+                  {selectedMember.applicationStatus === "ACCEPTED" ? (
+                    <p className="text-body-2-semibold text-success-200 mb-4">
+                      승인된 지원서입니다.
+                    </p>
+                  ) : selectedMember.applicationStatus === "REJECTED" ? (
+                    <p className="text-body-2-semibold text-error-200 mb-4">
+                      거절된 지원서입니다.
+                    </p>
+                  ) : (
+                    <p className="text-body-2-semibold text-warning-200 mb-4">
+                      대기 중인 지원서입니다.
+                    </p>
+                  )}
                   <div className="flex flex-col gap-3">
                     <div>
                       <p className="text-body-2-semibold text-bk mb-1">
@@ -89,7 +99,18 @@ export function ApplicationHistoryModal({
                         {selectedMember.phoneNumber}
                       </p>
                     </div>
-
+                    {selectedMember.personalityType ? (
+                      <div>
+                        <p className="text-body-2-semibold text-bk mb-1">
+                          스터디 성향
+                        </p>
+                        <p className="text-body-2 text-gray-400">
+                          {selectedMember.personalityType}
+                        </p>
+                      </div>
+                    ) : (
+                      ""
+                    )}
                     <div>
                       <p className="text-body-2-semibold text-bk mb-1">
                         지원 동기
@@ -106,37 +127,48 @@ export function ApplicationHistoryModal({
             </div>
           </div>
         </div>
-        <div className="flex gap-[10px] mt-[12px] mb-[12px]">
-          <Button
-            variant="secondary"
-            size="lg"
-            className="flex-1"
-            onClick={() =>
-              selectedMember != null &&
-              onChangeApplicationStatus(
-                selectedMember.applicationId,
-                "REJECTED"
-              )
-            }
-          >
-            거절하기
-          </Button>
-          <Button
-            variant="primary"
-            size="lg"
-            className="flex-1"
-            onClick={() =>
-              selectedMember != null &&
-              onChangeApplicationStatus(
-                selectedMember.applicationId,
-                "ACCEPTED"
-              )
-            }
-          >
-            승인하기
-          </Button>
-        </div>
-        <Button variant="default" size="lg" onClick={onClose}>
+
+        {selectedMember && selectedMember.applicationStatus == "PENDING" ? (
+          <div className="flex gap-[10px] mt-[12px]">
+            <Button
+              variant="secondary"
+              size="lg"
+              className="flex-1"
+              onClick={() =>
+                selectedMember != null &&
+                onChangeApplicationStatus(
+                  selectedMember.applicationId,
+                  "REJECTED"
+                )
+              }
+            >
+              거절하기
+            </Button>
+            <Button
+              variant="primary"
+              size="lg"
+              className="flex-1"
+              onClick={() =>
+                selectedMember != null &&
+                onChangeApplicationStatus(
+                  selectedMember.applicationId,
+                  "ACCEPTED"
+                )
+              }
+            >
+              승인하기
+            </Button>
+          </div>
+        ) : (
+          ""
+        )}
+
+        <Button
+          variant="default"
+          size="lg"
+          onClick={onClose}
+          className="mt-[12px]"
+        >
           닫기
         </Button>
       </div>

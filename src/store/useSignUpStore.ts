@@ -1,7 +1,7 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface SignUpData {
-  id: string;
+  loginId: string;
   password: string;
   email: string;
 }
@@ -13,9 +13,9 @@ interface SignUpState {
 }
 
 const initialState: SignUpData = {
-  id: '',
-  password: '',
-  email: '',
+  loginId: "",
+  password: "",
+  email: "",
 };
 
 export const useSignUpStore = create<SignUpState>((set) => ({

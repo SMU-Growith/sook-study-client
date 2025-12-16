@@ -1,23 +1,27 @@
 import { AuthHeader } from "@/components/layout/AuthHeader";
 import { SideBar } from "@/components/ui/SideBar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ArrowLeftSvg from "@/assets/arrow/arrowLeft.svg";
 import ArrowRightSvg from "@/assets/arrow/arrowRight.svg";
-import { myApplicationsData } from "../myAppliactions";
-import {
-  ApplicationCard,
-  type Application,
-} from "@/components/ui/ApplicationCard";
+import { ApplicationCard } from "@/features/study/component/ApplicationCard";
+import { useQuery } from "@tanstack/react-query";
+import type { MyApplication } from "../api/studyType";
+import { studyQueryKeys } from "../api/queries";
+import { fetchMyApplicationsApi } from "../api/study";
 
 export function MyApplications() {
-  const [, setAllStudies] = useState<Application[]>([]);
-
   const pageNumbers = [1, 2, 3, 4, 5]; // [lf] 페이지 번호 배열
   const [page, setPage] = useState(1); // [lf] 현재 페이지
 
-  useEffect(() => {
-    setAllStudies(myApplicationsData);
-  }, []);
+  const { data: myApplicationsData, isLoading } = useQuery<MyApplication[]>({
+    queryKey: studyQueryKeys.myApplications(),
+    queryFn: () => fetchMyApplicationsApi(),
+    enabled: true,
+  });
+
+  if (isLoading || !myApplicationsData) {
+    return null;
+  }
 
   return (
     <div className="flex h-screen bg-white w-full">
@@ -30,7 +34,7 @@ export function MyApplications() {
             <div className="grid grid-cols-3 gap-5">
               {myApplicationsData.map((application) => (
                 <ApplicationCard
-                  key={application.id}
+                  key={application.applicationId}
                   application={application}
                 />
               ))}

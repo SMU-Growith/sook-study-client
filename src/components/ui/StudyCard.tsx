@@ -3,38 +3,51 @@ import { Tag } from "./Tag";
 import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import HeartSvg from "@/assets/icons/heart.svg";
 import HeartFillSvg from "@/assets/icons/heartFill.svg";
-import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
-
-export interface Study {
-  id: number;
-  title: string;
-  status: "모집중" | "모집완료";
-  tags: string[];
-  author: string;
-  likeCount: number;
-}
+import type { StudyResult, ToggleScrap } from "@/features/study/api/studyType";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
+import type { ApiResponse } from "@/lib/api/apiClient";
+import { toggleStudyScrapApi } from "@/features/study/api/study";
+import { studyQueryKeys } from "@/features/study/api/queries";
+import { STUDY_STATUS_FILTER_LABEL } from "@/features/study/constants";
 
 interface StudyCardProps {
-  study: Study;
+  study: StudyResult;
   onCardClick?: () => void;
 }
 
 export function StudyCard({ study, onCardClick }: StudyCardProps) {
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(study.likeCount);
+  const queryClient = useQueryClient();
   const { isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleLikeClick = () => {
-    setIsLiked(!isLiked);
-    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+  const { mutate: toggleScrap } = useMutation<
+    ToggleScrap,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number }
+  >({
+    mutationFn: ({ studyId }) => toggleStudyScrapApi(studyId),
+    onSuccess: async (_data, vars) => {
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studyMatch(),
+      });
+    },
+    onError: (error) => {
+      alert(
+        error.response?.data?.message || "스터디 스크랩 수정에 실패했습니다."
+      );
+    },
+  });
+
+  const handleScrapClick = () => {
+    toggleScrap({ studyId: study.studyId });
   };
 
   const handleCardClick = () => {
     if (isLoggedIn) {
-      navigate("/study/detail/1");
+      navigate(`/study/detail/${study.studyId}`);
     } else {
       onCardClick?.();
     }
@@ -45,15 +58,19 @@ export function StudyCard({ study, onCardClick }: StudyCardProps) {
       <div className="flex flex-col gap-y-[10px]">
         <div className="flex flex-col gap-y-5" onClick={handleCardClick}>
           <div>
-            <Badge variant={study.status === "모집중" ? "purple" : "black"}>
-              {study.status}
+            <Badge variant={study.isRecruiting ? "purple" : "black"}>
+              {
+                STUDY_STATUS_FILTER_LABEL[
+                  study.isRecruiting ? "ACTIVE" : "CLOSED"
+                ]
+              }
             </Badge>
           </div>
           <h3 className="heading-3">{study.title}</h3>
-          <div className="flex gap-1">
-            {study.tags.map((tag, index) => (
-              <Tag key={index}>{tag}</Tag>
-            ))}
+          <div className="flex flex-wrap gap-1">
+            <Tag>{study.studyFormat}</Tag>
+            <Tag>{study.studyFieldName}</Tag>
+            <Tag>{study.studyStyleCategory}</Tag>
           </div>
           <hr className="border-t-3 border-gray-100" />
         </div>
@@ -61,17 +78,17 @@ export function StudyCard({ study, onCardClick }: StudyCardProps) {
           <div className="flex items-center">
             <img src={UserProfileSvg} alt="User Profile" />
             <span className="text-body-2-semibold text-gray-400 ml-1">
-              {study.author}
+              {study.nickname}
             </span>
           </div>
           <div className="flex items-center">
             <img
-              src={isLiked ? HeartFillSvg : HeartSvg}
+              src={study.isScraped ? HeartFillSvg : HeartSvg}
               alt="Heart Background"
-              onClick={handleLikeClick}
+              onClick={handleScrapClick}
             />
             <span className="text-body-2-semibold text-gray-400 ml-1">
-              {likeCount}
+              {study.scrapCount}
             </span>
           </div>
         </div>

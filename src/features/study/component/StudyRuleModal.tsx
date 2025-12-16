@@ -2,40 +2,35 @@ import { Modal } from "@/components/ui/Modal";
 import CloseSvg from "@/assets/icons/close.svg";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, type ChangeEvent } from "react";
-import {
-  RULE_TAG_OPTIONS,
-  type RuleCategory,
-  type Rules,
-  type StudyMember,
-} from "../api/studyType";
-import { FormField } from "@/components/ui/FormField";
+import { type RuleCategoryLabel, type RulesLabel } from "../api/studyType";
 import { TextAreaField } from "@/components/ui/TextAreaField";
 
 interface StudyRuleModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onChangeRule: (rules: Rules[]) => void;
-  studyId?: number;
-  rules?: Rules[];
+  onChangeRule: (rules: RulesLabel[]) => void;
+  rules?: RulesLabel[];
 }
 
 export function StudyRuleModal({
   isOpen,
   onClose,
   onChangeRule,
-  studyId,
   rules,
 }: StudyRuleModalProps) {
   // 각 규칙 태그에 맞게 FormField 렌더링
   // 해당 규칙을 클릭하면 버튼 색상이 focus로 바꾸고, 수정한 내용을 저장
+  const RULE_TAG_OPTIONS = ["시간", "벌금", "휴무", "분위기", "기타"];
 
-  const [activeRuleTag, setActiveRuleTag] = useState<RuleCategory>("TIME");
-  const [rulesState, setRulesState] = useState<Record<RuleCategory, string>>({
-    TIME: "",
-    FINE: "",
-    DAY_OFF: "",
-    ATMOSPHERE: "",
-    ETC: "",
+  const [activeRuleTag, setActiveRuleTag] = useState<RuleCategoryLabel>("시간");
+  const [rulesState, setRulesState] = useState<
+    Record<RuleCategoryLabel, string>
+  >({
+    시간: "",
+    벌금: "",
+    휴무: "",
+    분위기: "",
+    기타: "",
   });
 
   const handleChangeText = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -47,10 +42,10 @@ export function StudyRuleModal({
   };
 
   const handleSave = () => {
-    // rulesState -> Rules[] 변환
-    const updatedRules: Rules[] = Object.entries(rulesState).map(
+    // rulesState -> RulesLabel[] 변환
+    const updatedRules: RulesLabel[] = Object.entries(rulesState).map(
       ([ruleCategory, description]) => ({
-        ruleCategory: ruleCategory as RuleCategory,
+        ruleCategory: ruleCategory as RuleCategoryLabel,
         description,
       })
     );
@@ -78,13 +73,13 @@ export function StudyRuleModal({
         <hr className="border-t-3 border-gray-100 mt-2 mb-2" />
 
         <div className="flex gap-2 mb-5">
-          {RULE_TAG_OPTIONS.map(({ key, label }) => (
+          {RULE_TAG_OPTIONS.map((label) => (
             <Button
-              key={key}
-              variant={activeRuleTag === key ? "focus" : "default"}
+              key={label}
+              variant={activeRuleTag === label ? "focus" : "default"}
               size="sm"
               type="button"
-              onClick={() => setActiveRuleTag(key)}
+              onClick={() => setActiveRuleTag(label as RuleCategoryLabel)}
             >
               {label}
             </Button>

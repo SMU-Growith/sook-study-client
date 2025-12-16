@@ -6,10 +6,8 @@ import StudyLeaderSvg from "@/assets/studyLeader.svg";
 import StudyMemberSvg from "@/assets/studyMember.svg";
 import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import BlueCircleSvg from "@/assets/blueCircle.svg";
-import { myStudySessionListData } from "../studySession";
 import PlusSvg from "@/assets/icons/plus.svg";
 import { useState } from "react";
-import { useAuthStore } from "@/store/authStore";
 import { StudySessionCreateModal } from "../component/StudySessionCreateModal";
 import { StudySessionCard } from "@/features/study/component/MyStudySessionCard";
 import { StudyFinishModal } from "../component/StudyFinishModal";
@@ -17,20 +15,34 @@ import { StudyOutModal } from "../component/StudyOutModal";
 import { useNavigate, useParams } from "react-router";
 import { StudyMemberModal } from "../component/StudyMemberModal";
 import {
-  fetchStudyById,
+  createStudySessionApi,
+  fetchMyApplicationsListApi,
+  fetchMyStudyDetailApi,
   fetchStudyMembersApi,
+  fetchStudyRulesApi,
+  fetchStudySessionsApi,
+  respondToStudyApplicationApi,
   studyChangeLeaderApi,
+  studyFinishApi,
+  studyLeaveApi,
+  updateStudyRulesApi,
 } from "../api/study";
-import type { AxiosError } from "axios";
-import type { ApiResponse } from "@/lib/api";
-import type { Study } from "@/components/ui/StudyCard";
-import type { Rules, StudyMember } from "../api/studyType";
-import { defaultStudyMembers } from "../studyMembers";
+import type {
+  ApplicationStatus,
+  Applier,
+  MyStudyDetail,
+  RespondToStudyApplication,
+  RulesLabel,
+  StudyMember,
+  StudySessionDetail,
+} from "../api/studyType";
 import { StudyRuleModal } from "../component/StudyRuleModal";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApplicationHistoryModal } from "../component/ApplicationHistoryModal";
-import { is } from "zod/v4/locales";
 import { MemberDetailModal } from "@/components/ui/MemberDetailModal";
+import type { ApiResponse } from "@/lib/api/apiClient";
+import type { AxiosError } from "axios";
+import { studyQueryKeys } from "../api/queries";
 
 interface StampLevel {
   stampId: number;
@@ -81,7 +93,14 @@ const exampleStampData: Stamp[] = [
 ];
 
 export function MyStudySession() {
-  const auth = useAuthStore();
+  // // TODO: 상세조회 api 연동 후 role 설정
+  // const [sp] = useSearchParams();
+  // const role = sp.get("role");
+  // if (role === "LEADER") {
+  //   isLeader = true;
+  // }
+
+  const queryClient = useQueryClient();
   const { studyId } = useParams<{ studyId: string }>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStudyFinishModalOpen, setIsStudyFinishModalOpen] = useState(false);
@@ -96,73 +115,208 @@ export function MyStudySession() {
   const [selectedMemberNickname, setSelectedMemberNickname] = useState<
     string | null
   >(null);
+  const studyIdNum = Number(studyId);
 
-  const [sessions, setSessions] = useState(myStudySessionListData);
+  // 내 스터디 상세 조회 API
+  const { data: myStudyDetail = {} as MyStudyDetail } = useQuery<MyStudyDetail>(
+    {
+      queryKey: studyQueryKeys.myStudyDetail(studyIdNum),
+      queryFn: () => fetchMyStudyDetailApi(studyIdNum),
+      enabled: Number.isFinite(studyIdNum),
+    }
+  );
 
-  const handleCreateStudySession = () => {
-    const newSession = {
-      id: myStudySessionListData.length + 1,
-      title: "React 컴포넌트 아키텍처 분석하기",
-      submittedMembers: 0,
-      status: "진행중",
-    };
+  // 스터디 세션 조회 API
+  const { data: sessions = [] } = useQuery<StudySessionDetail[]>({
+    queryKey: studyQueryKeys.studySessions(studyIdNum),
+    queryFn: () => fetchStudySessionsApi(studyIdNum, 0, 20),
+    enabled: Number.isFinite(studyIdNum),
+  });
 
-    setSessions([...sessions, newSession]);
+  const { mutate: submitStudySession } = useMutation<
+    StudySessionDetail,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number; title: string }
+  >({
+    mutationFn: ({ studyId, title }) => createStudySessionApi(studyId, title),
+    onSuccess: (_res, vars) => {
+      console.log("스터디 세션 생성 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studySessions(vars.studyId),
+      });
+    },
+    onError: (error: unknown) => {
+      const err = error as AxiosError<{ message?: string }>;
+      alert(err.response?.data?.message || "프로필 업데이트 실패");
+    },
+  });
+
+  const handleCreateStudySession = (title: string) => {
+    submitStudySession({
+      studyId: studyIdNum,
+      title,
+    });
     setIsModalOpen(false);
-    // 스터디 일지 하나 추가하기
   };
+
   const navigate = useNavigate();
 
-  // 스터디 멤버 조회
-  // const { data: studyMember } = useQuery<ApiResponse<StudyMember[]>>({
-  //   queryKey: ['StudyMember', studyId],
-  //   queryFn: () => fetchStudyMembersApi(Number(studyId)),
-  //   enabled: !!studyId,
-  // });
+  const { data: memberList = [] } = useQuery<StudyMember[]>({
+    queryKey: studyQueryKeys.studyMembers(studyIdNum),
+    queryFn: () => fetchStudyMembersApi(studyIdNum),
+    enabled: !!studyId,
+  });
 
   // const members = StudyMember?.result || [];
-  const memberList = defaultStudyMembers;
+  // const memberList = defaultStudyMembers;
 
-  const leader = memberList.find((m) => m.studyRole === "leader");
-  const members = memberList.filter((m) => m.studyRole === "member") ?? [];
+  const leader = memberList.find((m) => m.studyRole === "LEADER");
+  const members = memberList.filter((m) => m.studyRole === "MEMBER") ?? [];
 
   // 스터디 멤버 역할 변경
-  // type ChangeLeaderVariables = { studyId: number; memberId: number };
-  // const { mutate: changeRole } = useMutation<
-  //   ApiResponse<Study[]>,               // 성공
-  //   AxiosError<ApiResponse<null>>,      // 실패
-  //   ChangeLeaderVariables
-  // >({
-  //   mutationFn: ({ studyId, memberId }) => studyChangeLeaderApi(studyId, memberId),
-  //   onSuccess: (res) => {
-  //     alert('역할이 변경되었습니다.');
-  //     // 필요하면 res.result 로 Study[] 접근 가능
-  //   },
-  //   onError: (error) => {
-  //     alert(error.response?.data?.message || '역할 변경에 실패했습니다.');
-  //   },
-  // });
+  type ChangeLeaderVariables = { studyId: number; memberId: number };
+
+  const { mutate: changeRole } = useMutation<
+    null,
+    AxiosError<ApiResponse<null>>,
+    ChangeLeaderVariables
+  >({
+    mutationFn: ({ studyId, memberId }) =>
+      studyChangeLeaderApi(studyId, memberId),
+    onSuccess: (_res, _vars) => {
+      console.log("스터디장 변경 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studyMembers(_vars.studyId),
+      });
+    },
+    onError: (error) => {
+      alert(error.response?.data?.message || "역할 변경에 실패했습니다.");
+    },
+  });
 
   const changeMemberRole = (newLeaderMemberId: number) => {
-    // 스터디 멤버 역할 변경 로직 구현
-    // changeRole({ studyId: Number(studyId), memberId: newLeaderMemberId });
+    changeRole({ studyId: studyIdNum, memberId: newLeaderMemberId });
     console.log("새로운 스터디장 멤버 ID:", newLeaderMemberId);
     setIsMemberModalOpen(false);
   };
 
-  const updateRules = (updatedRules: Rules[]) => {
+  // 규칙 조회 API
+  const { data: rules = [] } = useQuery<RulesLabel[]>({
+    queryKey: studyQueryKeys.studyRules(studyIdNum),
+    queryFn: () => fetchStudyRulesApi(studyIdNum),
+    enabled: !!studyIdNum,
+  });
+
+  const { mutate: changeRule } = useMutation<
+    null,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number; rules: RulesLabel[] }
+  >({
+    mutationFn: ({ studyId, rules }) => updateStudyRulesApi(studyId, rules),
+    onSuccess: (_res, _vars) => {
+      console.log("스터디 규칙 변경 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studyRules(_vars.studyId),
+      });
+    },
+    onError: (error) => {
+      alert(error.response?.data?.message || "규칙 변경에 실패했습니다.");
+    },
+  });
+
+  // 규칙 수정 API
+  const updateRules = (updatedRules: RulesLabel[]) => {
     console.log("업데이트된 규칙:", updatedRules);
-    // changeRule(updatedRules); // 스터디 규칙 변경 api 호출
+    changeRule({ studyId: studyIdNum, rules: updatedRules });
     setIsRuleModalOpen(false);
   };
+
+  // 스터디별 지원내역 조회 API
+  const { data: appliers = [] } = useQuery<Applier[]>({
+    queryKey: studyQueryKeys.studyApplication(studyIdNum),
+    queryFn: () => fetchMyApplicationsListApi(studyIdNum),
+    enabled: !!studyIdNum,
+  });
+
+  // 스터디 지원서 상태 변경 API
+  const { mutate: changeApplicationStatus } = useMutation<
+    RespondToStudyApplication,
+    AxiosError<ApiResponse<null>>,
+    { applicationId: number; status: ApplicationStatus }
+  >({
+    mutationFn: ({ applicationId, status }) =>
+      respondToStudyApplicationApi(applicationId, status),
+    onSuccess: (_res, _vars) => {
+      console.log("스터디 지원서 상태 변경 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studyApplication(_vars.applicationId),
+      });
+      setIsApplyModalOpen(false);
+    },
+    onError: (error) => {
+      alert(
+        error.response?.data?.message || "지원서 상태 변경에 실패했습니다."
+      );
+    },
+  });
 
   const updateApplicationStatus = (
     applicationId: number,
     newStatus: string
   ) => {
     console.log("지원서 ID:", applicationId, "새 상태:", newStatus);
-    // changeApplicationStatus(applicationId, newStatus); // 스터디 승인 api 호출
-    setIsApplyModalOpen(false);
+    changeApplicationStatus({
+      applicationId: applicationId,
+      status: newStatus as ApplicationStatus,
+    });
+  };
+
+  const { mutate: studyLeave } = useMutation<
+    null,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number }
+  >({
+    mutationFn: ({ studyId }) => studyLeaveApi(studyId),
+    onSuccess: (_res, _vars) => {
+      console.log("스터디 나가기 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.myStudies("CLOSED"),
+      });
+      setIsStudyOutModalOpen(false);
+      navigate("/study/my");
+    },
+    onError: (error) => {
+      alert(error.response?.data?.message || "스터디 나가기에 실패했습니다.");
+    },
+  });
+
+  const { mutate: studyFinish } = useMutation<
+    null,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number }
+  >({
+    mutationFn: ({ studyId }) => studyFinishApi(studyId),
+    onSuccess: (_res, _vars) => {
+      console.log("스터디 종료 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.myStudies("CLOSED"),
+      });
+      setIsStudyFinishModalOpen(false);
+      navigate("/study/my");
+    },
+    onError: (error) => {
+      alert(error.response?.data?.message || "스터디 종료에 실패했습니다.");
+    },
+  });
+
+  // 스터디 나가기 API
+  const handleStudyOut = () => {
+    studyLeave({ studyId: studyIdNum });
+  };
+
+  // 스터디 종료하기 API
+  const handleStudyFinish = () => {
+    studyFinish({ studyId: studyIdNum });
   };
 
   return (
@@ -171,7 +325,7 @@ export function MyStudySession() {
       <main className="flex w-full mt-[88px]">
         <div className="flex flex-col px-[18px] py-6 gap-5 w-[336px]">
           <h2 className="heading-2">React 실력 키우실 분! 초보도 환영!</h2>
-          {auth.isLeader && (
+          {myStudyDetail.myRole === "LEADER" && (
             <Button variant="default" size="md">
               모집글 수정하기
             </Button>
@@ -180,7 +334,7 @@ export function MyStudySession() {
             <div className="flex flex-col gap-y-[12px]">
               <div className="flex justify-between items-center">
                 <p className="text-body-1-semibold">스터디 멤버</p>
-                {auth.isLeader && (
+                {myStudyDetail.myRole === "LEADER" && (
                   <img
                     src={SettingsSvg}
                     alt="설정 아이콘"
@@ -196,7 +350,7 @@ export function MyStudySession() {
                 <button
                   onClick={() => {
                     // member.userId를 파라미터로 받는 멤버스탬프조회api 호출
-                    setSelectedMemberNickname(leader?.nickname || null);
+                    setSelectedMemberNickname(leader?.nickName || null);
                     setSelectedMemberStamp(exampleStampData);
                     setIsMemberDetailModalOpen(true);
                   }}
@@ -204,7 +358,7 @@ export function MyStudySession() {
                   <div className="flex items-center">
                     <img src={UserProfileSvg} alt="User Profile" />
                     <span className="text-body-2-semibold text-gray-400 ml-1">
-                      {leader?.nickname}
+                      {leader?.nickName}
                     </span>
                   </div>
                 </button>
@@ -216,17 +370,18 @@ export function MyStudySession() {
                 <div className="grid grid-cols-3 gap-3">
                   {members.map((member) => (
                     <button
+                      key={member.userId}
                       onClick={() => {
                         // member.userId를 파라미터로 받는 멤버스탬프조회api 호출
-                        setSelectedMemberNickname(member?.nickname || null);
+                        setSelectedMemberNickname(member?.nickName || null);
                         setSelectedMemberStamp(exampleStampData);
                         setIsMemberDetailModalOpen(true);
                       }}
                     >
-                      <div className="flex items-center" key={member.userId}>
+                      <div className="flex items-center">
                         <img src={UserProfileSvg} alt="User Profile" />
                         <span className="text-body-2-semibold text-gray-400 ml-1">
-                          {member?.nickname}
+                          {member?.nickName}
                         </span>
                       </div>
                     </button>
@@ -243,7 +398,7 @@ export function MyStudySession() {
                   isOpen={isMemberModalOpen}
                   onClose={() => setIsMemberModalOpen(false)}
                   onChangeRole={changeMemberRole}
-                  studyId={Number(studyId)}
+                  studyId={studyIdNum}
                   leader={leader}
                   members={members}
                 />
@@ -255,7 +410,7 @@ export function MyStudySession() {
             <div className="flex flex-col gap-y-[12px]">
               <div className="flex justify-between items-center">
                 <p className="text-body-1-semibold">스터디 규칙</p>
-                {auth.isLeader && (
+                {myStudyDetail.myRole === "LEADER" && (
                   <img
                     src={SettingsSvg}
                     alt="설정 아이콘"
@@ -266,51 +421,28 @@ export function MyStudySession() {
                   isOpen={isRuleModalOpen}
                   onClose={() => setIsRuleModalOpen(false)}
                   onChangeRule={updateRules}
-                  studyId={Number(studyId)}
-                  rules={[
-                    {
-                      ruleCategory: "TIME",
-                      description: "매주 월,수,금 아침 7시까지 출석",
-                    },
-                    {
-                      ruleCategory: "FINE",
-                      description: "지각당 1000원, 무단결석 5000원",
-                    },
-                    {
-                      ruleCategory: "DAY_OFF",
-                      description: "월 1회 자유롭게 휴무",
-                    },
-                    {
-                      ruleCategory: "ATMOSPHERE",
-                      description: "긍정적인 분위기 유지",
-                    },
-                    {
-                      ruleCategory: "ETC",
-                      description: "기타 등등",
-                    },
-                  ]}
+                  rules={rules}
                 />
               </div>
               <hr className="border-t-3 border-gray-100" />
-              <div className="flex flex-col gap-1">
-                <p className="text-body-1-semibold text-gray-300">시간</p>
-                <p className="text-body-1 text-black">아침 7시 입실</p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-body-1-semibold text-gray-300">벌금</p>
-                <p className="text-body-1 text-black">
-                  지각당 1000원 <br />
-                  무단 결석 5000원
+              {rules.length === 0 ? (
+                <p className="text-body-2 text-gray-200">
+                  등록된 스터디 규칙이 없습니다.
                 </p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-body-1-semibold text-gray-300">휴무</p>
-                <p className="text-body-1 text-black">아침 7시 입실</p>
-              </div>
+              ) : (
+                rules.map((rule) => (
+                  <div key={rule.ruleCategory} className="flex flex-col gap-1">
+                    <p className="text-body-1-semibold text-gray-300">
+                      {rule.ruleCategory}
+                    </p>
+                    <p className="text-body-1 text-black">{rule.description}</p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
-          {auth.isLeader && (
+          {myStudyDetail.myRole === "LEADER" && (
             <div className="w-full border-2 border-gray-200 rounded-[20px] px-[18px] py-6 cursor-pointer">
               <div className="flex flex-col gap-y-[12px]">
                 <div className="flex justify-between items-center">
@@ -324,11 +456,14 @@ export function MyStudySession() {
                 </div>
                 <hr className="border-t-3 border-gray-100" />
                 <div className="flex flex-col gap-3">
-                  {["지송이", "지원송이", "원송이"].map((applierName) => (
-                    <div className="flex items-center">
+                  {appliers.map((applier) => (
+                    <div
+                      key={applier.applicationId}
+                      className="flex items-center"
+                    >
                       <img src={UserProfileSvg} alt="User Profile" />
                       <span className="text-body-2-semibold text-gray-400 ml-1">
-                        {applierName}
+                        {applier.nickName}
                       </span>
                     </div>
                   ))}
@@ -344,45 +479,7 @@ export function MyStudySession() {
                   isOpen={isApplyModalOpen}
                   onClose={() => setIsApplyModalOpen(false)}
                   onChangeApplicationStatus={updateApplicationStatus}
-                  studyId={Number(studyId)}
-                  appliers={[
-                    {
-                      applicationId: 1,
-                      studyId: Number(studyId),
-                      userId: 101,
-                      nickName: "지송이",
-                      studentStatus: "재학",
-                      major: "기계공학과",
-                      phoneNumber: "010-1234-5678",
-                      motivation:
-                        "React 스터디를 통해 컴포넌트 설계 감을 잡고 싶어요.",
-                      applicationStatus: "PENDING",
-                    },
-                    {
-                      applicationId: 2,
-                      studyId: Number(studyId),
-                      userId: 102,
-                      nickName: "지원송이",
-                      studentStatus: "휴학",
-                      major: "컴퓨터공학과",
-                      phoneNumber: "010-2345-6789",
-                      motivation:
-                        "프로젝트 경험 쌓고 포트폴리오에 넣을 결과물을 만들고 싶어요.",
-                      applicationStatus: "ACCEPTED",
-                    },
-                    {
-                      applicationId: 3,
-                      studyId: Number(studyId),
-                      userId: 103,
-                      nickName: "원송이",
-                      studentStatus: "졸업",
-                      major: "소프트웨어학과",
-                      phoneNumber: "010-3456-7890",
-                      motivation:
-                        "실무 감각 유지하려고 사이드로 스터디 같이 하고 싶습니다.",
-                      applicationStatus: "REJECTED",
-                    },
-                  ]}
+                  appliers={appliers}
                 />
               </div>
             </div>
@@ -394,7 +491,7 @@ export function MyStudySession() {
           >
             스터디 나가기
           </Button>
-          {auth.isLeader && (
+          {myStudyDetail.myRole === "LEADER" && (
             <Button
               variant="deleted"
               size="md"
@@ -407,7 +504,7 @@ export function MyStudySession() {
         <div className="flex flex-1 flex-col px-10 py-10 gap-5">
           <div className="flex justify-between items-center">
             <h2 className="heading-2">스터디 일지</h2>
-            {auth.isLeader && (
+            {myStudyDetail.myRole === "LEADER" && (
               <div className="flex gap-2">
                 <Button
                   variant="primary"
@@ -421,17 +518,17 @@ export function MyStudySession() {
             )}
           </div>
           <p className="text-subtitle-1">
-            총 <span className="text-primary-500">5개</span>
+            총 <span className="text-primary-500">{sessions.length}개</span>
           </p>
           <div className="grid grid-cols-2 gap-5">
             {sessions
               .slice()
               .reverse()
-              .map((study) => (
+              .map((session) => (
                 <StudySessionCard
-                  id={study.id}
+                  key={session.sessionId}
                   isLeader={true}
-                  studySession={study}
+                  studySession={session}
                 />
               ))}
           </div>
@@ -443,24 +540,17 @@ export function MyStudySession() {
           setIsModalOpen(false);
         }}
         onConfirm={handleCreateStudySession}
-        nextSessionId={myStudySessionListData.length + 1}
+        nextSessionId={sessions.length + 1}
       />
       <StudyOutModal
         isOpen={isStudyOutModalOpen}
         onClose={() => setIsStudyOutModalOpen(false)}
-        onConfirm={() => {
-          setIsStudyOutModalOpen(false);
-          navigate(-1);
-        }}
+        onConfirm={handleStudyOut}
       />
       <StudyFinishModal
         isOpen={isStudyFinishModalOpen}
         onClose={() => setIsStudyFinishModalOpen(false)}
-        onConfirm={() => {
-          setIsStudyFinishModalOpen(false);
-          // 이전페이지로 이동
-          navigate(-1);
-        }}
+        onConfirm={handleStudyFinish}
       />
     </div>
   );
