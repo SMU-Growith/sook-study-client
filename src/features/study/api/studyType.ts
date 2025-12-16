@@ -187,3 +187,17 @@ export interface Level {
   levelDescription: string;
   isAchieved: boolean;
 }
+
+export interface MyStudy {
+  studyId: number;
+  studyRole: "LEADER" | "MEMBER";
+  title: string;
+  studyStatus: "ACTIVE" | "CLOSED";
+  userId: number;
+  url: string;
+  memberCount: number;
+  studySessionCount: number;
+  studyFormat: string;
+  studyFieldName: string;
+  studyStyleCategory: string;
+}

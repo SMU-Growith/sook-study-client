@@ -8,6 +8,7 @@ import type {
 import type {
   EmojiCounts,
   MyApplication,
+  MyStudy,
   StampList,
   StudyDetail,
   StudyListResult,
@@ -244,5 +245,20 @@ export const fetchStudyStampsApi = async (userId?: number) => {
       params: userId != null ? { userId } : undefined,
     }
   );
+  return response.data.result;
+};
+
+// 나의 스터디 조회 API
+export const fetchMyStudiesApi = async (
+  page: number,
+  size: number,
+  studyStatus: string
+) => {
+  const response = await apiClient.post<ApiResponse<MyStudy[]>>(
+    `/studies/my-studies`,
+    { studyStatus },
+    { params: { page, size } }
+  );
+
   return response.data.result;
 };
