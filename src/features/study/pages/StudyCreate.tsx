@@ -14,7 +14,7 @@ import { useMutation } from "@tanstack/react-query";
 import { studyCreateApi } from "../api/study";
 import type { ApiResponse } from "@/lib/api/apiClient";
 import type { AxiosError } from "axios";
-import type { StudyDetail } from "../api/studyType";
+import type { RuleCategoryLabel, StudyDetail } from "../api/studyType";
 // import { useMutation } from '@tanstack/react-query';
 // import { studyCreateApi } from '@/lib/api';
 // import type { AxiosError } from 'axios';
@@ -44,6 +44,7 @@ const STUDY_TYPE_OPTIONS = ["체계적인", "자유로운", "협력적인", "실
 const PROGRESS_METHOD_OPTIONS = ["온라인", "오프라인", "온라인/오프라인"];
 const CONTACT_METHOD_OPTIONS = ["카카오톡", "이메일"];
 const RULE_TAG_OPTIONS = ["시간", "벌금", "휴무", "분위기", "기타"];
+const ALLOWED_RULE_CATEGORIES = new Set(RULE_TAG_OPTIONS);
 
 export function StudyCreate() {
   const navigate = useNavigate();
@@ -72,17 +73,20 @@ export function StudyCreate() {
     const rulesObj = (data as any).rules ?? {};
 
     const ruleDto = Object.entries(rulesObj)
+      .filter(([key]) => activeRuleTags.includes(key))
+      .filter(([key]) => ALLOWED_RULE_CATEGORIES.has(key))
       .map(([key, value]) => ({
-        ruleCategory: key,
+        ruleCategory: key as RuleCategoryLabel,
         description: String(value ?? "").trim(),
       }))
       .filter((r) => r.description.length > 0);
 
+    const { rules, ...rest } = data;
+
     const finalData: StudyCreateRequest = {
-      ...(data as any),
+      ...rest,
       ruleDTO: ruleDto.length ? ruleDto : undefined,
     };
-
     console.log("Study Create Data: ", finalData);
     submitStudy({ data: finalData });
   };

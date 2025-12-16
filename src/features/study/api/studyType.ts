@@ -69,6 +69,7 @@ export interface StudyDetail {
   contactType: string;
   url: string;
   isRecruiting: boolean;
+  isMyStudy: boolean;
   studyFieldName: string;
   studyFormat: string;
   studyStyleCategory: string;

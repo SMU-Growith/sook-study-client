@@ -31,6 +31,10 @@ export type StudyCreateRequest = Omit<TStudySchema, "rules"> & {
   ruleDTO?: RulesLabel[];
 };
 
+export type StudyUpdateRequest = StudyCreateRequest & {
+  isRecruiting: boolean;
+};
+
 export const studyApplySchema = z.object({
   studentStatus: z.string().min(1, "재학 상태를 선택해주세요."),
   major: z.string().min(1, "전공을 선택해주세요."),

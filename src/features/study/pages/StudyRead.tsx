@@ -266,7 +266,15 @@ export function StudyRead() {
             </div>
           </div>
           <div className="flex flex-col gap-3 w-60">
-            <Button onClick={() => setIsApplyModalOpen(true)}>지원하기</Button>
+            {studyData?.isMyStudy ? (
+              <Button onClick={() => navigate(`/study/update/${studyId}`)}>
+                수정하기
+              </Button>
+            ) : (
+              <Button onClick={() => setIsApplyModalOpen(true)}>
+                지원하기
+              </Button>
+            )}
             <Button variant="default" onClick={() => {}}>
               관심 스터디
             </Button>

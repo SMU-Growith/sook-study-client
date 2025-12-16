@@ -3,7 +3,7 @@ import type {
   StudyCreateRequest,
   TStudyApplySchema,
   TStudyLogSchema,
-  TStudySchema,
+  StudyUpdateRequest,
 } from "@/features/study/validators/study";
 import type {
   EmojiCounts,
@@ -18,8 +18,6 @@ import type {
   ToggleScrap,
 } from "./studyType";
 
-type StudyUpdateData = TStudySchema & { isRecruiting: boolean };
-
 // 스터디 생성 API
 export const studyCreateApi = async (data: StudyCreateRequest) => {
   const response = await apiClient.post<ApiResponse<StudyDetail>>(
@@ -32,7 +30,7 @@ export const studyCreateApi = async (data: StudyCreateRequest) => {
 // 스터디 수정 API
 export const studyUpdateApi = async (
   studyId: number,
-  data: StudyUpdateData
+  data: StudyUpdateRequest
 ) => {
   const response = await apiClient.put(`/studies/${studyId}`, data);
   return response.data;
