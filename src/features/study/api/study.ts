@@ -9,6 +9,8 @@ import type {
   EmojiCounts,
   MyApplication,
   MyStudy,
+  RuleCategoryLabel,
+  RulesLabel,
   StampList,
   StudyDetail,
   StudyListResult,
@@ -70,6 +72,26 @@ export const studyChangeLeaderApi = async (
 export const fetchStudyMembersApi = async (studyId: number) => {
   const response = await apiClient.get<ApiResponse<StudyMember[]>>(
     `/studies/${studyId}/users`
+  );
+  return response.data.result;
+};
+
+// 규칙 조회 API
+export const fetchStudyRulesApi = async (studyId: number) => {
+  const response = await apiClient.get<ApiResponse<RulesLabel[]>>(
+    `/studies/${studyId}/rules`
+  );
+  return response.data.result;
+};
+
+// 규칙 수정 API
+export const updateStudyRulesApi = async (
+  studyId: number,
+  rules: RulesLabel[]
+) => {
+  const response = await apiClient.put<ApiResponse<null>>(
+    `/studies/${studyId}/rules`,
+    { rules }
   );
   return response.data.result;
 };

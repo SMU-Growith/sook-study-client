@@ -19,10 +19,17 @@ import {
   createStudySessionApi,
   fetchStudyById,
   fetchStudyMembersApi,
+  fetchStudyRulesApi,
   fetchStudySessionsApi,
   studyChangeLeaderApi,
+  updateStudyRulesApi,
 } from "../api/study";
-import type { Rules, StudyMember, StudySessionDetail } from "../api/studyType";
+import type {
+  Rules,
+  RulesLabel,
+  StudyMember,
+  StudySessionDetail,
+} from "../api/studyType";
 import { StudyRuleModal } from "../component/StudyRuleModal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApplicationHistoryModal } from "../component/ApplicationHistoryModal";
@@ -178,9 +185,34 @@ export function MyStudySession() {
     setIsMemberModalOpen(false);
   };
 
-  const updateRules = (updatedRules: Rules[]) => {
+  // 규칙 조회 API
+  const { data: rules = [] } = useQuery<RulesLabel[]>({
+    queryKey: studyQueryKeys.studyRules(studyIdNum),
+    queryFn: () => fetchStudyRulesApi(studyIdNum),
+    enabled: !!studyIdNum,
+  });
+
+  const { mutate: changeRule } = useMutation<
+    null,
+    AxiosError<ApiResponse<null>>,
+    { studyId: number; rules: RulesLabel[] }
+  >({
+    mutationFn: ({ studyId, rules }) => updateStudyRulesApi(studyId, rules),
+    onSuccess: (_res, _vars) => {
+      console.log("스터디 규칙 변경 성공:", _res);
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.studyRules(_vars.studyId),
+      });
+    },
+    onError: (error) => {
+      alert(error.response?.data?.message || "규칙 변경에 실패했습니다.");
+    },
+  });
+
+  // 규칙 수정 API
+  const updateRules = (updatedRules: RulesLabel[]) => {
     console.log("업데이트된 규칙:", updatedRules);
-    // changeRule(updatedRules); // 스터디 규칙 변경 api 호출
+    changeRule({ studyId: studyIdNum, rules: updatedRules });
     setIsRuleModalOpen(false);
   };
 
@@ -295,47 +327,24 @@ export function MyStudySession() {
                   isOpen={isRuleModalOpen}
                   onClose={() => setIsRuleModalOpen(false)}
                   onChangeRule={updateRules}
-                  studyId={Number(studyId)}
-                  rules={[
-                    {
-                      ruleCategory: "TIME",
-                      description: "매주 월,수,금 아침 7시까지 출석",
-                    },
-                    {
-                      ruleCategory: "FINE",
-                      description: "지각당 1000원, 무단결석 5000원",
-                    },
-                    {
-                      ruleCategory: "DAY_OFF",
-                      description: "월 1회 자유롭게 휴무",
-                    },
-                    {
-                      ruleCategory: "ATMOSPHERE",
-                      description: "긍정적인 분위기 유지",
-                    },
-                    {
-                      ruleCategory: "ETC",
-                      description: "기타 등등",
-                    },
-                  ]}
+                  rules={rules}
                 />
               </div>
               <hr className="border-t-3 border-gray-100" />
-              <div className="flex flex-col gap-1">
-                <p className="text-body-1-semibold text-gray-300">시간</p>
-                <p className="text-body-1 text-black">아침 7시 입실</p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-body-1-semibold text-gray-300">벌금</p>
-                <p className="text-body-1 text-black">
-                  지각당 1000원 <br />
-                  무단 결석 5000원
+              {rules.length === 0 ? (
+                <p className="text-body-2 text-gray-200">
+                  등록된 스터디 규칙이 없습니다.
                 </p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-body-1-semibold text-gray-300">휴무</p>
-                <p className="text-body-1 text-black">아침 7시 입실</p>
-              </div>
+              ) : (
+                rules.map((rule) => (
+                  <div key={rule.ruleCategory} className="flex flex-col gap-1">
+                    <p className="text-body-1-semibold text-gray-300">
+                      {rule.ruleCategory}
+                    </p>
+                    <p className="text-body-1 text-black">{rule.description}</p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 

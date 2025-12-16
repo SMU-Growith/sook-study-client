@@ -31,4 +31,5 @@ export const studyQueryKeys = {
   studyDetail: (studyId: number) => ["studyDetail", studyId] as const,
   myStudies: (studyStatus: string) => ["myStudies", studyStatus] as const,
   studyMembers: (studyId: number) => ["studyMembers", studyId] as const,
+  studyRules: (studyId: number) => ["studyRules", studyId] as const,
 };
