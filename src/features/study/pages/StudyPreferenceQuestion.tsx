@@ -94,7 +94,7 @@ export function StudyPreferenceQuestion() {
         <Badge variant="blue">{currentIndex + 1}/6</Badge>
         <StudyPreferenceQuestionCard
           q={currentQuestion}
-          selectedIndex={selectedIndex}
+          selectedIndex={selectedIndex?.optionId ?? null}
           onSelect={handleSelectOption}
           onNext={handleNext}
         />

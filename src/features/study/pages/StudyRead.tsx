@@ -1,10 +1,9 @@
 import { AuthHeader } from "@/components/layout/AuthHeader";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/Form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  type TStudySchema,
   studyApplySchema,
   type TStudyApplySchema,
   type TStudyApplyRequest,

@@ -1,5 +1,3 @@
-import { myStudiesData } from "../myStudyMatch";
-
 export const studyQueryKeys = {
   homeStudies: (type?: string, sortParam?: string) =>
     ["homeStudies", type, sortParam] as const,

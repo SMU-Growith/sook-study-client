@@ -90,7 +90,7 @@ export function ApplicationCard({
     { applicationId: number }
   >({
     mutationFn: ({ applicationId }) => deleteStudyApplicationApi(applicationId),
-    onSuccess: (_res, vars) => {
+    onSuccess: (_res) => {
       console.log("스터디 지원내역 삭제 성공:", _res);
       queryClient.invalidateQueries({
         queryKey: studyQueryKeys.myApplications(),

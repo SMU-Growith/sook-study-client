@@ -2,7 +2,7 @@ import { Modal } from "@/components/ui/Modal";
 import CloseSvg from "@/assets/icons/close.svg";
 import { InputField } from "@/components/ui/InputField";
 import { TextAreaField } from "@/components/ui/TextAreaField";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import HeartReactionSvg from "@/assets/reactions/heartReaction.svg";
 import LikeReactionSvg from "@/assets/reactions/likeReaction.svg";
@@ -22,10 +22,10 @@ import LaughFillSvg from "@/assets/reactions/laughFill.svg";
 import SurpriseFillSvg from "@/assets/reactions/surpriseFill.svg";
 import CuriosityFillSvg from "@/assets/reactions/questionFill.svg";
 
-import StudyLog1 from "@/assets/studyLogs/studyLog1.svg";
-import StudyLog2 from "@/assets/studyLogs/studyLog2.svg";
-import StudyLog3 from "@/assets/studyLogs/studyLog3.svg";
-import { CarouselNavButtons } from "@/components/ui/CarouselNavButtons";
+// import StudyLog1 from "@/assets/studyLogs/studyLog1.svg";
+// import StudyLog2 from "@/assets/studyLogs/studyLog2.svg";
+// import StudyLog3 from "@/assets/studyLogs/studyLog3.svg";
+// import { CarouselNavButtons } from "@/components/ui/CarouselNavButtons";
 import type { EmojiCounts, StudyLogDetail } from "../api/studyType";
 import { Badge } from "@/components/ui/Badge";
 import StudyLeader from "@/assets/studyLeader.svg";
@@ -36,8 +36,8 @@ import { toggleStudyLogEmojiApi } from "../api/study";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { studyQueryKeys } from "../api/queries";
 
-const CARDS_PER_VIEW = 1;
-const MOVE_BY = 1;
+// const CARDS_PER_VIEW = 1;
+// const MOVE_BY = 1;
 
 type EmojiType = "heart" | "like" | "laugh" | "surprise" | "curiosity";
 
@@ -79,9 +79,9 @@ export function StudyLogReadModal({
     },
   });
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const images = [StudyLog1, StudyLog2, StudyLog3]; // TODO 실제 이미지 데이터로 교체 필요
-  const totalStudies = images.length;
+  // const [currentIndex, setCurrentIndex] = useState(0);
+  // const images = [StudyLog1, StudyLog2, StudyLog3]; // TODO 실제 이미지 데이터로 교체 필요
+  // const totalStudies = images.length;
 
   if (!logDetail) return null;
 
@@ -107,18 +107,18 @@ export function StudyLogReadModal({
     toggleEmoji({ journalId, emojiType });
   };
 
-  const handlePrev = () => {
-    setCurrentIndex((prevIndex) => Math.max(prevIndex - MOVE_BY, 0));
-  };
+  // const handlePrev = () => {
+  //   setCurrentIndex((prevIndex) => Math.max(prevIndex - MOVE_BY, 0));
+  // };
 
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) =>
-      Math.min(prevIndex + MOVE_BY, totalStudies - CARDS_PER_VIEW)
-    );
-  };
+  // const handleNext = () => {
+  //   setCurrentIndex((prevIndex) =>
+  //     Math.min(prevIndex + MOVE_BY, totalStudies - CARDS_PER_VIEW)
+  //   );
+  // };
 
-  const canGoPrev = currentIndex > 0;
-  const canGoNext = currentIndex < totalStudies - CARDS_PER_VIEW;
+  // const canGoPrev = currentIndex > 0;
+  // const canGoNext = currentIndex < totalStudies - CARDS_PER_VIEW;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[550px]">

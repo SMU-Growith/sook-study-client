@@ -1,5 +1,3 @@
-import { int } from "zod";
-
 export interface StudyMember {
   userId: number;
   nickName: string;

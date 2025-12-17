@@ -1,7 +1,7 @@
 import { Modal } from "@/components/ui/Modal";
 import CloseSvg from "@/assets/icons/close.svg";
 import { Button } from "@/components/ui/button";
-import { InputField } from "@/components/ui/InputField";
+// import { InputField } from "@/components/ui/InputField";
 import { useRef, useState, type ChangeEvent } from "react";
 import { FormField } from "@/components/ui/FormField";
 import { Form } from "@/components/ui/Form";
@@ -25,11 +25,11 @@ export function StudyLogUpdateModal({
   logDetail,
 }: StudyLogUpdateModalProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [, setSelectedFiles] = useState<File[]>([]);
 
-  const handleClickAttachButton = () => {
-    fileInputRef.current?.click();
-  };
+  // const handleClickAttachButton = () => {
+  //   fileInputRef.current?.click();
+  // };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -51,10 +51,10 @@ export function StudyLogUpdateModal({
     }
   };
 
-  const fileNames =
-    selectedFiles.length > 0
-      ? selectedFiles.map((file) => file.name).join(", ")
-      : "";
+  // const fileNames =
+  //   selectedFiles.length > 0
+  //     ? selectedFiles.map((file) => file.name).join(", ")
+  //     : "";
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[550px]">

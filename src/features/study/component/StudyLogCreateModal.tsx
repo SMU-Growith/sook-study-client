@@ -22,11 +22,11 @@ export function StudyLogCreateModal({
   sessionTitle,
 }: StudyLogCreateModalProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [, setSelectedFiles] = useState<File[]>([]);
 
-  const handleClickAttachButton = () => {
-    fileInputRef.current?.click();
-  };
+  // const handleClickAttachButton = () => {
+  //   fileInputRef.current?.click();
+  // };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -42,10 +42,10 @@ export function StudyLogCreateModal({
     onConfirm(data);
   };
 
-  const fileNames =
-    selectedFiles.length > 0
-      ? selectedFiles.map((file) => file.name).join(", ")
-      : "";
+  // const fileNames =
+  //   selectedFiles.length > 0
+  //     ? selectedFiles.map((file) => file.name).join(", ")
+  //     : "";
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[550px]">

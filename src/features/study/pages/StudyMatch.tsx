@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/Input";
 import { Tag } from "@/components/ui/Tag";
 import { DropdownList } from "@/components/ui/DropdownList";
 import { CATEGORIES } from "@/constants/index";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import type { StudyResult } from "../api/studyType";
 import { SearchStudyApi } from "../api/study";
 import {
@@ -26,7 +26,7 @@ type TopCategory = keyof typeof CATEGORIES;
 type SubCategory = keyof (typeof CATEGORIES)["분야"];
 
 export function StudyMatch() {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
   const [isBookmarkOpen, setIsBookmarkOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);

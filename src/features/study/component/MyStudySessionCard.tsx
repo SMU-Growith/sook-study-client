@@ -43,7 +43,7 @@ export function StudySessionCard({ studySession }: MyStudySessionCardProps) {
       alert("스터디 일지가 수정되었습니다.");
       setIsUpdateModalOpen(false);
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.studySessions(studyIdNum),
+        queryKey: studyQueryKeys.studySessions(studyIdNum, 0, 9),
       });
     },
     onError: (error) => {

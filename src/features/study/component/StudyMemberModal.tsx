@@ -22,7 +22,7 @@ export function StudyMemberModal({
   isOpen,
   onClose,
   onChangeRole,
-  studyId,
+  // studyId,
   leader,
   members,
 }: StudyMemberModalProps) {

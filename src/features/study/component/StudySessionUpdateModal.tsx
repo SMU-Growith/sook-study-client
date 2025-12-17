@@ -1,8 +1,6 @@
 import { Modal } from "@/components/ui/Modal";
 import CloseSvg from "@/assets/icons/close.svg";
 import { Button } from "@/components/ui/button";
-import { InputField } from "@/components/ui/InputField";
-import { useEffect, useState } from "react";
 import { FormField } from "@/components/ui/FormField";
 import { Form } from "@/components/ui/Form";
 import {

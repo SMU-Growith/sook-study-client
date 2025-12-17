@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Rules, RulesLabel } from "../api/studyType";
+import type { RulesLabel } from "../api/studyType";
 
 export const studyStep1Schema = z.object({
   studyFieldName: z.string().min(1, "스터디 분야를 선택해주세요."),

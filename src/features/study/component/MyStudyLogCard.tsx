@@ -40,7 +40,7 @@ export function StudyLogCard({ sessionId, log }: MyStudyLogProps) {
       console.log("스터디 로그 삭제 성공:", _res);
 
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.studyLogs(sessionId),
+        queryKey: studyQueryKeys.studyLogs(sessionId, 0, 9),
       });
       queryClient.removeQueries({
         queryKey: studyQueryKeys.studyLogDetail(vars.journalId),

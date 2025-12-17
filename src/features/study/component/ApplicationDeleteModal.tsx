@@ -1,6 +1,5 @@
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "../../../components/ui/button";
-import CloseSvg from "@/assets/icons/close.svg";
 
 interface ApplicationDeleteModalProps {
   isOpen: boolean;

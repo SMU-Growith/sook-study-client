@@ -3,7 +3,18 @@ import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { StudyPreferenceRegisterModal } from "../component/StudyPreferenceRegisterModal";
-import CarefulSong from "@/assets/testResult/carefulSong.svg";
+import CarefulSong from "@/assets/testResult2/속성 1=꼼꼼송이.svg";
+import PalrangSong from "@/assets/testResult2/속성 1=팔랑송이.svg";
+import DoranSong from "@/assets/testResult2/속성 1=도란송이.svg";
+import BeonjjeokSong from "@/assets/testResult2/속성 1=번쩍송이.png";
+import AlsongSong from "@/assets/testResult2/속성 1=알쏭송이.svg";
+import DeundeunSong from "@/assets/testResult2/속성 1=든든송이.svg";
+import KkankkanSong from "@/assets/testResult2/속성 1=깐깐송이.svg";
+import BanggeutSong from "@/assets/testResult2/속성 1=방긋송이.svg";
+import ToktokSong from "@/assets/testResult2/속성 1=톡톡송이.svg";
+import EusseukSong from "@/assets/testResult2/속성 1=으쓱송이.svg";
+import AllrounderSong from "@/assets/testResult2/속성 1=올라운더송이.svg";
+
 import TestSmile from "@/assets/testResult/testSmile.svg";
 import TestWarning from "@/assets/testResult/testWarning.svg";
 import { useMutation } from "@tanstack/react-query";
@@ -57,6 +68,21 @@ export function StudyPreferenceResult() {
     navigate("/study/preference-test/question/1", { replace: true });
   };
 
+  // testId와 이미지 경로 맵핑
+  const testResultImageMap: Record<number, string> = {
+    1: CarefulSong, // 꼼꼼송이
+    2: PalrangSong, // 팔랑송이
+    3: DoranSong, // 도란송이
+    4: BeonjjeokSong, // 번쩍송이
+    5: AlsongSong, // 알쏭송이
+    6: DeundeunSong, // 든든송이
+    7: KkankkanSong, // 깐깐송이
+    8: BanggeutSong, // 방긋송이
+    9: ToktokSong, // 톡톡송이
+    10: EusseukSong, // 으쓱송이
+    11: AllrounderSong, // 올라운더송이
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col items-center bg-white">
       <AuthHeader />
@@ -76,7 +102,12 @@ export function StudyPreferenceResult() {
             {result.resultType.tagline}
           </p>
         </div>
-        <img src={CarefulSong} alt="꼼꼼송이 이미지" className="mx-auto" />
+
+        <img
+          src={testResultImageMap[result.testId]}
+          alt="꼼꼼송이 이미지"
+          className="mx-auto"
+        />
         <div className="flex gap-[12px]">
           <div className="bg-primary-100 rounded-[10px] px-5 py-5 flex-1">
             <div className="flex items-center gap-2 mb-2">

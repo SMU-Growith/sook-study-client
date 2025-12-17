@@ -244,10 +244,10 @@ export function MyStudySession() {
     onSuccess: (_res, _vars) => {
       console.log("스터디 나가기 성공:", _res);
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.myStudies("CLOSED"),
+        queryKey: studyQueryKeys.myStudies("CLOSED", 0, 9),
       });
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.myStudies("ACTIVE"),
+        queryKey: studyQueryKeys.myStudies("ACTIVE", 0, 9),
       });
       setIsStudyOutModalOpen(false);
       navigate("/study/my");
@@ -266,10 +266,10 @@ export function MyStudySession() {
     onSuccess: (_res, _vars) => {
       console.log("스터디 종료 성공:", _res);
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.myStudies("CLOSED"),
+        queryKey: studyQueryKeys.myStudies("CLOSED", 0, 9),
       });
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.myStudies("ACTIVE"),
+        queryKey: studyQueryKeys.myStudies("ACTIVE", 0, 9),
       });
       setIsStudyFinishModalOpen(false);
       navigate("/study/my");
