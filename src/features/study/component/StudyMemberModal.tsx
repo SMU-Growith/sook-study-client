@@ -107,7 +107,7 @@ export function StudyMemberModal({
                         닉네임
                       </p>
                       <p className="text-body-2 text-gray-400">
-                        {selectedMember.nickname}
+                        {selectedMember.nickName}
                       </p>
                     </div>
 
