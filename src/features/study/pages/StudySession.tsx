@@ -7,13 +7,16 @@ import StudyMemberSvg from "@/assets/studyMember.svg";
 import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import BlueCircleSvg from "@/assets/blueCircle.svg";
 import PlusSvg from "@/assets/icons/plus.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StudySessionCreateModal } from "../component/StudySessionCreateModal";
 import { StudySessionCard } from "@/features/study/component/MyStudySessionCard";
 import { StudyFinishModal } from "../component/StudyFinishModal";
 import { StudyOutModal } from "../component/StudyOutModal";
 import { useNavigate, useParams } from "react-router";
 import { StudyMemberModal } from "../component/StudyMemberModal";
+import ArrowLeftSvg from "@/assets/arrow/arrowLeft.svg";
+import ArrowRightSvg from "@/assets/arrow/arrowRight.svg";
+
 import {
   createStudySessionApi,
   fetchMyApplicationsListApi,
@@ -34,7 +37,6 @@ import type {
   MyStudyDetail,
   RespondToStudyApplication,
   RulesLabel,
-  Stamp,
   StampList,
   StudyMember,
   StudySessionDetail,
@@ -66,6 +68,19 @@ export function MyStudySession() {
   >(null);
   const studyIdNum = Number(studyId);
 
+  const MAX_PAGE = 20;
+  const WINDOW = 5;
+  const [page, setPage] = useState(1);
+  const [pageWindowStart, setPageWindowStart] = useState(1); // 1,6,11,16 ...
+
+  const pageNumbers = Array.from(
+    { length: WINDOW },
+    (_, i) => pageWindowStart + i
+  ).filter((p) => p <= MAX_PAGE);
+
+  const SIZE = 10;
+  const offset = page - 1;
+
   // 내 스터디 상세 조회 API
   const { data: myStudyDetail = {} as MyStudyDetail } = useQuery<MyStudyDetail>(
     {
@@ -77,8 +92,8 @@ export function MyStudySession() {
 
   // 스터디 세션 조회 API
   const { data: sessions = [] } = useQuery<StudySessionDetail[]>({
-    queryKey: studyQueryKeys.studySessions(studyIdNum),
-    queryFn: () => fetchStudySessionsApi(studyIdNum, 0, 20),
+    queryKey: studyQueryKeys.studySessions(studyIdNum, offset, SIZE),
+    queryFn: () => fetchStudySessionsApi(studyIdNum, SIZE, offset),
     enabled: Number.isFinite(studyIdNum),
   });
 
@@ -91,7 +106,7 @@ export function MyStudySession() {
     onSuccess: (_res, vars) => {
       console.log("스터디 세션 생성 성공:", _res);
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.studySessions(vars.studyId),
+        queryKey: studyQueryKeys.studySessions(vars.studyId, offset, SIZE),
       });
     },
     onError: (error: unknown) => {
@@ -279,6 +294,18 @@ export function MyStudySession() {
     queryKey: authQueryKeys.stampList(selectedMemberUserId || 0),
     queryFn: () => fetchStudyStampsApi(selectedMemberUserId!),
   });
+
+  const handleNextWindow = () => {
+    setPageWindowStart((s) => Math.min(s + WINDOW, MAX_PAGE - (WINDOW - 1)));
+  };
+
+  const handlePrevWindow = () => {
+    setPageWindowStart((s) => Math.max(1, s - WINDOW));
+  };
+
+  useEffect(() => {
+    setPage(pageWindowStart);
+  }, [pageWindowStart]);
 
   console.log("stampList >>>", stampList);
 
@@ -491,6 +518,29 @@ export function MyStudySession() {
                   studySession={session}
                 />
               ))}
+          </div>
+          <div className="flex justify-center items-center gap-6">
+            <button onClick={handlePrevWindow} disabled={pageWindowStart === 1}>
+              <img src={ArrowLeftSvg} alt="이전" />
+            </button>
+            <div className="flex items-center gap-2">
+              {pageNumbers.map((p) => (
+                <button
+                  key={p}
+                  className={`text-caption-semibold rounded-[4px] px-[8px] py-[2px]
+                ${page == p ? "text-white bg-gray-400 hover:bg-gray-300" : "text-gray-400 hover:bg-gray-100"}`}
+                  onClick={() => setPage(p)}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={handleNextWindow}
+              disabled={pageWindowStart + WINDOW > MAX_PAGE}
+            >
+              <img src={ArrowRightSvg} alt="다음" />
+            </button>
           </div>
         </div>
       </main>

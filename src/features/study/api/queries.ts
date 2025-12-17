@@ -1,9 +1,13 @@
+import { myStudiesData } from "../myStudyMatch";
+
 export const studyQueryKeys = {
   homeStudies: (type?: string, sortParam?: string) =>
     ["homeStudies", type, sortParam] as const,
   // sessionLogs: (sessionId: number) => ["sessionLogs", sessionId] as const,
-  studySessions: (studyId: number) => ["studySessions", studyId] as const,
-  studyLogs: (sessionId: number) => ["studyLogs", sessionId] as const,
+  studySessions: (studyId: number, offset: number, limit: number) =>
+    ["studySessions", studyId, offset, limit] as const,
+  studyLogs: (sessionId: number, offset: number, limit: number) =>
+    ["studyLogs", sessionId, offset, limit] as const,
   studyLogDetail: (journalId: number) => ["studyLogDetail", journalId] as const,
   myApplications: () => ["myApplications"] as const,
   studyMatch: () => ["studyMatch"] as const,
@@ -29,7 +33,8 @@ export const studyQueryKeys = {
       sortParam,
     ] as const,
   studyDetail: (studyId: number) => ["studyDetail", studyId] as const,
-  myStudies: (studyStatus: string) => ["myStudies", studyStatus] as const,
+  myStudies: (studyStatus: string, offset: number, limit: number) =>
+    ["myStudies", studyStatus, offset, limit] as const,
   studyMembers: (studyId: number) => ["studyMembers", studyId] as const,
   studyRules: (studyId: number) => ["studyRules", studyId] as const,
   myStudyDetail: (studyId: number) => ["myStudyDetail", studyId] as const,
