@@ -97,7 +97,7 @@ export function MyPage() {
               type="button"
               variant="default"
               size="lg"
-              onClick={() => navigate("/home")}
+              onClick={() => navigate("/")}
             >
               홈으로
             </Button>

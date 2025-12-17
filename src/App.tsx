@@ -1,5 +1,5 @@
 import "./index.css";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { SignUpPage } from "@/features/auth/pages/SignUpPage";
 import { Home } from "@/features/study/pages/Home";
@@ -27,8 +27,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/study/match" element={<StudyMatch />} />
           <Route path="/study/create" element={<StudyCreate />} />
           <Route path="/study/update/:studyId" element={<StudyUpdate />} />

@@ -5,7 +5,7 @@ export function SideBar() {
   const location = useLocation();
 
   const menus = [
-    { name: "홈", path: "/home" },
+    { name: "홈", path: "/" },
     { name: "숙터디 둘러보기", path: "/study/match" },
     { name: "숙터디 만들기", path: "/study/create" },
     { name: "내 숙터디", path: "/study/my" },
