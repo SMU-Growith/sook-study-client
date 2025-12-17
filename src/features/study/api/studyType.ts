@@ -1,3 +1,5 @@
+import { int } from "zod";
+
 export interface StudyMember {
   userId: number;
   nickName: string;
@@ -214,4 +216,36 @@ export interface RespondToStudyApplication {
   applicationId: number;
   studyId: number;
   applicationStatus: ApplicationStatus;
+}
+
+export interface PreferenceSave {
+  mesage: string;
+  typeName: string;
+}
+
+export interface QuestionAnswer {
+  answers: QuestionAnswerItem[];
+}
+
+export interface QuestionAnswerItem {
+  questionId: number;
+  optionId: number;
+}
+
+export interface PreferenceResult {
+  testId: number;
+  resultType: {
+    typeCode: string;
+    typeName: string;
+    typeCategory: string;
+    tagline: string;
+    description: string;
+    caution: string;
+  };
+  scores: {
+    plannedCount: number;
+    freeCount: number;
+    cooperativeCount: number;
+    achievementCount: number;
+  };
 }

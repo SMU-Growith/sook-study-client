@@ -16,4 +16,5 @@ export interface ProfileResult {
   studyStyle: string;
   phoneNumber: string;
   noticeYn: boolean;
+  personalityType: string;
 }

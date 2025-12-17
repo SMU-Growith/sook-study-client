@@ -68,9 +68,9 @@ export const myProfileSchema = z.object({
       /^010-\d{4}-\d{4}$/,
       "올바른 전화번호 형식이 아닙니다. (010-1234-5678)"
     ),
-  studyStyle: z.string(),
   noticeYn: z.boolean(),
+  personalityType: z.string(),
 });
 
 export type TProfile = z.infer<typeof myProfileSchema>;
-export type TUpdateProfile = Omit<TProfile, "studyStyle">;
+export type TUpdateProfile = Omit<TProfile, "personalityType">;

@@ -38,7 +38,7 @@ export function ProfileForm() {
       <div className="flex items-end gap-2">
         <div className="grow">
           <FormField
-            name="studyStyle"
+            name="personalityType"
             label="내 스터디 성향"
             placeholder="아직 스터디 성향 지정이 되지 않았어요!"
             readOnly

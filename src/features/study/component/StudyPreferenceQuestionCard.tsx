@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 
 export type StudyPreferenceQuestion = {
-  id: number;
+  questionId: number;
   question: string;
-  options: string[];
+  options: { optionId: number; text: string }[];
 };
 
 interface StudyPreferenceTestCardsProps {
@@ -22,7 +22,7 @@ export function StudyPreferenceQuestionCard({
   return (
     <>
       <h1 className="heading-1 mt-[26px]">
-        Q{q.id}.
+        Q{q.questionId}.
         <br />
         {q.question}
       </h1>
@@ -35,7 +35,7 @@ export function StudyPreferenceQuestionCard({
               size="md"
               onClick={() => onSelect(index)}
             >
-              {option}
+              {option.text}
             </Button>
           );
         })}
