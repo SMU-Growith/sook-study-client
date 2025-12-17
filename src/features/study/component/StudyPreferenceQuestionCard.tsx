@@ -8,14 +8,14 @@ export type StudyPreferenceQuestion = {
 
 interface StudyPreferenceTestCardsProps {
   q: StudyPreferenceQuestion;
-  selectedIndex: number | null;
+  selectedOptionId: number | null;
   onSelect: (optionIndex: number) => void;
   onNext: () => void;
 }
 
 export function StudyPreferenceQuestionCard({
   q,
-  selectedIndex,
+  selectedOptionId,
   onSelect,
   onNext,
 }: StudyPreferenceTestCardsProps) {
@@ -41,7 +41,7 @@ export function StudyPreferenceQuestionCard({
         })}
       </div>
       <Button
-        variant={selectedIndex !== null ? "primary" : "disabled"}
+        variant={selectedOptionId !== null ? "primary" : "disabled"}
         size="md"
         className="mt-10"
         onClick={onNext}

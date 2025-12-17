@@ -68,19 +68,32 @@ export function StudyPreferenceResult() {
     navigate("/study/preference-test/question/1", { replace: true });
   };
 
-  // testId와 이미지 경로 맵핑
-  const testResultImageMap: Record<number, string> = {
-    1: CarefulSong, // 꼼꼼송이
-    2: PalrangSong, // 팔랑송이
-    3: DoranSong, // 도란송이
-    4: BeonjjeokSong, // 번쩍송이
-    5: AlsongSong, // 알쏭송이
-    6: DeundeunSong, // 든든송이
-    7: KkankkanSong, // 깐깐송이
-    8: BanggeutSong, // 방긋송이
-    9: ToktokSong, // 톡톡송이
-    10: EusseukSong, // 으쓱송이
-    11: AllrounderSong, // 올라운더송이
+  // 테스트 결과 이미지 매핑
+  type ResultTypeCode =
+    | "METICULOUS"
+    | "FLUTTERING"
+    | "WARM"
+    | "BRILLIANT"
+    | "MYSTERIOUS"
+    | "RELIABLE"
+    | "METICULOUS_STRICT"
+    | "CHEERFUL"
+    | "SPARKLING"
+    | "PROUD"
+    | "ALLROUNDER";
+
+  const testResultImageMap: Record<ResultTypeCode, string> = {
+    METICULOUS: CarefulSong, // 꼼꼼송이
+    FLUTTERING: PalrangSong, // 팔랑송이
+    WARM: DoranSong, // 도란송이
+    BRILLIANT: BeonjjeokSong, // 번쩍송이
+    MYSTERIOUS: AlsongSong, // 알쏭송이
+    RELIABLE: DeundeunSong, // 든든송이
+    METICULOUS_STRICT: KkankkanSong, // 깐깐송이
+    CHEERFUL: BanggeutSong, // 방긋송이
+    SPARKLING: ToktokSong, // 톡톡송이
+    PROUD: EusseukSong, // 으쓱송이
+    ALLROUNDER: AllrounderSong, // 올라운더송이
   };
 
   return (
@@ -104,7 +117,7 @@ export function StudyPreferenceResult() {
         </div>
 
         <img
-          src={testResultImageMap[result.testId]}
+          src={testResultImageMap[result.resultType.typeCode as ResultTypeCode]}
           alt="꼼꼼송이 이미지"
           className="mx-auto"
         />

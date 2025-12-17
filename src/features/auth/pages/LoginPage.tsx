@@ -87,7 +87,7 @@ export function LoginPage() {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-          navigate("/home");
+          navigate("/");
         }}
         onConfirm={handleConfirmStamp}
       />

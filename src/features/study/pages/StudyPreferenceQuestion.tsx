@@ -13,28 +13,28 @@ import { saveStudyPreferenceResultApi } from "../api/study";
 export function StudyPreferenceQuestion() {
   const { questionId } = useParams();
   const total = studyPreferenceQuestions.length;
-  const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
 
-  const [MyAnswers, setMyAnswers] = useState<QuestionAnswerItem[]>([]);
-
+  // 1. 현재 질문 인덱스 상태 관리
+  // questionId =index + 1
+  const [currentIndex, setCurrentIndex] = useState(0);
   const currentQuestion = studyPreferenceQuestions[currentIndex];
-  const selectedIndex = MyAnswers[currentIndex];
+
+  // 2. 사용자의 답변 상태 관리
+  const [MyAnswers, setMyAnswers] = useState<QuestionAnswerItem[]>([]);
+  const selectedAnswer = MyAnswers[currentIndex];
 
   const handleSelectOption = (optionIndex: number) => {
     const question = studyPreferenceQuestions[currentIndex];
     const option = question.options[optionIndex];
 
     setMyAnswers((prev) => {
-      const filtered = prev.filter((a) => a.questionId !== question.questionId);
-
-      return [
-        ...filtered,
-        {
-          questionId: question.questionId,
-          optionId: option.optionId,
-        },
-      ];
+      const next = [...prev];
+      next[currentIndex] = {
+        questionId: currentIndex + 1,
+        optionId: option.optionId,
+      };
+      return next;
     });
   };
 
@@ -62,7 +62,7 @@ export function StudyPreferenceQuestion() {
   });
 
   const handleNext = () => {
-    if (selectedIndex === null) return;
+    if (selectedAnswer === undefined) return;
     if (currentIndex < total - 1) {
       navigate(`/study/preference-test/question/${currentIndex + 2}`, {
         replace: true,
@@ -94,7 +94,7 @@ export function StudyPreferenceQuestion() {
         <Badge variant="blue">{currentIndex + 1}/6</Badge>
         <StudyPreferenceQuestionCard
           q={currentQuestion}
-          selectedIndex={selectedIndex?.optionId ?? null}
+          selectedOptionId={selectedAnswer?.optionId ?? null}
           onSelect={handleSelectOption}
           onNext={handleNext}
         />
