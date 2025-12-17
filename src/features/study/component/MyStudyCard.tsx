@@ -18,7 +18,10 @@ export function MyStudyCard({ study, studyStatus }: MyStudyCardProps) {
   const navigate = useNavigate();
 
   const handleStudyInClick = () => {
-    navigate(`/study/my/${study.studyId}`);
+    // study.title를 state로 넘겨주기
+    navigate(`/study/my/${study.studyId}`, {
+      state: { studyTitle: study.title },
+    });
   };
 
   const handleCardClick = () => {

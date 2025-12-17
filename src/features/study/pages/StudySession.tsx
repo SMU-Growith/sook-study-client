@@ -12,7 +12,7 @@ import { StudySessionCreateModal } from "../component/StudySessionCreateModal";
 import { StudySessionCard } from "@/features/study/component/MyStudySessionCard";
 import { StudyFinishModal } from "../component/StudyFinishModal";
 import { StudyOutModal } from "../component/StudyOutModal";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { StudyMemberModal } from "../component/StudyMemberModal";
 import ArrowLeftSvg from "@/assets/arrow/arrowLeft.svg";
 import ArrowRightSvg from "@/assets/arrow/arrowRight.svg";
@@ -52,6 +52,10 @@ import { authQueryKeys } from "@/features/auth/api/queries";
 
 export function MyStudySession() {
   const queryClient = useQueryClient();
+  // state로 받은 스터디 제목
+  const { state } = useLocation();
+  const { studyTitle } = state as { studyTitle: string };
+
   const { studyId } = useParams<{ studyId: string }>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStudyFinishModalOpen, setIsStudyFinishModalOpen] = useState(false);
@@ -90,12 +94,16 @@ export function MyStudySession() {
     }
   );
 
-  // 스터디 세션 조회 API
+  // 스터디 세션 리스트 조회 API
   const { data: sessions = [] } = useQuery<StudySessionDetail[]>({
     queryKey: studyQueryKeys.studySessions(studyIdNum, offset, SIZE),
-    queryFn: () => fetchStudySessionsApi(studyIdNum, SIZE, offset),
+    queryFn: () => fetchStudySessionsApi(studyIdNum, offset, SIZE),
     enabled: Number.isFinite(studyIdNum),
   });
+
+  console.log("sessions >>>", sessions);
+  console.log("myStudyDetail >>>", myStudyDetail);
+  console.log("offset SIZE >>>", offset, SIZE);
 
   const { mutate: submitStudySession } = useMutation<
     StudySessionDetail,
@@ -136,6 +144,8 @@ export function MyStudySession() {
 
   const leader = memberList.find((m) => m.studyRole === "LEADER");
   const members = memberList.filter((m) => m.studyRole === "MEMBER") ?? [];
+
+  console.log("memberList >>>", memberList);
 
   // 스터디 멤버 역할 변경
   type ChangeLeaderVariables = { studyId: number; memberId: number };
@@ -314,7 +324,7 @@ export function MyStudySession() {
       <AuthHeader />
       <main className="flex w-full mt-[88px]">
         <div className="flex flex-col px-[18px] py-6 gap-5 w-[336px]">
-          <h2 className="heading-2">React 실력 키우실 분! 초보도 환영!</h2>
+          <h2 className="heading-2">{studyTitle}</h2>
           {myStudyDetail.myRole === "LEADER" && (
             <Button variant="default" size="md">
               모집글 수정하기
