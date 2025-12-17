@@ -13,12 +13,12 @@ import WelcomeOn from "@/assets/stamp/welcomeOn.svg";
 
 interface StampCardProps {
   stamp: Stamp;
-  onCardClick: (stampType: Stamp["stampType"]) => void;
+  onCardClick?: (stampType: Stamp["stampType"]) => void;
 }
 
 export function StampCard({ stamp, onCardClick }: StampCardProps) {
   const handleCardClick = () => {
-    onCardClick(stamp.stampType);
+    onCardClick && onCardClick(stamp.stampType);
   };
 
   const badgeStatus = stamp.isCompleted

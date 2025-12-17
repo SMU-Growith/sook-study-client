@@ -4,6 +4,11 @@ import { StudyPreferenceQuestionCard } from "../component/StudyPreferenceQuestio
 import { studyPreferenceQuestions } from "../studyPreferenceTest";
 import { Badge } from "@/components/ui/Badge";
 import { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import type { PreferenceResult, QuestionAnswerItem } from "../api/studyType";
+import type { ApiResponse } from "@/lib/api/apiClient";
+import type { AxiosError } from "axios";
+import { saveStudyPreferenceResultApi } from "../api/study";
 
 export function StudyPreferenceQuestion() {
   const { questionId } = useParams();
@@ -11,20 +16,50 @@ export function StudyPreferenceQuestion() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
 
-  const [answers, setAnswers] = useState<(number | null)[]>(() =>
-    Array(total).fill(null)
-  );
+  const [MyAnswers, setMyAnswers] = useState<QuestionAnswerItem[]>([]);
 
   const currentQuestion = studyPreferenceQuestions[currentIndex];
-  const selectedIndex = answers[currentIndex];
+  const selectedIndex = MyAnswers[currentIndex];
 
   const handleSelectOption = (optionIndex: number) => {
-    setAnswers((prev) => {
-      const next = [...prev];
-      next[currentIndex] = optionIndex;
-      return next;
+    const question = studyPreferenceQuestions[currentIndex];
+    const option = question.options[optionIndex];
+
+    setMyAnswers((prev) => {
+      const filtered = prev.filter((a) => a.questionId !== question.questionId);
+
+      return [
+        ...filtered,
+        {
+          questionId: question.questionId,
+          optionId: option.optionId,
+        },
+      ];
     });
   };
+
+  const { mutate: submitStudyPreference } = useMutation<
+    PreferenceResult,
+    AxiosError<ApiResponse<null>>,
+    { data: { answers: QuestionAnswerItem[] } }
+  >({
+    mutationFn: ({ data }) => saveStudyPreferenceResultApi(data),
+    onSuccess: async (_data) => {
+      // alert("스터디 성향 결과를 받아왔습니다.");
+      console.log("Study Preference Result:", _data);
+      navigate("/study/preference-test/result", {
+        replace: true,
+        state: {
+          result: _data,
+        },
+      });
+    },
+    onError: (error) => {
+      alert(
+        error.response?.data?.message || "스터디 성향 결과 조회에 실패했습니다."
+      );
+    },
+  });
 
   const handleNext = () => {
     if (selectedIndex === null) return;
@@ -34,22 +69,8 @@ export function StudyPreferenceQuestion() {
       });
       return;
     }
-    // api 호출 후 스터디 성향 결과 받아오기
-    // resultData는 StudyPreferenceResultData 타입임
-    const resultData = {
-      name: "꼼꼼송이",
-      type: "계획형",
-      ment: "게획표를 들고 나타나는 철저 꼼꼼쟁이!",
-      introduction: "무엇이든 차근차근 계획부터 세우고 움직이는 타입이에요",
-      warning:
-        "시간 관리와 자료 준비에 능해 팀을 안정적으로 이끌지만, 때로는 융통성이 부족할 수 있어요.",
-    };
-    navigate("/study/preference-test/result", {
-      replace: true,
-      state: {
-        result: resultData,
-      },
-    });
+    submitStudyPreference({ data: { answers: MyAnswers } });
+    console.log("All answers submitted:", MyAnswers);
   };
 
   useEffect(() => {

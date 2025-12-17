@@ -1,38 +1,38 @@
 import { Modal } from "@/components/ui/Modal";
-import CloseSvg from "@/assets/icons/close.svg";
 import { Button } from "@/components/ui/button";
-import { InputField } from "@/components/ui/InputField";
 import UserProfileSvg from "@/assets/icons/userProfile.svg";
-import type { Stamp } from "@/features/study/pages/StudySession";
-import BadgeWelcomOn from "@/assets/badges/badgeWelcomeOn.svg";
-import BadgeWelcomOff from "@/assets/badges/badgeWelcomeOn.svg";
-import BadgeLeaderOn from "@/assets/badges/badgeLeaderOn.svg";
-import BadgeLeaderOff from "@/assets/badges/badgeLeaderOff.svg";
-import BadgeWriteOn from "@/assets/badges/badgeWriteOn.svg";
-import BadgeWriteOff from "@/assets/badges/badgeWriteOff.svg";
-import BadgeCheerOn from "@/assets/badges/badgeCheerOn.svg";
-import BadgeCheerOff from "@/assets/badges/badgeCheerOff.svg";
-import BadgeSuperOn from "@/assets/badges/badgeSuperOn.svg";
-import BadgeSuperOff from "@/assets/badges/badgeSuperOff.svg";
-import { CarouselNavButtons } from "./CarouselNavButtons";
+import type { Stamp, StampList } from "@/features/study/api/studyType";
+import { StampCard } from "@/features/auth/components/StampCard";
+import { useState } from "react";
+import { StampDetailModal } from "@/features/auth/components/StampDetailModal";
 
 interface MemberDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  stamps: Stamp[] | null;
+  stampList?: StampList;
   nickname?: string;
 }
+
 export function MemberDetailModal({
   isOpen,
   onClose,
-  onConfirm,
-  stamps,
+  stampList,
   nickname,
 }: MemberDetailModalProps) {
+  const [isStampDetailModalOpen, setIsStampDetailModalOpen] = useState(false);
+  const [selectedStamp, setSelectedStamp] = useState<Stamp["stampType"] | null>(
+    null
+  );
+
+  const openModal = (stampType: Stamp["stampType"]) => {
+    setSelectedStamp(stampType);
+    setIsStampDetailModalOpen(true);
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-[670px]">
-      <div className="flex flex-col text-left relative px-5 py-6">
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-[800px]">
+      <div className="flex flex-col text-left relative px-3 py-2">
         <div className="h-[90px] bg-gray-100 rounded-[10px] mb-6">
           <div className="flex items-center h-full gap-5">
             <img
@@ -43,35 +43,38 @@ export function MemberDetailModal({
             <div className="flex flex-col">
               <p className="text-body-1-semibold">{nickname}</p>
               <p className="text-body-1">
-                스터디 스탬프{" "}
+                진행중인 스탬프{" "}
                 <span className="text-primary-500 text-body-1-semibold">
-                  4개{" "}
+                  {stampList?.inProgressCount ?? 0}개{" "}
                 </span>{" "}
                 | 완료한 스탬프{" "}
                 <span className="text-primary-500 text-body-1-semibold">
-                  6개{" "}
+                  {stampList?.completedCount ?? 0}개{" "}
                 </span>
               </p>
             </div>
           </div>
         </div>
         <hr className="border-t-3 border-gray-100 mb-[22px]" />
-
-        <div className="flex justify-end">
-          <CarouselNavButtons
-            onPrev={function (): void {}}
-            onNext={function (): void {}}
-            canGoPrev={false}
-            canGoNext={false}
-          />
+        <div className="grid grid-cols-4 gap-5 mb-10">
+          {stampList?.stamps.map((stamp) => (
+            <StampCard
+              key={stamp.stampType}
+              stamp={stamp}
+              onCardClick={openModal}
+            />
+          ))}
         </div>
-
-        <div className="flex gap-2 overflow-x-auto justify-center mt-3">
-          <img src={BadgeWelcomOn} alt="웰컴 스탬프" />
-          <img src={BadgeLeaderOn} alt="리더 스탬프" />
-          <img src={BadgeSuperOn} alt="슈퍼숙타 스탬프" />
-        </div>
-        <Button variant="default" onClick={onClose} className="mt-6">
+        <StampDetailModal
+          isOpen={isStampDetailModalOpen}
+          stamp={
+            stampList?.stamps.find(
+              (stamp) => stamp.stampType === selectedStamp
+            ) ?? null
+          }
+          onClose={() => setIsStampDetailModalOpen(false)}
+        />
+        <Button variant="default" onClick={onClose}>
           닫기
         </Button>
       </div>

@@ -1,6 +1,4 @@
 import { AuthHeader } from "@/components/layout/AuthHeader";
-import Desc1 from "@/assets/preferences/carefulSongDesc1.svg";
-import Desc2 from "@/assets/preferences/carefulSongDesc2.svg";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -8,19 +6,16 @@ import { StudyPreferenceRegisterModal } from "../component/StudyPreferenceRegist
 import CarefulSong from "@/assets/testResult/carefulSong.svg";
 import TestSmile from "@/assets/testResult/testSmile.svg";
 import TestWarning from "@/assets/testResult/testWarning.svg";
-
-type StudyPreferenceResultData = {
-  name: string;
-  type: string;
-  ment: string;
-  introduction: string;
-  warning: string;
-};
+import { useMutation } from "@tanstack/react-query";
+import type { PreferenceResult, PreferenceSave } from "../api/studyType";
+import type { ApiResponse } from "@/lib/api/apiClient";
+import type { AxiosError } from "axios";
+import { saveStudyPreferenceProfileApi } from "../api/study";
 
 export function StudyPreferenceResult() {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as { result?: StudyPreferenceResultData } | null;
+  const state = location.state as { result?: PreferenceResult } | null;
   const result = state?.result;
   const [
     registerStudyPreferenceModalOpen,
@@ -35,10 +30,27 @@ export function StudyPreferenceResult() {
 
   if (!result) return null;
 
+  const { mutate: saveStudyPreference } = useMutation<
+    PreferenceSave,
+    AxiosError<ApiResponse<null>>,
+    { testId: number }
+  >({
+    mutationFn: ({ testId }) => saveStudyPreferenceProfileApi(testId),
+    onSuccess: async (_data) => {
+      // alert("스터디 성향이 저장되었습니다.");
+      console.log("Study Preference Result:", _data);
+      setRegisterStudyPreferenceModalOpen(false);
+      navigate("/my-page");
+    },
+    onError: (error) => {
+      alert(
+        error.response?.data?.message || "스터디 성향 저장에 실패했습니다."
+      );
+    },
+  });
+
   const registerStudyPreference = () => {
-    // 스터디성향 등록 api 호출
-    setRegisterStudyPreferenceModalOpen(false);
-    navigate("/my-page");
+    saveStudyPreference({ testId: result.testId });
   };
 
   const retryTest = () => {
@@ -52,10 +64,17 @@ export function StudyPreferenceResult() {
       <main className="flex flex-col w-full max-w-[730px] mt-[88px] px-10 py-10 gap-y-10 overflow-y-auto justify-center">
         <div className="flex flex-col items-center text-center gap-4">
           <div className="flex items-center gap-1">
-            <h1 className="heading-1 text-primary-500">{result.name}</h1>
-            <span className="text-gray-300 text-body-1"> {result.type}</span>
+            <h1 className="heading-1 text-primary-500">
+              {result.resultType.typeName}
+            </h1>
+            <span className="text-gray-300 text-body-1">
+              {" "}
+              {result.resultType.typeCategory}
+            </span>
           </div>
-          <p className="text-gray-500 text-body-1-semibold">{result.ment}</p>
+          <p className="text-gray-500 text-body-1-semibold">
+            {result.resultType.tagline}
+          </p>
         </div>
         <img src={CarefulSong} alt="꼼꼼송이 이미지" className="mx-auto" />
         <div className="flex gap-[12px]">
@@ -66,14 +85,18 @@ export function StudyPreferenceResult() {
                 나의 숙터디 성향이에요
               </p>
             </div>
-            <p className="text-gray-400 text-body-1">{result.introduction}</p>
+            <p className="text-gray-400 text-body-1">
+              {result.resultType.description}
+            </p>
           </div>
           <div className="bg-error-100 rounded-[10px] px-5 py-5 flex-1">
             <div className="flex items-center gap-2 mb-2">
               <img src={TestWarning} alt="조심할 점" />
               <p className="text-error-200 text-body-2-semibold">조심하숙!</p>
             </div>
-            <p className="text-gray-400 text-body-1">{result.warning}</p>
+            <p className="text-gray-400 text-body-1">
+              {result.resultType.caution}
+            </p>
           </div>
         </div>
         <div className="flex flex-col gap-2">

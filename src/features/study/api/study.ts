@@ -12,8 +12,10 @@ import type {
   MyApplication,
   MyStudy,
   MyStudyDetail,
+  PreferenceResult,
+  PreferenceSave,
+  QuestionAnswer,
   RespondToStudyApplication,
-  RuleCategoryLabel,
   RulesLabel,
   StampList,
   StudyDetail,
@@ -333,6 +335,25 @@ export const studyLeaveApi = async (studyId: number) => {
 export const studyFinishApi = async (studyId: number) => {
   const response = await apiClient.patch<ApiResponse<null>>(
     `/studies/${studyId}/close`
+  );
+  return response.data.result;
+};
+
+// 스터디 성향 테스트 결과보기
+export const saveStudyPreferenceResultApi = async (
+  resultData: QuestionAnswer
+) => {
+  const response = await apiClient.post<ApiResponse<PreferenceResult>>(
+    `/personality-test/submit`,
+    resultData
+  );
+  return response.data.result;
+};
+
+// 스터디 성향 테스트 프로필 저장
+export const saveStudyPreferenceProfileApi = async (testId: number) => {
+  const response = await apiClient.post<ApiResponse<PreferenceSave>>(
+    `/personality-test/${testId}/save`
   );
   return response.data.result;
 };

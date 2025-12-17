@@ -2,21 +2,19 @@ import { AuthHeader } from "@/components/layout/AuthHeader";
 import { Button } from "@/components/ui/button";
 import PlusSvg from "@/assets/icons/plus.svg";
 import { StudyLogCreateModal } from "../component/StudyLogCreateModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useParams } from "react-router-dom";
 import { StudyLogCard } from "@/features/study/component/MyStudyLogCard";
-import type {
-  StudyLogDetail,
-  StudyLogList,
-  StudySessionDetail,
-} from "../api/studyType";
+import type { StudyLogDetail, StudyLogList } from "../api/studyType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createStudyLogApi, fetchStudyLogsApi } from "../api/study";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/lib/api";
 import type { TStudyLogSchema } from "../validators/study";
 import { studyQueryKeys } from "../api/queries";
+import ArrowRightSvg from "@/assets/arrow/arrowRight.svg";
+import ArrowLeftSvg from "@/assets/arrow/arrowLeft.svg";
 
 export function MyStudyLog() {
   const auth = useAuthStore();
@@ -24,12 +22,24 @@ export function MyStudyLog() {
   // const [searchParams] = useSearchParams();
   const { sessionId } = useParams<{ studyId: string; sessionId: string }>();
   // const sessionTitle = searchParams.get("sessionTitle");
+  const MAX_PAGE = 20;
+  const WINDOW = 5;
+  const [page, setPage] = useState(1);
+  const [pageWindowStart, setPageWindowStart] = useState(1); // 1,6,11,16 ...
+
+  const pageNumbers = Array.from(
+    { length: WINDOW },
+    (_, i) => pageWindowStart + i
+  ).filter((p) => p <= MAX_PAGE);
+
+  const SIZE = 9;
+  const offset = page - 1;
 
   // 일지 리스트 불러오기
   const sessionIdNum = Number(sessionId);
   const { data: logData } = useQuery<StudyLogList>({
-    queryKey: studyQueryKeys.studyLogs(sessionIdNum),
-    queryFn: () => fetchStudyLogsApi(sessionIdNum, 0, 20),
+    queryKey: studyQueryKeys.studyLogs(sessionIdNum, offset, SIZE),
+    queryFn: () => fetchStudyLogsApi(sessionIdNum, offset, SIZE),
     enabled: Number.isFinite(sessionIdNum),
   });
 
@@ -48,7 +58,7 @@ export function MyStudyLog() {
     onSuccess: (res) => {
       console.log("스터디 로그 생성 성공:", res);
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.studyLogs(sessionIdNum),
+        queryKey: studyQueryKeys.studyLogs(sessionIdNum, offset, SIZE),
       });
       setIsWriteModalOpen(false);
     },
@@ -65,6 +75,27 @@ export function MyStudyLog() {
     });
     setIsWriteModalOpen(false);
   };
+
+  const handleNextWindow = () => {
+    setPageWindowStart((s) => Math.min(s + WINDOW, MAX_PAGE - (WINDOW - 1)));
+  };
+
+  const handlePrevWindow = () => {
+    setPageWindowStart((s) => Math.max(1, s - WINDOW));
+  };
+
+  const resetPagination = () => {
+    setPage(1);
+    setPageWindowStart(1);
+  };
+
+  useEffect(() => {
+    setPage(pageWindowStart);
+  }, [pageWindowStart]);
+
+  useEffect(() => {
+    resetPagination();
+  }, [sessionIdNum]);
 
   return (
     <div className="flex h-screen bg-white w-full">
@@ -131,6 +162,29 @@ export function MyStudyLog() {
                   isEmpty={false}
                 />
               ))}
+          </div>
+          <div className="flex justify-center items-center gap-6">
+            <button onClick={handlePrevWindow} disabled={pageWindowStart === 1}>
+              <img src={ArrowLeftSvg} alt="이전" />
+            </button>
+            <div className="flex items-center gap-2">
+              {pageNumbers.map((p) => (
+                <button
+                  key={p}
+                  className={`text-caption-semibold rounded-[4px] px-[8px] py-[2px]
+                ${page == p ? "text-white bg-gray-400 hover:bg-gray-300" : "text-gray-400 hover:bg-gray-100"}`}
+                  onClick={() => setPage(p)}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={handleNextWindow}
+              disabled={pageWindowStart + WINDOW > MAX_PAGE}
+            >
+              <img src={ArrowRightSvg} alt="다음" />
+            </button>
           </div>
         </div>
       </main>

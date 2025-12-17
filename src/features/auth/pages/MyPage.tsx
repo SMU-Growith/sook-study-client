@@ -64,14 +64,14 @@ export function MyPage() {
   if (isLoading || !userInfo) {
     return null;
   }
-  // console.log("userInfo >>>", userInfo);
+  console.log("userInfo >>>", userInfo);
 
   const mapToProfileFormValues = (api: ProfileResult): TProfile => ({
     nickName: api.nickName,
     studentStatus:
       REVERSE_STUDENT_STATUS_MAP[api.studentStatus] ?? api.studentStatus,
     major: REVERSE_MAJOR_MAP[api.major] ?? api.major,
-    studyStyle: api.studyStyle,
+    personalityType: api.personalityType,
     phoneNumber: api.phoneNumber,
     noticeYn: api.noticeYn,
   });

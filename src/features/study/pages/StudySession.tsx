@@ -7,13 +7,16 @@ import StudyMemberSvg from "@/assets/studyMember.svg";
 import UserProfileSvg from "@/assets/icons/userProfile.svg";
 import BlueCircleSvg from "@/assets/blueCircle.svg";
 import PlusSvg from "@/assets/icons/plus.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StudySessionCreateModal } from "../component/StudySessionCreateModal";
 import { StudySessionCard } from "@/features/study/component/MyStudySessionCard";
 import { StudyFinishModal } from "../component/StudyFinishModal";
 import { StudyOutModal } from "../component/StudyOutModal";
 import { useNavigate, useParams } from "react-router";
 import { StudyMemberModal } from "../component/StudyMemberModal";
+import ArrowLeftSvg from "@/assets/arrow/arrowLeft.svg";
+import ArrowRightSvg from "@/assets/arrow/arrowRight.svg";
+
 import {
   createStudySessionApi,
   fetchMyApplicationsListApi,
@@ -21,6 +24,7 @@ import {
   fetchStudyMembersApi,
   fetchStudyRulesApi,
   fetchStudySessionsApi,
+  fetchStudyStampsApi,
   respondToStudyApplicationApi,
   studyChangeLeaderApi,
   studyFinishApi,
@@ -33,6 +37,7 @@ import type {
   MyStudyDetail,
   RespondToStudyApplication,
   RulesLabel,
+  StampList,
   StudyMember,
   StudySessionDetail,
 } from "../api/studyType";
@@ -43,63 +48,9 @@ import { MemberDetailModal } from "@/components/ui/MemberDetailModal";
 import type { ApiResponse } from "@/lib/api/apiClient";
 import type { AxiosError } from "axios";
 import { studyQueryKeys } from "../api/queries";
-
-interface StampLevel {
-  stampId: number;
-  level: "NONE" | "LEVEL_1" | "LEVEL_2";
-  levelName: string;
-  levelDescription: string;
-  isAchieved: boolean;
-}
-
-export interface Stamp {
-  stampType: "WELCOME" | "LEADER" | "RECORD" | "CHEER" | "SUPERSTAR ";
-  stampName: string;
-  description: string;
-  achievedLevel: "NONE" | "LEVEL_1" | "LEVEL_2";
-  isAchieved: boolean;
-  isCompleted: boolean;
-  levels?: StampLevel[];
-}
-
-const exampleStampData: Stamp[] = [
-  {
-    stampType: "WELCOME",
-    stampName: "웰컴숙",
-    description:
-      "숙터디 회원가입을 축하해요! 숙터디에서 다양한 활동을 이용해보세요.",
-    achievedLevel: "NONE",
-    isAchieved: true,
-    isCompleted: true,
-  },
-  {
-    stampType: "LEADER",
-    stampName: "리더숙",
-    description:
-      "스터디 개설을 하셨네요. 스터디장은 스터디 일지를 회차별로 생성할 수 있어요.",
-    achievedLevel: "LEVEL_1",
-    isAchieved: true,
-    isCompleted: false,
-    levels: [
-      {
-        stampId: 1,
-        level: "LEVEL_1",
-        levelName: "과대송",
-        levelDescription: "스터디 1회 개설",
-        isAchieved: true,
-      },
-    ],
-  },
-];
+import { authQueryKeys } from "@/features/auth/api/queries";
 
 export function MyStudySession() {
-  // // TODO: 상세조회 api 연동 후 role 설정
-  // const [sp] = useSearchParams();
-  // const role = sp.get("role");
-  // if (role === "LEADER") {
-  //   isLeader = true;
-  // }
-
   const queryClient = useQueryClient();
   const { studyId } = useParams<{ studyId: string }>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -109,13 +60,26 @@ export function MyStudySession() {
   const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isMemberDetailModalOpen, setIsMemberDetailModalOpen] = useState(false);
-  const [selectedMemberStamp, setSelectedMemberStamp] = useState<
-    Stamp[] | null
+  const [selectedMemberUserId, setSelectedMemberUserId] = useState<
+    number | null
   >(null);
   const [selectedMemberNickname, setSelectedMemberNickname] = useState<
     string | null
   >(null);
   const studyIdNum = Number(studyId);
+
+  const MAX_PAGE = 20;
+  const WINDOW = 5;
+  const [page, setPage] = useState(1);
+  const [pageWindowStart, setPageWindowStart] = useState(1); // 1,6,11,16 ...
+
+  const pageNumbers = Array.from(
+    { length: WINDOW },
+    (_, i) => pageWindowStart + i
+  ).filter((p) => p <= MAX_PAGE);
+
+  const SIZE = 10;
+  const offset = page - 1;
 
   // 내 스터디 상세 조회 API
   const { data: myStudyDetail = {} as MyStudyDetail } = useQuery<MyStudyDetail>(
@@ -128,8 +92,8 @@ export function MyStudySession() {
 
   // 스터디 세션 조회 API
   const { data: sessions = [] } = useQuery<StudySessionDetail[]>({
-    queryKey: studyQueryKeys.studySessions(studyIdNum),
-    queryFn: () => fetchStudySessionsApi(studyIdNum, 0, 20),
+    queryKey: studyQueryKeys.studySessions(studyIdNum, offset, SIZE),
+    queryFn: () => fetchStudySessionsApi(studyIdNum, SIZE, offset),
     enabled: Number.isFinite(studyIdNum),
   });
 
@@ -142,7 +106,7 @@ export function MyStudySession() {
     onSuccess: (_res, vars) => {
       console.log("스터디 세션 생성 성공:", _res);
       queryClient.invalidateQueries({
-        queryKey: studyQueryKeys.studySessions(vars.studyId),
+        queryKey: studyQueryKeys.studySessions(vars.studyId, offset, SIZE),
       });
     },
     onError: (error: unknown) => {
@@ -282,6 +246,9 @@ export function MyStudySession() {
       queryClient.invalidateQueries({
         queryKey: studyQueryKeys.myStudies("CLOSED"),
       });
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.myStudies("ACTIVE"),
+      });
       setIsStudyOutModalOpen(false);
       navigate("/study/my");
     },
@@ -301,6 +268,9 @@ export function MyStudySession() {
       queryClient.invalidateQueries({
         queryKey: studyQueryKeys.myStudies("CLOSED"),
       });
+      queryClient.invalidateQueries({
+        queryKey: studyQueryKeys.myStudies("ACTIVE"),
+      });
       setIsStudyFinishModalOpen(false);
       navigate("/study/my");
     },
@@ -318,6 +288,26 @@ export function MyStudySession() {
   const handleStudyFinish = () => {
     studyFinish({ studyId: studyIdNum });
   };
+
+  // 스터디 멤버 슽탬프 조회 API
+  const { data: stampList } = useQuery<StampList>({
+    queryKey: authQueryKeys.stampList(selectedMemberUserId || 0),
+    queryFn: () => fetchStudyStampsApi(selectedMemberUserId!),
+  });
+
+  const handleNextWindow = () => {
+    setPageWindowStart((s) => Math.min(s + WINDOW, MAX_PAGE - (WINDOW - 1)));
+  };
+
+  const handlePrevWindow = () => {
+    setPageWindowStart((s) => Math.max(1, s - WINDOW));
+  };
+
+  useEffect(() => {
+    setPage(pageWindowStart);
+  }, [pageWindowStart]);
+
+  console.log("stampList >>>", stampList);
 
   return (
     <div className="flex h-screen bg-white w-full">
@@ -349,9 +339,8 @@ export function MyStudySession() {
                 </Badge>
                 <button
                   onClick={() => {
-                    // member.userId를 파라미터로 받는 멤버스탬프조회api 호출
+                    setSelectedMemberUserId(leader?.userId || null);
                     setSelectedMemberNickname(leader?.nickName || null);
-                    setSelectedMemberStamp(exampleStampData);
                     setIsMemberDetailModalOpen(true);
                   }}
                 >
@@ -372,9 +361,7 @@ export function MyStudySession() {
                     <button
                       key={member.userId}
                       onClick={() => {
-                        // member.userId를 파라미터로 받는 멤버스탬프조회api 호출
-                        setSelectedMemberNickname(member?.nickName || null);
-                        setSelectedMemberStamp(exampleStampData);
+                        setSelectedMemberUserId(member?.userId || null);
                         setIsMemberDetailModalOpen(true);
                       }}
                     >
@@ -391,7 +378,7 @@ export function MyStudySession() {
                   isOpen={isMemberDetailModalOpen}
                   onClose={() => setIsMemberDetailModalOpen(false)}
                   onConfirm={() => setIsMemberDetailModalOpen(false)}
-                  stamps={selectedMemberStamp}
+                  stampList={stampList}
                   nickname={selectedMemberNickname || undefined}
                 />
                 <StudyMemberModal
@@ -531,6 +518,29 @@ export function MyStudySession() {
                   studySession={session}
                 />
               ))}
+          </div>
+          <div className="flex justify-center items-center gap-6">
+            <button onClick={handlePrevWindow} disabled={pageWindowStart === 1}>
+              <img src={ArrowLeftSvg} alt="이전" />
+            </button>
+            <div className="flex items-center gap-2">
+              {pageNumbers.map((p) => (
+                <button
+                  key={p}
+                  className={`text-caption-semibold rounded-[4px] px-[8px] py-[2px]
+                ${page == p ? "text-white bg-gray-400 hover:bg-gray-300" : "text-gray-400 hover:bg-gray-100"}`}
+                  onClick={() => setPage(p)}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={handleNextWindow}
+              disabled={pageWindowStart + WINDOW > MAX_PAGE}
+            >
+              <img src={ArrowRightSvg} alt="다음" />
+            </button>
           </div>
         </div>
       </main>

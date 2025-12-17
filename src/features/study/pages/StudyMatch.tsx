@@ -1,6 +1,6 @@
 import { AuthHeader } from "@/components/layout/AuthHeader";
 import { SideBar } from "@/components/ui/SideBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StudyCard } from "@/components/ui/StudyCard";
 import ArrowLeftSvg from "@/assets/arrow/arrowLeft.svg";
 import ArrowRightSvg from "@/assets/arrow/arrowRight.svg";
@@ -55,8 +55,18 @@ export function StudyMatch() {
   const [activeSubCategory, setActiveSubCategory] =
     useState<SubCategory>("학업");
 
-  const pageNumbers = [1, 2, 3, 4, 5]; // [lf] 페이지 번호 배열
-  const [page, setPage] = useState(1); // [lf] 현재 페이지
+  const MAX_PAGE = 20;
+  const WINDOW = 5;
+  const [page, setPage] = useState(1);
+  const [pageWindowStart, setPageWindowStart] = useState(1); // 1,6,11,16 ...
+
+  const pageNumbers = Array.from(
+    { length: WINDOW },
+    (_, i) => pageWindowStart + i
+  ).filter((p) => p <= MAX_PAGE);
+
+  const SIZE = 9;
+  const offset = page - 1;
 
   const { data: studies = [] } = useQuery<StudyResult[]>({
     queryKey: studyQueryKeys.searchStudies(
@@ -65,8 +75,8 @@ export function StudyMatch() {
       studyStyleCategories,
       isRecruiting,
       searchContent,
-      0,
-      9,
+      offset,
+      SIZE,
       "createdAt"
     ),
     queryFn: () =>
@@ -76,8 +86,8 @@ export function StudyMatch() {
         studyStyleCategories,
         isRecruiting,
         searchContent,
-        0,
-        9,
+        offset,
+        SIZE,
         "createdAt"
       ),
   });
@@ -156,13 +166,38 @@ export function StudyMatch() {
 
   const handleStudyStatus = (status: string) => {
     setSelectedStatus(status as StudyStatusFilter);
-    setPage(1);
   };
 
   const handleSearch = (text: string) => {
     setSearchContent(text);
-    setPage(1);
   };
+
+  const handleNextWindow = () => {
+    setPageWindowStart((s) => Math.min(s + WINDOW, MAX_PAGE - (WINDOW - 1)));
+  };
+
+  const handlePrevWindow = () => {
+    setPageWindowStart((s) => Math.max(1, s - WINDOW));
+  };
+
+  const resetPagination = () => {
+    setPage(1);
+    setPageWindowStart(1);
+  };
+
+  useEffect(() => {
+    setPage(pageWindowStart);
+  }, [pageWindowStart]);
+
+  useEffect(() => {
+    resetPagination();
+  }, [
+    selectedStatus,
+    searchContent,
+    activeTopCategory,
+    activeSubCategory,
+    selectedTags.join("|"),
+  ]);
 
   return (
     <div className="flex h-screen bg-white w-full">
@@ -269,7 +304,7 @@ export function StudyMatch() {
             </div>
           </div>
           <div className="flex justify-center items-center gap-6">
-            <button>
+            <button onClick={handlePrevWindow} disabled={pageWindowStart === 1}>
               <img src={ArrowLeftSvg} alt="이전" />
             </button>
             <div className="flex items-center gap-2">
@@ -284,7 +319,10 @@ export function StudyMatch() {
                 </button>
               ))}
             </div>
-            <button>
+            <button
+              onClick={handleNextWindow}
+              disabled={pageWindowStart + WINDOW > MAX_PAGE}
+            >
               <img src={ArrowRightSvg} alt="다음" />
             </button>
           </div>
